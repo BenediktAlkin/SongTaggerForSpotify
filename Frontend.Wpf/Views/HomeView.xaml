@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="Frontend.Wpf.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:Frontend.Wpf.ViewModels" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewmodels:HomeViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <!-- logged in user info -->
+        <StackPanel Orientation="Horizontal">
+            <Label Style="{StaticResource MaterialDesignLabel}" 
+               Content="Logged in as"
+               Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+            <Label Style="{StaticResource MaterialDesignLabel}" 
+               Content="{Binding DataContainer.User.Id}"
+               FontWeight="Bold"
+               Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+        </StackPanel>
+
+        <!-- logout button -->
+        <Button Click="LoginButton_Click"
+                Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
+                Width="128"
+                Content="Logout"/>
+
+
+        <!-- login button -->
+        <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>
+        <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"
+                materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
+                Width="128"
+                Content="Login"
+                IsEnabledChanged="Button_IsEnabledChanged">
+            <Button.CommandParameter>
+                <StackPanel Margin="16">
+                    <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                 HorizontalAlignment="Center" Margin="16"
+                                 IsIndeterminate="True"
+                                 Value="0" />
+                    <Label Style="{StaticResource MaterialDesignLabel}"
+                           Content="Waiting for login in opened browser window"/>
+                    <Button 
+                        Style="{StaticResource DialogButton}"
+                        IsCancel="True" 
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        HorizontalAlignment="Center"
+                        Content="CANCEL"
+                        Click="LoginDialog_Cancel"/>
+                </StackPanel>
+            </Button.CommandParameter>
+        </Button>
+    </StackPanel>
+</UserControl>

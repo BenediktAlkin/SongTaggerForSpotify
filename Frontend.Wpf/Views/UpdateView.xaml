@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="Frontend.Wpf.Views.UpdateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:Frontend.Wpf.ViewModels" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:Frontend.Wpf.Converters"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewmodels:UpdateViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Resources>
+            <converters:DoubleToTextConverter x:Key="MbToTextConverter" Format="N2" Suffix=" MB"/>
+            <converters:DoubleToTextConverter x:Key="PercentToTextConverter" Format="N2" Suffix="%"/>
+            <converters:UpdatingStateToTextConverter x:Key="UpdatingStateToTextConverter"/>
+        </Grid.Resources>
+
+        <!-- indeterminate progress -->
+        <Grid VerticalAlignment="Center" Visibility="{Binding UpdateManager.IsDownloading, Converter={StaticResource InverseBoolToVisConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ProgressBar
+                Margin="12"
+                Height="75"
+                Width="75"
+                Grid.Row="0"
+                Style="{StaticResource MaterialDesignCircularProgressBar}"
+                Value="0" IsIndeterminate="True"/>
+            <TextBlock
+                Grid.Row="1"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Text="{Binding UpdateManager.State, Converter={StaticResource UpdatingStateToTextConverter}}"/>
+        </Grid>
+        
+        <!-- download progress -->
+        <Grid VerticalAlignment="Center" Visibility="{Binding UpdateManager.IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock 
+                Grid.Row="0" Grid.Column="0" 
+                Text="{Binding UpdateManager.UpdateProgressMb, Converter={StaticResource MbToTextConverter}}" 
+                Margin="0 0 6 0" 
+                TextAlignment="Right" 
+                VerticalAlignment="Center"/>
+            <ProgressBar
+                Grid.Row="0" Grid.Column="1" 
+                materialDesign:TransitionAssist.DisableTransitions="True"
+                Value="{Binding UpdateManager.UpdateProgressPercent}"/>
+            <!--<TextBlock
+                Grid.Row="0" Grid.Column="1" 
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Text="{Binding UpdateManager.UpdateProgressPercent, Converter={StaticResource PercentToTextConverter}}"/>-->
+            <TextBlock 
+                Grid.Row="0" Grid.Column="2" 
+                Text="{Binding UpdateManager.UpdateSizeMb, Converter={StaticResource MbToTextConverter}}" 
+                Margin="6 0 0 0" 
+                VerticalAlignment="Center" />
+            <TextBlock 
+                Grid.Row="1" Grid.ColumnSpan="3" 
+                Text="{Binding UpdateManager.State, Converter={StaticResource UpdatingStateToTextConverter}}"
+                Margin="6 0 0 0" 
+                HorizontalAlignment="Center" />
+        </Grid>
+    </Grid>
+</UserControl>

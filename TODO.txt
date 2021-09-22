@@ -1,0 +1,5 @@
+
+
+maybe replace listboxes with buttons with itemscontrol to use buttons and that can be disabled
+check if the Resource blocks at the start of views are needed
+graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"><?define Frontend.Wpf_TargetDir=$(var.Frontend.Wpf.TargetDir)?>
+	<Product Id="d41bde06-14ce-4fb0-9644-b16920db14e3" Name="SpotifySongTagger" Language="1033" Version="1.0.0.0" Manufacturer="SpotifySongTagger" UpgradeCode="cfaf6289-7d61-427f-8bf2-6ddf18644555">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="ProductFeature" Title="SpotifySongTagger" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut"/>
+      <ComponentRef Id="ApplicationShortcutDesktop"/>
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="Setup" />
+			</Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="SpotifySongTagger"/>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop"/>
+		</Directory>
+	</Fragment>
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="ef8cc152-e973-4fe7-bf74-518cf6386b03">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="SpotifySongTagger" Description="SpotifySongTagger" Target="[INSTALLFOLDER]SpotifySongTagger.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\SpotifySongTagger" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="ApplicationShortcutDesktop" Guid="e8b8891c-e38b-4acf-92b9-d5695fb92bcd">
+        <Shortcut Id="ApplicationDesktopShortcut" Name="SpotifySongTagger" Description="SpotifySongTagger" Target="[INSTALLFOLDER]SpotifySongTagger.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveDesktopFolder" Directory="DesktopFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\SpotifySongTagger" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+			<Component Id="Frontend.Wpf.runtimeconfig.json" Guid="3ac4d982-3e7e-4b9f-828e-4059913c0c40">
+			  <File Id="Frontend.Wpf.runtimeconfig.json" Name="Frontend.Wpf.runtimeconfig.json" Source="$(var.Frontend.Wpf_TargetDir)Frontend.Wpf.runtimeconfig.json" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Logging.dll" Guid="bbd64192-2119-4a67-878d-922482157523">
+			  <File Id="Microsoft.Extensions.Logging.dll" Name="Microsoft.Extensions.Logging.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Logging.dll" />
+			</Component>
+			<Component Id="System.Collections.Immutable.dll" Guid="6c26d16a-bba0-4406-a66d-63ba52d3d6bd">
+			  <File Id="System.Collections.Immutable.dll" Name="System.Collections.Immutable.dll" Source="$(var.Frontend.Wpf_TargetDir)System.Collections.Immutable.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.DependencyInjection.dll" Guid="d63bae9a-9152-4cdc-ba39-ff8c1c0c49a5">
+			  <File Id="Microsoft.Extensions.DependencyInjection.dll" Name="Microsoft.Extensions.DependencyInjection.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.DependencyInjection.dll" />
+			</Component>
+			<Component Id="System.Text.Encodings.Web.dll" Guid="72c0ef86-e4d2-4f82-810d-8a3725173333">
+			  <File Id="System.Text.Encodings.Web.dll" Name="System.Text.Encodings.Web.dll" Source="$(var.Frontend.Wpf_TargetDir)System.Text.Encodings.Web.dll" />
+			</Component>
+			<Component Id="System.Text.Json.dll" Guid="5dacedd0-7c99-4106-86a1-629a425da8a6">
+			  <File Id="System.Text.Json.dll" Name="System.Text.Json.dll" Source="$(var.Frontend.Wpf_TargetDir)System.Text.Json.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.DependencyModel.dll" Guid="50230479-3b03-49b8-a133-372ec18025b2">
+			  <File Id="Microsoft.Extensions.DependencyModel.dll" Name="Microsoft.Extensions.DependencyModel.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.DependencyModel.dll" />
+			</Component>
+			<Component Id="SQLitePCLRaw.core.dll" Guid="f541a1cf-f05b-4034-ad3c-ee4fb6860f92">
+			  <File Id="SQLitePCLRaw.core.dll" Name="SQLitePCLRaw.core.dll" Source="$(var.Frontend.Wpf_TargetDir)SQLitePCLRaw.core.dll" />
+			</Component>
+			<Component Id="Microsoft.Data.Sqlite.dll" Guid="08e84c63-d80b-45bc-8169-41d1a7583ff0">
+			  <File Id="Microsoft.Data.Sqlite.dll" Name="Microsoft.Data.Sqlite.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Data.Sqlite.dll" />
+			</Component>
+			<Component Id="Microsoft.DotNet.PlatformAbstractions.dll" Guid="15049687-bb4d-4e20-ad9b-abed7755ea34">
+			  <File Id="Microsoft.DotNet.PlatformAbstractions.dll" Name="Microsoft.DotNet.PlatformAbstractions.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.DotNet.PlatformAbstractions.dll" />
+			</Component>
+			<Component Id="System.Diagnostics.DiagnosticSource.dll" Guid="2d8d8aa2-799f-43c3-95c7-ac2c4f06b66f">
+			  <File Id="System.Diagnostics.DiagnosticSource.dll" Name="System.Diagnostics.DiagnosticSource.dll" Source="$(var.Frontend.Wpf_TargetDir)System.Diagnostics.DiagnosticSource.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Logging.Abstractions.dll" Guid="f627b247-ec64-47d9-bb04-e379e3da18ad">
+			  <File Id="Microsoft.Extensions.Logging.Abstractions.dll" Name="Microsoft.Extensions.Logging.Abstractions.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Caching.Abstractions.dll" Guid="e3c657d1-96db-4029-a485-1b46f69f74e4">
+			  <File Id="Microsoft.Extensions.Caching.Abstractions.dll" Name="Microsoft.Extensions.Caching.Abstractions.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Caching.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Primitives.dll" Guid="208200d6-947e-46ee-9ef5-c16af5c1956d">
+			  <File Id="Microsoft.Extensions.Primitives.dll" Name="Microsoft.Extensions.Primitives.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Primitives.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Configuration.Abstractions.dll" Guid="ea77577b-7df0-439c-8fb9-ab53ff4b410f">
+			  <File Id="Microsoft.Extensions.Configuration.Abstractions.dll" Name="Microsoft.Extensions.Configuration.Abstractions.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" />
+			</Component>
+			<Component Id="System.ComponentModel.Annotations.dll" Guid="2a82bd27-6d89-42fa-925b-5e9b98421526">
+			  <File Id="System.ComponentModel.Annotations.dll" Name="System.ComponentModel.Annotations.dll" Source="$(var.Frontend.Wpf_TargetDir)System.ComponentModel.Annotations.dll" />
+			</Component>
+			<Component Id="Microsoft.EntityFrameworkCore.Abstractions.dll" Guid="d4edf2d5-c2ad-4632-a9bb-a4c3e7520cca">
+			  <File Id="Microsoft.EntityFrameworkCore.Abstractions.dll" Name="Microsoft.EntityFrameworkCore.Abstractions.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.EntityFrameworkCore.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.EntityFrameworkCore.Relational.dll" Guid="6c52d056-7215-455a-94e5-c88de6efe58f">
+			  <File Id="Microsoft.EntityFrameworkCore.Relational.dll" Name="Microsoft.EntityFrameworkCore.Relational.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.EntityFrameworkCore.Relational.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Guid="acc4264f-dd0a-4eb4-a247-b1ecf0554513">
+			  <File Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Name="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.EntityFrameworkCore.Sqlite.dll" Guid="0dc6d335-c618-49e2-b673-d9175c3f170e">
+			  <File Id="Microsoft.EntityFrameworkCore.Sqlite.dll" Name="Microsoft.EntityFrameworkCore.Sqlite.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.EntityFrameworkCore.Sqlite.dll" />
+			</Component>
+			<Component Id="Newtonsoft.Json.dll" Guid="23637126-4a72-4e7c-993d-9156c2ccc1b4">
+			  <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.Frontend.Wpf_TargetDir)Newtonsoft.Json.dll" />
+			</Component>
+			<Component Id="SpotifyAPI.Web.dll" Guid="cbc9ac37-9a61-4f8e-89a3-300c84bc4081">
+			  <File Id="SpotifyAPI.Web.dll" Name="SpotifyAPI.Web.dll" Source="$(var.Frontend.Wpf_TargetDir)SpotifyAPI.Web.dll" />
+			</Component>
+			<Component Id="MaterialDesignColors.dll" Guid="7461443b-44e6-4a0d-837f-aeeaa3fd5cdb">
+			  <File Id="MaterialDesignColors.dll" Name="MaterialDesignColors.dll" Source="$(var.Frontend.Wpf_TargetDir)MaterialDesignColors.dll" />
+			</Component>
+			<Component Id="Microsoft.EntityFrameworkCore.dll" Guid="e4216134-9f6c-48ec-a87a-17f04aad6911">
+			  <File Id="Microsoft.EntityFrameworkCore.dll" Name="Microsoft.EntityFrameworkCore.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.EntityFrameworkCore.dll" />
+			</Component>
+			<Component Id="Serilog.Sinks.Trace.dll" Guid="38434640-af86-4e88-8c7f-3aca7434679f">
+			  <File Id="Serilog.Sinks.Trace.dll" Name="Serilog.Sinks.Trace.dll" Source="$(var.Frontend.Wpf_TargetDir)Serilog.Sinks.Trace.dll" />
+			</Component>
+			<Component Id="Serilog.Sinks.File.dll" Guid="eb67ab1c-0383-4b3d-8223-1b9f0671fb9f">
+			  <File Id="Serilog.Sinks.File.dll" Name="Serilog.Sinks.File.dll" Source="$(var.Frontend.Wpf_TargetDir)Serilog.Sinks.File.dll" />
+			</Component>
+			<Component Id="Serilog.dll" Guid="01a38461-da0e-41dd-8a6e-6209b7f6ac78">
+			  <File Id="Serilog.dll" Name="Serilog.dll" Source="$(var.Frontend.Wpf_TargetDir)Serilog.dll" />
+			</Component>
+			<Component Id="Backend.dll" Guid="c518add7-f869-4a17-8c2c-b29f2876dba7">
+			  <File Id="Backend.dll" Name="Backend.dll" Source="$(var.Frontend.Wpf_TargetDir)Backend.dll" />
+			</Component>
+			<Component Id="MaterialDesignThemes.Wpf.dll" Guid="a9c2b9cc-47fb-430b-8c55-96356d73607c">
+			  <File Id="MaterialDesignThemes.Wpf.dll" Name="MaterialDesignThemes.Wpf.dll" Source="$(var.Frontend.Wpf_TargetDir)MaterialDesignThemes.Wpf.dll" />
+			</Component>
+			<Component Id="Frontend.Wpf.dll" Guid="e74c5768-b10c-42a9-a187-55cf1ba78c8f">
+			  <File Id="Frontend.Wpf.dll" Name="Frontend.Wpf.dll" Source="$(var.Frontend.Wpf_TargetDir)Frontend.Wpf.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Caching.Memory.dll" Guid="1f56eb47-203a-49a6-9d6f-bc8e8a63caf9">
+			  <File Id="Microsoft.Extensions.Caching.Memory.dll" Name="Microsoft.Extensions.Caching.Memory.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Caching.Memory.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Options.dll" Guid="33ab03a6-4ae0-417b-9b0a-9a9c4bcd1ec9">
+			  <File Id="Microsoft.Extensions.Options.dll" Name="Microsoft.Extensions.Options.dll" Source="$(var.Frontend.Wpf_TargetDir)Microsoft.Extensions.Options.dll" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>
