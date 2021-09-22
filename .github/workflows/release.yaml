@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 env:
-  application_name: Spotify Song Tagger
+  application_name: SpotifySongTagger
   updater_name: Updater
   build_config: Release
 

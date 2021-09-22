@@ -1,0 +1,184 @@
+﻿<Window x:Class="SpotifySongTagger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpotifySongTagger"
+        xmlns:views="clr-namespace:SpotifySongTagger.Views"
+        xmlns:viewmodels="clr-namespace:SpotifySongTagger.ViewModels" 
+        xmlns:converters="clr-namespace:SpotifySongTagger.Converters"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Spotify Song Tagger"
+        Height="800"
+        Width="1100"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance viewmodels:MainWindowViewModel}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Style="{StaticResource MaterialDesignWindow}" 
+        Loaded="Window_Loaded"
+        Closed="Window_Closed"
+        Name="MainWindowWindow">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml"/>
+                <ResourceDictionary>
+                    <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <materialDesign:DialogHost
+        Identifier="RootDialog"
+        DialogTheme="Inherit"
+        SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
+
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+            <!-- toggleable menu -->
+            <materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel MinWidth="220">
+                    <!-- collapse menu button -->
+                    <ToggleButton 
+                        Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Right" 
+                        Margin="16"
+                        IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}"/>
+                    <!-- menu items -->
+                    <ListBox 
+                        x:Name="MenuItemsListBox" 
+                        Margin="0 16 0 16"
+                        SelectedIndex="{Binding SelectedIndex}"
+                        SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                        ItemsSource="{Binding MenuItems}"
+                        IsEnabled="{Binding DataContainer.User, Converter={StaticResource IsNotNullToBooleanConverter}}"
+                        PreviewMouseLeftButtonUp="UIElement_OnPreviewMouseLeftButtonUp"
+                        Style="{StaticResource MaterialDesignListBox}">
+                        <!-- this comes in a later version Style="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}" -->
+                        <ListBox.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}"/>
+                        </ListBox.Resources>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="viewmodels:MenuItem">
+                                <TextBlock Text="{Binding Name}" 
+                                           Margin="24 4 0 4" 
+                                           AutomationProperties.AutomationId="MenuItemName"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </materialDesign:DrawerHost.LeftDrawerContent>
+            
+            <!-- title bar and page content -->
+            <DockPanel>
+                <!-- title bar -->
+                <materialDesign:ColorZone
+                    Padding="16"
+                    materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                    Mode="PrimaryMid"
+                    DockPanel.Dock="Top">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- title bar buttons -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <!-- menu toggle button -->
+                            <ToggleButton
+                                x:Name="MenuToggleButton"
+                                Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                IsChecked="False"/>
+                            <!-- sync library button -->
+                            <Button
+                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                Margin="16,0,0,0"
+                                ToolTip="Sync Library"
+                                IsEnabled="{Binding DataContainer.User, Converter={StaticResource IsNotNullToBooleanConverter}}"
+                                materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
+                                Content="{materialDesign:PackIcon Kind=Sync, Size=24}"
+                                Style="{DynamicResource MaterialDesignToolButton}"
+                                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}">
+                                <Button.CommandParameter>
+                                    <StackPanel Margin="16">
+                                        <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                                     HorizontalAlignment="Center" Margin="16"
+                                                     IsIndeterminate="True"
+                                                     Value="0" />
+                                        <Label Style="{StaticResource MaterialDesignLabel}" Content="Syncing library"/>
+                                        <Button 
+                                            Style="{StaticResource DialogButton}"
+                                            IsCancel="True" 
+                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                            HorizontalAlignment="Stretch"
+                                            Content="CANCEL"
+                                            Click="Cancel_Sync"/>
+                                    </StackPanel>
+                                </Button.CommandParameter>
+                            </Button>
+                        </StackPanel>
+                        <!-- title bar text -->
+                        <TextBlock
+                            Grid.ColumnSpan="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="22"
+                            Text="{Binding SelectedItem.Name}"/>
+                        <!-- settings popup -->
+                        <materialDesign:PopupBox
+                            Grid.Column="2"
+                            PlacementMode="BottomAndAlignRightEdges"
+                            StaysOpen="False">
+                            <StackPanel>
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="10">
+                                    <TextBlock Text="Light" Margin="0 0 10 0"/>
+                                    <ToggleButton IsChecked="{Binding Settings.IsDarkTheme}" Click="MenuDarkModeButton_Click"/>
+                                    <TextBlock Text="Dark" Margin="10 0 0 0"/>
+                                </StackPanel>
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="10">
+                                    <TextBlock Text="Hide Player" Margin="0 0 10 0"/>
+                                    <ToggleButton IsChecked="{Binding Settings.HidePlayer}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </materialDesign:PopupBox>
+                    </Grid>
+                </materialDesign:ColorZone>
+
+                <!-- page content -->
+                <Grid>
+                    <!-- update view -->
+                    <views:UpdateView
+                        Visibility="{Binding DataContext.CheckedForUpdates, ElementName=MainWindowWindow, Converter={StaticResource InverseBoolToVisConverter}}"
+                        Margin="0 8 0 0"/>
+
+                    <!-- content -->
+                    <ContentControl 
+                        Visibility="{Binding DataContext.CheckedForUpdates, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        DataContext="{Binding SelectedItem}"
+                        Margin="0 8 0 0"
+                        Content="{Binding View, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"/>
+                    
+                    <!-- snackbar -->
+                    <materialDesign:Snackbar
+                        x:Name="MainSnackbar"
+                        MessageQueue="{materialDesign:MessageQueue}"/>
+                </Grid>
+            </DockPanel>
+        </materialDesign:DrawerHost>
+    </materialDesign:DialogHost>
+</Window>

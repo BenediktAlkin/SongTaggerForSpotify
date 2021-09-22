@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend.Wpf", "Frontend.Wpf\Frontend.Wpf.csproj", "{56DC5713-85FE-4918-B7D2-0541BD793C72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpotifySongTagger", "SpotifySongTagger\SpotifySongTagger.csproj", "{56DC5713-85FE-4918-B7D2-0541BD793C72}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Backend\Backend.csproj", "{A4E0682F-098D-431C-A844-25EBAA566F96}"
 EndProject
