@@ -1,8 +1,4 @@
-﻿using Backend;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Util;
+﻿using Util;
 
 namespace SpotifySongTagger.ViewModels
 {

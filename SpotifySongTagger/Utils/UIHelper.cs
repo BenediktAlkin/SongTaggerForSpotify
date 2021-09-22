@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,7 +8,7 @@ namespace SpotifySongTagger.Utils
 {
     public static class UIHelper
     {
-        public static List<T> FindVisualChildren<T>(DependencyObject current) where T: DependencyObject
+        public static List<T> FindVisualChildren<T>(DependencyObject current) where T : DependencyObject
         {
             if (current == null) return null;
 
@@ -27,7 +25,7 @@ namespace SpotifySongTagger.Utils
         public static T FindVisualChild<T>(DependencyObject current) where T : DependencyObject
         {
             if (current == null) return null;
-            
+
             int childrenCount = VisualTreeHelper.GetChildrenCount(current);
             for (int i = 0; i < childrenCount; i++)
             {
@@ -83,7 +81,7 @@ namespace SpotifySongTagger.Utils
 
             // get position
             Point position;
-            if(e is DragEventArgs ev)
+            if (e is DragEventArgs ev)
                 position = ev.GetPosition(dataGrid);
             var positionY = position.Y - headerHight;
             var index = (int)(GetItemIndex(offset, positionY) + offset);

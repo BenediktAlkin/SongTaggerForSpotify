@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Util.Tests
@@ -75,7 +73,7 @@ namespace Util.Tests
                         Directory.Delete(UpdateManager.TEMP_DIR, true);
                     return;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Log.Error(e.Message);
                     timeout += TIMEOUT;
@@ -89,7 +87,7 @@ namespace Util.Tests
         public async Task DownloadUpdate()
         {
             await RemoveAllFiles();
-            
+
             await UpdateManager.Instance.UpdateToLatestRelease(USER, REPO, new Version(1, 0, 0), UPDATER_NAME, APPLICATION_NAME, null);
 
             // zip exists
@@ -108,7 +106,7 @@ namespace Util.Tests
         {
             await RemoveAllFiles();
 
-            var newVersion = await UpdateManager.Instance.UpdateToLatestRelease(USER, REPO, MIN_VERSION, 
+            var newVersion = await UpdateManager.Instance.UpdateToLatestRelease(USER, REPO, MIN_VERSION,
                 UPDATER_NAME, APPLICATION_NAME, null, false);
 
             // automatic updater call in update is disabled
@@ -118,7 +116,7 @@ namespace Util.Tests
             Assert.IsTrue(File.Exists($"{APPLICATION_NAME}.exe"));
 
             // run application
-            var applicationOutput = RunProcess($"{APPLICATION_NAME}.exe", captureOutput:true); 
+            var applicationOutput = RunProcess($"{APPLICATION_NAME}.exe", captureOutput: true);
             Assert.AreEqual($"{APPLICATION_NAME} {newVersion}.0", applicationOutput[0]);
         }
         [Test]
@@ -129,12 +127,12 @@ namespace Util.Tests
             var releases = await Github.GetReleases(USER, REPO);
             var release = releases.First(r => r.Version == new Version(2, 0, 0));
             var newVersion = release.Version;
-            await UpdateManager.Instance.UpdateToRelease(USER, REPO, release, 
+            await UpdateManager.Instance.UpdateToRelease(USER, REPO, release,
                 UPDATER_NAME, APPLICATION_NAME, null, false);
 
             // automatic updater call in update is disabled
             // run updater manually
-            var updaterOutput = RunProcess($"{UPDATER_NAME}.exe", captureOutput:false);
+            var updaterOutput = RunProcess($"{UPDATER_NAME}.exe", captureOutput: false);
             //Assert.AreEqual($"{UPDATER_NAME} {newVersion}.0", updaterOutput[0]);
             Assert.IsTrue(File.Exists($"{APPLICATION_NAME}.exe"));
 

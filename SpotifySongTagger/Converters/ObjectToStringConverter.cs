@@ -1,8 +1,5 @@
-﻿using Backend.Entities.GraphNodes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace SpotifySongTagger.Converters
@@ -11,7 +8,7 @@ namespace SpotifySongTagger.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) 
+            if (value == null)
                 return string.Empty;
             return value.ToString();
         }

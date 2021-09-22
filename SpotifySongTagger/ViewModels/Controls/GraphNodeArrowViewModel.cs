@@ -1,9 +1,5 @@
-﻿using Backend;
-using Backend.Entities.GraphNodes;
+﻿using Backend.Entities.GraphNodes;
 using SpotifySongTagger.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Media;
 
 namespace SpotifySongTagger.ViewModels.Controls

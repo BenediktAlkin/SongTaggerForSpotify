@@ -1,9 +1,4 @@
-﻿using Backend.Entities;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Util;
 
@@ -61,7 +56,7 @@ namespace Backend.Entities.GraphNodes
         private static bool HasCycles(GraphNode curNode, List<int> seenNodes = null) => HasForwardCycles(curNode) || HasBackwardCycles(curNode);
         private static bool HasForwardCycles(GraphNode curNode, List<int> seenNodes = null)
         {
-            if (seenNodes == null) 
+            if (seenNodes == null)
                 seenNodes = new List<int>();
 
             if (seenNodes.Contains(curNode.Id))

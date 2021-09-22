@@ -1,24 +1,9 @@
-﻿using Backend;
-using Backend.Entities;
-using Backend.Entities.GraphNodes;
-using SpotifySongTagger.Utils;
-using SpotifySongTagger.ViewModels;
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SpotifySongTagger.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SpotifySongTagger.Views
 {
@@ -51,7 +36,7 @@ namespace SpotifySongTagger.Views
             ViewModel.NewGraphGeneratorPageName = null;
         }
 
-        
+
 
         #region drag & drop new nodes
         private void NewNode_MouseDown(object sender, MouseButtonEventArgs e)
@@ -77,7 +62,7 @@ namespace SpotifySongTagger.Views
             e.Handled = true;
         }
         #endregion
-        
+
 
         private void DeleteGraphGeneratorPage_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

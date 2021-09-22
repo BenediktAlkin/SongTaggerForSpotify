@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
@@ -26,9 +24,9 @@ namespace SpotifySongTagger.Utils
 
             var bestDistance = double.PositiveInfinity;
             Point p1, p2;
-            foreach(var anchor1 in anchors1)
+            foreach (var anchor1 in anchors1)
             {
-                foreach(var anchor2 in anchors2)
+                foreach (var anchor2 in anchors2)
                 {
                     var distance = (anchor2 - anchor1).Length;
                     if (distance < bestDistance)

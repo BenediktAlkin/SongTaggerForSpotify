@@ -2,9 +2,7 @@
 using Serilog;
 using SpotifyAPI.Web;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Util;
@@ -95,7 +93,7 @@ namespace Backend
         private Timer UpdateTrackInfoTimer { get; set; }
         public void StartUpdateTrackInfoTimer()
         {
-            if (UpdateTrackInfoTimer != null) 
+            if (UpdateTrackInfoTimer != null)
                 UpdateTrackInfoTimer.Enabled = false;
 
             UpdateTrackInfoTimer = new Timer
@@ -165,11 +163,12 @@ namespace Backend
                 var success = await Spotify.Player.ResumePlayback();
                 if (success)
                     IsPlaying = true;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error($"Error in PlayerManager.Play {e.Message}");
             }
-            
+
         }
         public async Task Pause()
         {

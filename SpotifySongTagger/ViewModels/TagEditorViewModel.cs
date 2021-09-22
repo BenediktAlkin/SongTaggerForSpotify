@@ -1,17 +1,11 @@
 ﻿using Backend;
 using Backend.Entities;
-using SpotifySongTagger.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace SpotifySongTagger.ViewModels
 {
@@ -54,7 +48,7 @@ namespace SpotifySongTagger.ViewModels
         }
         public void UpdatePlayingTrack(string newId)
         {
-            foreach(var trackVM in TrackVMs)
+            foreach (var trackVM in TrackVMs)
                 trackVM.IsPlaying = trackVM.Track.Id == newId;
         }
         #endregion
@@ -139,7 +133,7 @@ namespace SpotifySongTagger.ViewModels
         public void SetProgressSpotify(int newProgress) => SetProgress(newProgress, ProgressUpdateSource.Spotify);
         public void SetProgress(int newProgress, ProgressUpdateSource source)
         {
-            if (DisableSpotifyProgressUpdates && source == ProgressUpdateSource.Spotify) 
+            if (DisableSpotifyProgressUpdates && source == ProgressUpdateSource.Spotify)
                 return;
 
             progress = newProgress;

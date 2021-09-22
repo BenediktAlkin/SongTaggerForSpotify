@@ -1,7 +1,4 @@
 ﻿using Backend.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SpotifySongTagger.ViewModels
 {

@@ -5,7 +5,6 @@ using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend
@@ -100,7 +99,7 @@ namespace Backend
 
         public static async Task SyncOutputNode(OutputNode outputNode)
         {
-            if(outputNode.GeneratedPlaylistId == null)
+            if (outputNode.GeneratedPlaylistId == null)
             {
                 // create playlist
                 var request = new PlaylistCreateRequest(outputNode.PlaylistName);
@@ -121,10 +120,10 @@ namespace Backend
                     var changeNameReq = new PlaylistChangeDetailsRequest { Name = outputNode.PlaylistName };
                     await Spotify.Playlists.ChangeDetails(outputNode.GeneratedPlaylistId, changeNameReq);
                 }
-                    
+
 
                 // remove everything
-                if(playlistDetails.Tracks.Total.Value > 0)
+                if (playlistDetails.Tracks.Total.Value > 0)
                 {
                     var request = new PlaylistRemoveItemsRequest
                     {

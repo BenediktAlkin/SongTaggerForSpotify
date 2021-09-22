@@ -1,8 +1,5 @@
-﻿using Backend.Entities;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -26,9 +23,9 @@ namespace Backend.Entities.GraphNodes
 
         public override async Task<List<Track>> GetResult()
         {
-            if (Inputs == null || Inputs.Count() == 0) 
+            if (Inputs == null || Inputs.Count() == 0)
                 return new List<Track>();
-            
+
             return await Inputs.First().GetResult();
         }
 

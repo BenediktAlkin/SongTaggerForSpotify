@@ -1,8 +1,4 @@
-﻿using Backend.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -10,7 +6,7 @@ namespace Backend.Entities.GraphNodes
     public class InputNode : GraphNode
     {
         private string playlistId;
-        public string PlaylistId 
+        public string PlaylistId
         {
             get => playlistId;
             set
@@ -20,14 +16,14 @@ namespace Backend.Entities.GraphNodes
             }
         }
         private Playlist playlist;
-        public Playlist Playlist 
+        public Playlist Playlist
         {
             get => playlist;
             set
             {
                 SetProperty(ref playlist, value, nameof(Playlist));
                 GraphGeneratorPage.NotifyIsValidChanged();
-            } 
+            }
         }
 
 

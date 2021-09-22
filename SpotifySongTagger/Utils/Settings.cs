@@ -3,7 +3,6 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace SpotifySongTagger.Utils
 {
@@ -47,7 +46,8 @@ namespace SpotifySongTagger.Utils
             }
         }
 
-        public bool IsDarkTheme {
+        public bool IsDarkTheme
+        {
             get => TryGetValue(SettingKey.IsDarkTheme, IS_DARK_THEME_DEFAULT, bool.Parse);
             set => SetValue(SettingKey.IsDarkTheme, value.ToString());
         }
@@ -65,7 +65,7 @@ namespace SpotifySongTagger.Utils
                 SetValue(key, defaultValue.ToString());
                 return defaultValue;
             }
-            
+
             // convert to target type
             try
             {
@@ -85,7 +85,8 @@ namespace SpotifySongTagger.Utils
             {
                 var json = JsonConvert.SerializeObject(Dict);
                 File.WriteAllText(FILE, json);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Warning($"Failed to save settings {e.Message}");
             }

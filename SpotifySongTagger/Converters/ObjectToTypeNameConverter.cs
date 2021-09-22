@@ -1,8 +1,5 @@
-﻿using Backend.Entities.GraphNodes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace SpotifySongTagger.Converters

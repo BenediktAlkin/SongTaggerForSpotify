@@ -5,7 +5,6 @@ using NUnit.Framework;
 using Serilog;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Tests.Backend
 {
@@ -47,7 +46,7 @@ namespace Tests.Backend
         {
             // sync library
             DatabaseOperations.SyncLibrary().Wait();
-            
+
             // define graphs
             var input = new InputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
             var tag1 = new Tag { Name = "Tag1" };
@@ -112,7 +111,7 @@ namespace Tests.Backend
             Assert.AreEqual(4, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
 
             // add some more tags
-            foreach(var i in new[] {10, 20, 30})
+            foreach (var i in new[] { 10, 20, 30 })
                 Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag);
             Db.SaveChanges();
             SpotifyOperations.SyncOutputNode(output).Wait();

@@ -1,9 +1,6 @@
-﻿using Backend.Entities.GraphNodes;
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace SpotifySongTagger.Converters
@@ -12,7 +9,7 @@ namespace SpotifySongTagger.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is double volume)) 
+            if (!(value is double volume))
                 return PackIconKind.VolumeMedium;
             if (volume > 66) return PackIconKind.VolumeHigh;
             if (volume > 33) return PackIconKind.VolumeMedium;

@@ -1,13 +1,8 @@
-﻿using Backend;
-using Backend.Entities.GraphNodes;
+﻿using Backend.Entities.GraphNodes;
 using SpotifySongTagger.Utils;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Media;
 
 namespace SpotifySongTagger.ViewModels.Controls
 {
@@ -96,7 +91,7 @@ namespace SpotifySongTagger.ViewModels.Controls
 
         public void UpdateArrows(bool updatePreviousNodes)
         {
-            if (AllGraphNodeViewModels == null) return; 
+            if (AllGraphNodeViewModels == null) return;
 
             var nodeToVM = AllGraphNodeViewModels.ToDictionary(vm => vm.GraphNode, vm => vm);
 
@@ -117,7 +112,7 @@ namespace SpotifySongTagger.ViewModels.Controls
 
                 OutgoingArrows[i].Geometry = geometry;
             }
-                
+
 
             if (updatePreviousNodes && AllGraphNodeViewModels != null)
             {

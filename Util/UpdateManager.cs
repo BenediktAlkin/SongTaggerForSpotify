@@ -1,12 +1,10 @@
 ﻿using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Util
@@ -26,7 +24,7 @@ namespace Util
         public bool IsRestarting => State == UpdatingState.Restarting;
 
         private UpdatingState state;
-        public UpdatingState State 
+        public UpdatingState State
         {
             get => state;
             private set
@@ -66,7 +64,7 @@ namespace Util
             set => SetProperty(ref updateProgressPercent, value, nameof(UpdateProgressPercent));
         }
 
-        public async Task<Version> UpdateToLatestRelease(string user, string repo, Version currentVersion, string updaterName, string applicationName, Action shutdownAction, bool startUpdater=true)
+        public async Task<Version> UpdateToLatestRelease(string user, string repo, Version currentVersion, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
         {
             State = UpdatingState.Checking;
             var latestRelease = await Github.CheckForUpdate(user, repo, currentVersion);
@@ -76,7 +74,7 @@ namespace Util
             await UpdateToRelease(user, repo, latestRelease, updaterName, applicationName, shutdownAction, startUpdater);
             return latestRelease.Version;
         }
-        public async Task UpdateToRelease(string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater=true)
+        public async Task UpdateToRelease(string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
         {
             var url = release.Assets[0].BrowserDownloadUrl;
             var (zipFileName, zipFilePath) = PrepareUpdate(url);

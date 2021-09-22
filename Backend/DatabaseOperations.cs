@@ -1,11 +1,9 @@
 ﻿using Backend.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,7 +70,7 @@ namespace Backend
             var dbTag = Db.Tags.FirstOrDefault(t => t.Name == tagName.ToLower());
             if (dbTag == null)
                 return false;
-            
+
             track.Tags.Add(dbTag);
             Db.SaveChanges();
             return true;
@@ -138,7 +136,7 @@ namespace Backend
             }
         }
 
-        public static async Task SyncLibrary(CancellationToken cancellationToken=default)
+        public static async Task SyncLibrary(CancellationToken cancellationToken = default)
         {
             Log.Information("Syncing library");
             // exclude generated playlists from library
@@ -159,7 +157,7 @@ namespace Backend
 
             // replace duplicate objects within data
             Log.Information("Start removing duplicated objects within library");
-            foreach(var track in tracks.Values)
+            foreach (var track in tracks.Values)
             {
                 ReplaceAlbumWithDbAlbum(dbAlbums, track);
                 ReplaceArtistWithDbArtist(dbArtists, track);
@@ -181,7 +179,7 @@ namespace Backend
             Log.Information("Start pushing library to database");
             foreach (var track in tracks.Values)
             {
-                if(dbTracks.TryGetValue(track.Id, out var dbTrack))
+                if (dbTracks.TryGetValue(track.Id, out var dbTrack))
                 {
                     // update the playlist sources in case the song has been added/removed from a playlist
                     dbTrack.Playlists = track.Playlists;

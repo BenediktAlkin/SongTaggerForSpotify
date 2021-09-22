@@ -1,9 +1,5 @@
-﻿using Backend.Entities.GraphNodes;
-using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 using static Util.UpdateManager;
 
@@ -17,7 +13,7 @@ namespace SpotifySongTagger.Converters
             if (!(value is UpdatingState state))
                 return string.Empty;
 
-            switch(state)
+            switch (state)
             {
                 case UpdatingState.Checking:
                 case UpdatingState.Preparation:
@@ -28,7 +24,7 @@ namespace SpotifySongTagger.Converters
                     return "Extracting update";
                 case UpdatingState.Restarting:
                     return "Restarting application";
-            }; 
+            };
             return string.Empty;
         }
 

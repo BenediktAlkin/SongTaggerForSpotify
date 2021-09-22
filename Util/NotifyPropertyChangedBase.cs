@@ -1,8 +1,5 @@
-﻿using Serilog;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace Util
 {
@@ -13,7 +10,7 @@ namespace Util
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
-            
+
 
         protected bool SetProperty<T>(ref T member, T value, string propertyName = null)
         {

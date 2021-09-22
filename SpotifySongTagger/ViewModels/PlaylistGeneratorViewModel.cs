@@ -1,21 +1,13 @@
 ﻿using Backend;
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
-using SpotifySongTagger.Utils;
-using SpotifySongTagger.ViewModels.Controls;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace SpotifySongTagger.ViewModels
 {
@@ -48,7 +40,7 @@ namespace SpotifySongTagger.ViewModels
             get => isRunningAll;
             set => SetProperty(ref isRunningAll, value, nameof(IsRunningAll));
         }
-        public ObservableCollection<GraphGeneratorPageViewModel> GraphGeneratorPageVMs { get; } = 
+        public ObservableCollection<GraphGeneratorPageViewModel> GraphGeneratorPageVMs { get; } =
             new ObservableCollection<GraphGeneratorPageViewModel>(
                 ConnectionManager.Instance.Database.GraphGeneratorPages
                 .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs)

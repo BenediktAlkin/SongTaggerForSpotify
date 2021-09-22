@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SpotifySongTagger.Utils
+﻿namespace SpotifySongTagger.Utils
 {
     public interface ISelectable
     {
-        bool IsSelected{ get; set; }
+        bool IsSelected { get; set; }
     }
 }

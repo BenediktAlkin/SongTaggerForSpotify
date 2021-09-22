@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
-namespace Backend.Entities
+﻿namespace Backend.Entities
 {
     public class Album
     {

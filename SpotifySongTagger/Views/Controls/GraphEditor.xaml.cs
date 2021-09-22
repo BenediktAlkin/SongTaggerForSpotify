@@ -1,19 +1,11 @@
 ﻿using Backend.Entities.GraphNodes;
+using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels.Controls;
-using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SpotifySongTagger.Views.Controls
 {
@@ -156,7 +148,7 @@ namespace SpotifySongTagger.Views.Controls
             var frameworkElement = sender as FrameworkElement;
             var outputNode = frameworkElement.DataContext as OutputNode;
 
-           outputNode.PlaylistName = textBox.Text;
+            outputNode.PlaylistName = textBox.Text;
         }
 
         private void UpdateCanvasSize_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateCanvasSize();

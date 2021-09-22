@@ -3,10 +3,8 @@ using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using SpotifySongTagger.Utils;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -106,7 +104,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public GraphNodeViewModel GetHoveredGraphNodeViewModel(Point pos)
         {
-            foreach(var nodeVM in GraphNodeVMs)
+            foreach (var nodeVM in GraphNodeVMs)
             {
                 if (pos.X >= nodeVM.X &&
                     pos.Y >= nodeVM.Y &&
@@ -132,7 +130,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         {
             if (SelectedObject == null) return;
 
-            if(SelectedObject is GraphNodeViewModel nodeVM)
+            if (SelectedObject is GraphNodeViewModel nodeVM)
             {
                 // remove from db
                 ConnectionManager.Instance.Database.GraphNodes.Remove(nodeVM.GraphNode);
@@ -140,10 +138,10 @@ namespace SpotifySongTagger.ViewModels.Controls
 
                 // update ui
                 GraphNodeVMs.Remove(nodeVM);
-                foreach(var prevNode in nodeVM.GraphNode.Inputs)
+                foreach (var prevNode in nodeVM.GraphNode.Inputs)
                     GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == prevNode).GenerateArrows();
             }
-            if(SelectedObject is GraphNodeArrowViewModel arrowVM)
+            if (SelectedObject is GraphNodeArrowViewModel arrowVM)
             {
                 // remove from db
                 arrowVM.FromNode.RemoveOutput(arrowVM.ToNode);

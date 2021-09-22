@@ -2,7 +2,6 @@
 using Serilog;
 using SpotifyAPI.Web;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -174,7 +173,7 @@ namespace Backend
                 Log.Information("failed to get login response");
                 return;
             }
-            
+
             // extract token
             var code = ctx.Request.Url.ToString().Replace($"{CALLBACK_URL}?code=", "");
             Log.Information("got token");

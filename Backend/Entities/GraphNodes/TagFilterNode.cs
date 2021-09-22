@@ -1,9 +1,6 @@
-﻿using Backend.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -11,7 +8,8 @@ namespace Backend.Entities.GraphNodes
     public class TagFilterNode : GraphNode
     {
         private int? tagId;
-        public int? TagId {
+        public int? TagId
+        {
             get => tagId;
             set
             {
@@ -20,7 +18,7 @@ namespace Backend.Entities.GraphNodes
             }
         }
         private Tag tag;
-        public Tag Tag 
+        public Tag Tag
         {
             get => tag;
             set
@@ -37,10 +35,10 @@ namespace Backend.Entities.GraphNodes
                 return new List<Track>();
 
             var tracks = await Inputs.First().GetResult();
-            
+
             // populate tracks with tags
             var dbTracks = await ConnectionManager.Instance.Database.Tracks.Include(t => t.Tags).ToDictionaryAsync(t => t.Id, t => t);
-            foreach(var track in tracks)
+            foreach (var track in tracks)
             {
                 if (dbTracks.TryGetValue(track.Id, out var dbTrack))
                     track.Tags = dbTrack.Tags;

@@ -1,28 +1,14 @@
 ﻿using Backend;
 using Backend.Entities;
-using SpotifySongTagger.Converters;
+using MaterialDesignThemes.Wpf;
+using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
-using MaterialDesignThemes.Wpf;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static SpotifySongTagger.ViewModels.TagEditorViewModel;
 
 namespace SpotifySongTagger.Views
@@ -56,7 +42,7 @@ namespace SpotifySongTagger.Views
             Log.Debug("Finished loading playlists");
             await ViewModel.DataContainer.LoadTags();
             Log.Debug("Finished loading tags");
-            
+
             if (updatePlaybackInfoTask != null)
                 await updatePlaybackInfoTask;
         }

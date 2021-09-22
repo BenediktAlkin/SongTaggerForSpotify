@@ -1,9 +1,5 @@
 ﻿using Backend;
 using SpotifySongTagger.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
 using Util;
 
 namespace SpotifySongTagger.ViewModels
