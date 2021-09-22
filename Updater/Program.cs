@@ -33,7 +33,7 @@ namespace Updater
             var version = typeof(Program).Assembly.GetName().Version;
             LogInformation($"Updater {version}");
 
-            int? procId = args.Length > 0 ? int.Parse(args[0]) : null;
+            int? procId = args.Length == 0 ? null : int.Parse(args[0]);
             TerminateApplication(procId);
 
             MoveTempToBaseDir();
