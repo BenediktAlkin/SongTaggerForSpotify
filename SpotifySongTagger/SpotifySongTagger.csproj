@@ -1,57 +1,50 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Res\Spotify_Icon_RGB_Black.png" />
-    <None Remove="Res\Spotify_Icon_RGB_Green.png" />
-    <None Remove="Res\Spotify_Icon_RGB_White.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Trace" Version="3.0.0" />
-    <PackageReference Include="SpotifyAPI.Web" Version="6.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Backend\Backend.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Views\UpdateView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\HomeView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\UpdateView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\HomeView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Res\Spotify_Icon_RGB_Black.png" />
-    <Resource Include="Res\Spotify_Icon_RGB_Green.png" />
-    <Resource Include="Res\Spotify_Icon_RGB_White.png" />
-  </ItemGroup>
-
+<?xml version="1.0" ?>
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Version>0.0.5</Version>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="Res\Spotify_Icon_RGB_Black.png"/>
+		<None Remove="Res\Spotify_Icon_RGB_Green.png"/>
+		<None Remove="Res\Spotify_Icon_RGB_White.png"/>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig"/>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MaterialDesignThemes" Version="4.1.0"/>
+		<PackageReference Include="Serilog" Version="2.10.0"/>
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+		<PackageReference Include="Serilog.Sinks.Trace" Version="3.0.0"/>
+		<PackageReference Include="SpotifyAPI.Web" Version="6.2.0"/>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Backend\Backend.csproj"/>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Views\UpdateView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\HomeView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<Page Update="Views\UpdateView.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="Views\HomeView.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Res\Spotify_Icon_RGB_Black.png"/>
+		<Resource Include="Res\Spotify_Icon_RGB_Green.png"/>
+		<Resource Include="Res\Spotify_Icon_RGB_White.png"/>
+	</ItemGroup>
 </Project>
