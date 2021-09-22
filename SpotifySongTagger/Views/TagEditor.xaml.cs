@@ -81,8 +81,7 @@ namespace SpotifySongTagger.Views
             var tag = e.Data.GetData(DataFormats.StringFormat) as string;
             var trackVM = (TrackViewModel)dataGrid.Items.GetItemAt(index);
             ViewModel.AssignTag(trackVM.Track, tag);
-
-            Log.Information($"Drop idx={index} track={trackVM.Track.Name}");
+            Log.Information($"Assigned {tag} to {trackVM.Track.Name}");
             e.Handled = true;
         }
 
