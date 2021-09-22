@@ -12,8 +12,8 @@ namespace Updater
         private const string UPDATER_NAME = "Updater";
         public const string TEMP_DIR = "temp";
 
-        private static readonly Action<string> LogInformation = Console.WriteLine;
-        private static readonly Action<string> LogError = Console.WriteLine;
+        private static readonly Action<string> LogInformation = UpdateLogger.Information;
+        private static readonly Action<string> LogError = UpdateLogger.Information;
 
         private static void Main(string[] args)
         {
@@ -33,6 +33,7 @@ namespace Updater
             Process.Start($"{APPLICATION_NAME}.exe");
 
             LogInformation($"Finished updater");
+            UpdateLogger.CloseAndFlush();
         }
 
         private static void TerminateApplication(int? procId)
