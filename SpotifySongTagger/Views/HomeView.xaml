@@ -26,12 +26,12 @@
             <!-- logged in user info -->
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource MaterialDesignLabel}" 
-               Content="Logged in as"
-               Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+                   Content="Logged in as"
+                   Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
                 <Label Style="{StaticResource MaterialDesignLabel}" 
-               Content="{Binding DataContainer.User.Id}"
-               FontWeight="Bold"
-               Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+                   Content="{Binding DataContainer.User.Id}"
+                   FontWeight="Bold"
+                   Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
             </StackPanel>
 
             <!-- logout button -->

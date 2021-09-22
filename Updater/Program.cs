@@ -38,7 +38,7 @@ namespace Updater
 
         private static void TerminateApplication(int? procId)
         {
-            // wait application to exit
+            // wait for application to exit
             Thread.Sleep(1000);
             if (procId == null) return;
 
