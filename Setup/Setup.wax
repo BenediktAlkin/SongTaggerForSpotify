@@ -2,6 +2,7 @@
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <DeployedProjects>
     <string>SpotifySongTagger\SpotifySongTagger.csproj</string>
+    <string>Updater\Updater.csproj</string>
   </DeployedProjects>
   <DirectoryMappings>
     <Item Key="" Value="INSTALLFOLDER" />

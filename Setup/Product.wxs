@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"><?define SpotifySongTagger_TargetDir=$(var.SpotifySongTagger.TargetDir)?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define SpotifySongTagger_TargetDir=$(var.SpotifySongTagger.TargetDir)?>
+  <?define Updater_TargetDir=$(var.Updater.TargetDir)?>
 	<Product Id="d41bde06-14ce-4fb0-9644-b16920db14e3" Name="SpotifySongTagger" Language="1033" Version="1.0.0.0" Manufacturer="SpotifySongTagger" UpgradeCode="cfaf6289-7d61-427f-8bf2-6ddf18644555">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate EmbedCab="yes"/>
+		<MediaTemplate EmbedCab="yes" />
 
 		<Feature Id="ProductFeature" Title="SpotifySongTagger" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
-      <ComponentRef Id="ApplicationShortcut"/>
-      <ComponentRef Id="ApplicationShortcutDesktop"/>
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="ApplicationShortcutDesktop" />
 		</Feature>
 	</Product>
 
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLFOLDER" Name="Setup" />
+				<Directory Id="INSTALLFOLDER" Name="SpotifySongTagger" />
 			</Directory>
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="SpotifySongTagger"/>
+        <Directory Id="ApplicationProgramsFolder" Name="SpotifySongTagger" />
       </Directory>
-      <Directory Id="DesktopFolder" Name="Desktop"/>
+      <Directory Id="DesktopFolder" Name="Desktop" />
 		</Directory>
 	</Fragment>
   <Fragment>
@@ -47,101 +49,104 @@
 			<!-- <Component Id="ProductComponent"> -->
 				<!-- TODO: Insert files, registry keys, and other resources here. -->
 			<!-- </Component> -->
-			<Component Id="SpotifySongTagger.runtimeconfig.json" Guid="3ac4d982-3e7e-4b9f-828e-4059913c0c40">
-			  <File Id="SpotifySongTagger.runtimeconfig.json" Name="SpotifySongTagger.runtimeconfig.json" Source="$(var.SpotifySongTagger_TargetDir)SpotifySongTagger.runtimeconfig.json" />
+      <Component Id="SpotifySongTagger.exe" Guid="dbfc29ff-bb07-4e80-80d7-69d91e8309ff">
+        <File Id="SpotifySongTagger.exe" Name="SpotifySongTagger.exe" Source="$(var.SpotifySongTagger_TargetDir)SpotifySongTagger.exe" />
+      </Component>
+      <Component Id="Updater.exe" Guid="459dffb1-2eda-414f-9817-5004a28f3d2c">
+        <File Id="Updater.exe" Name="Updater.exe" Source="$(var.Updater_TargetDir)Updater.exe" />
+      </Component>
+			<Component Id="Updater.runtimeconfig.json" Guid="612dc6c9-4506-4677-a109-a1dc3bc50968">
+			  <File Id="Updater.runtimeconfig.json" Name="Updater.runtimeconfig.json" Source="$(var.Updater_TargetDir)Updater.runtimeconfig.json" />
 			</Component>
-			<Component Id="Microsoft.Extensions.Logging.dll" Guid="bbd64192-2119-4a67-878d-922482157523">
+			<Component Id="Microsoft.Extensions.Logging.dll" Guid="5d750a8f-1aad-4a34-998b-34420a596eec">
 			  <File Id="Microsoft.Extensions.Logging.dll" Name="Microsoft.Extensions.Logging.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Logging.dll" />
 			</Component>
-			<Component Id="System.Collections.Immutable.dll" Guid="6c26d16a-bba0-4406-a66d-63ba52d3d6bd">
-			  <File Id="System.Collections.Immutable.dll" Name="System.Collections.Immutable.dll" Source="$(var.SpotifySongTagger_TargetDir)System.Collections.Immutable.dll" />
-			</Component>
-			<Component Id="Microsoft.Extensions.DependencyInjection.dll" Guid="d63bae9a-9152-4cdc-ba39-ff8c1c0c49a5">
+			<Component Id="Microsoft.Extensions.DependencyInjection.dll" Guid="ebd907e3-9b0e-4da9-ba45-37ce14795155">
 			  <File Id="Microsoft.Extensions.DependencyInjection.dll" Name="Microsoft.Extensions.DependencyInjection.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.DependencyInjection.dll" />
 			</Component>
-			<Component Id="System.Text.Encodings.Web.dll" Guid="72c0ef86-e4d2-4f82-810d-8a3725173333">
-			  <File Id="System.Text.Encodings.Web.dll" Name="System.Text.Encodings.Web.dll" Source="$(var.SpotifySongTagger_TargetDir)System.Text.Encodings.Web.dll" />
-			</Component>
-			<Component Id="System.Text.Json.dll" Guid="5dacedd0-7c99-4106-86a1-629a425da8a6">
-			  <File Id="System.Text.Json.dll" Name="System.Text.Json.dll" Source="$(var.SpotifySongTagger_TargetDir)System.Text.Json.dll" />
-			</Component>
-			<Component Id="Microsoft.Extensions.DependencyModel.dll" Guid="50230479-3b03-49b8-a133-372ec18025b2">
+			<Component Id="Microsoft.Extensions.DependencyModel.dll" Guid="f2a47fff-b695-4414-b7c5-14263c1a7949">
 			  <File Id="Microsoft.Extensions.DependencyModel.dll" Name="Microsoft.Extensions.DependencyModel.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.DependencyModel.dll" />
 			</Component>
-			<Component Id="SQLitePCLRaw.core.dll" Guid="f541a1cf-f05b-4034-ad3c-ee4fb6860f92">
+			<Component Id="SQLitePCLRaw.core.dll" Guid="bf7cad00-8482-4683-9bf7-36cba3e77671">
 			  <File Id="SQLitePCLRaw.core.dll" Name="SQLitePCLRaw.core.dll" Source="$(var.SpotifySongTagger_TargetDir)SQLitePCLRaw.core.dll" />
 			</Component>
-			<Component Id="Microsoft.Data.Sqlite.dll" Guid="08e84c63-d80b-45bc-8169-41d1a7583ff0">
+			<Component Id="Microsoft.Data.Sqlite.dll" Guid="8281db42-003f-42e7-9814-d23feed41ccb">
 			  <File Id="Microsoft.Data.Sqlite.dll" Name="Microsoft.Data.Sqlite.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Data.Sqlite.dll" />
 			</Component>
-			<Component Id="Microsoft.DotNet.PlatformAbstractions.dll" Guid="15049687-bb4d-4e20-ad9b-abed7755ea34">
+			<Component Id="Microsoft.DotNet.PlatformAbstractions.dll" Guid="0c94ad93-4d6a-4a92-8cc8-70e31332b025">
 			  <File Id="Microsoft.DotNet.PlatformAbstractions.dll" Name="Microsoft.DotNet.PlatformAbstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.DotNet.PlatformAbstractions.dll" />
 			</Component>
-			<Component Id="System.Diagnostics.DiagnosticSource.dll" Guid="2d8d8aa2-799f-43c3-95c7-ac2c4f06b66f">
+			<Component Id="System.Diagnostics.DiagnosticSource.dll" Guid="364f6b12-4d8f-4f00-a1da-66bbd36cc823">
 			  <File Id="System.Diagnostics.DiagnosticSource.dll" Name="System.Diagnostics.DiagnosticSource.dll" Source="$(var.SpotifySongTagger_TargetDir)System.Diagnostics.DiagnosticSource.dll" />
 			</Component>
-			<Component Id="Microsoft.Extensions.Logging.Abstractions.dll" Guid="f627b247-ec64-47d9-bb04-e379e3da18ad">
+			<Component Id="Microsoft.Extensions.Logging.Abstractions.dll" Guid="76fb2985-b7b0-46b3-a16d-2c6a67b33aeb">
 			  <File Id="Microsoft.Extensions.Logging.Abstractions.dll" Name="Microsoft.Extensions.Logging.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" />
 			</Component>
-			<Component Id="Microsoft.Extensions.Caching.Abstractions.dll" Guid="e3c657d1-96db-4029-a485-1b46f69f74e4">
-			  <File Id="Microsoft.Extensions.Caching.Abstractions.dll" Name="Microsoft.Extensions.Caching.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Caching.Abstractions.dll" />
-			</Component>
-			<Component Id="Microsoft.Extensions.Primitives.dll" Guid="208200d6-947e-46ee-9ef5-c16af5c1956d">
+			<Component Id="Microsoft.Extensions.Primitives.dll" Guid="d36e36e9-a61d-4e42-9993-0fa3d2314719">
 			  <File Id="Microsoft.Extensions.Primitives.dll" Name="Microsoft.Extensions.Primitives.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Primitives.dll" />
 			</Component>
-			<Component Id="Microsoft.Extensions.Configuration.Abstractions.dll" Guid="ea77577b-7df0-439c-8fb9-ab53ff4b410f">
-			  <File Id="Microsoft.Extensions.Configuration.Abstractions.dll" Name="Microsoft.Extensions.Configuration.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" />
+			<Component Id="Microsoft.Extensions.Caching.Abstractions.dll" Guid="2ad86eae-bb42-43ec-b23e-b76a305c30c7">
+			  <File Id="Microsoft.Extensions.Caching.Abstractions.dll" Name="Microsoft.Extensions.Caching.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Caching.Abstractions.dll" />
 			</Component>
-			<Component Id="System.ComponentModel.Annotations.dll" Guid="2a82bd27-6d89-42fa-925b-5e9b98421526">
-			  <File Id="System.ComponentModel.Annotations.dll" Name="System.ComponentModel.Annotations.dll" Source="$(var.SpotifySongTagger_TargetDir)System.ComponentModel.Annotations.dll" />
-			</Component>
-			<Component Id="Microsoft.EntityFrameworkCore.Abstractions.dll" Guid="d4edf2d5-c2ad-4632-a9bb-a4c3e7520cca">
-			  <File Id="Microsoft.EntityFrameworkCore.Abstractions.dll" Name="Microsoft.EntityFrameworkCore.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.Abstractions.dll" />
-			</Component>
-			<Component Id="Microsoft.EntityFrameworkCore.Relational.dll" Guid="6c52d056-7215-455a-94e5-c88de6efe58f">
+			<Component Id="Microsoft.EntityFrameworkCore.Relational.dll" Guid="44b090cb-23f7-4cac-a723-4e3250733507">
 			  <File Id="Microsoft.EntityFrameworkCore.Relational.dll" Name="Microsoft.EntityFrameworkCore.Relational.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.Relational.dll" />
 			</Component>
-			<Component Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Guid="acc4264f-dd0a-4eb4-a247-b1ecf0554513">
+			<Component Id="Microsoft.EntityFrameworkCore.Abstractions.dll" Guid="1cc30a69-4a44-47b1-8b82-f5b903df06db">
+			  <File Id="Microsoft.EntityFrameworkCore.Abstractions.dll" Name="Microsoft.EntityFrameworkCore.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Options.dll" Guid="d36e338f-0b21-4ca7-900a-75897f760ae9">
+			  <File Id="Microsoft.Extensions.Options.dll" Name="Microsoft.Extensions.Options.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Options.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Configuration.Abstractions.dll" Guid="85effc90-ab0b-4966-aca3-8d8e21dfb987">
+			  <File Id="Microsoft.Extensions.Configuration.Abstractions.dll" Name="Microsoft.Extensions.Configuration.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Guid="bf91bf31-d856-4fd6-ba17-95c6138c7606">
 			  <File Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Name="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
 			</Component>
-			<Component Id="Microsoft.EntityFrameworkCore.Sqlite.dll" Guid="0dc6d335-c618-49e2-b673-d9175c3f170e">
-			  <File Id="Microsoft.EntityFrameworkCore.Sqlite.dll" Name="Microsoft.EntityFrameworkCore.Sqlite.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.Sqlite.dll" />
-			</Component>
-			<Component Id="Newtonsoft.Json.dll" Guid="23637126-4a72-4e7c-993d-9156c2ccc1b4">
-			  <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SpotifySongTagger_TargetDir)Newtonsoft.Json.dll" />
-			</Component>
-			<Component Id="SpotifyAPI.Web.dll" Guid="cbc9ac37-9a61-4f8e-89a3-300c84bc4081">
-			  <File Id="SpotifyAPI.Web.dll" Name="SpotifyAPI.Web.dll" Source="$(var.SpotifySongTagger_TargetDir)SpotifyAPI.Web.dll" />
-			</Component>
-			<Component Id="MaterialDesignColors.dll" Guid="7461443b-44e6-4a0d-837f-aeeaa3fd5cdb">
+			<Component Id="MaterialDesignColors.dll" Guid="57b41ab6-d29c-49ed-848b-eca17b3b345a">
 			  <File Id="MaterialDesignColors.dll" Name="MaterialDesignColors.dll" Source="$(var.SpotifySongTagger_TargetDir)MaterialDesignColors.dll" />
 			</Component>
-			<Component Id="Microsoft.EntityFrameworkCore.dll" Guid="e4216134-9f6c-48ec-a87a-17f04aad6911">
-			  <File Id="Microsoft.EntityFrameworkCore.dll" Name="Microsoft.EntityFrameworkCore.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.dll" />
+			<Component Id="SpotifyAPI.Web.dll" Guid="f19d89b2-dafa-4a5d-8d58-55a4abbf46e9">
+			  <File Id="SpotifyAPI.Web.dll" Name="SpotifyAPI.Web.dll" Source="$(var.SpotifySongTagger_TargetDir)SpotifyAPI.Web.dll" />
 			</Component>
-			<Component Id="Serilog.Sinks.Trace.dll" Guid="38434640-af86-4e88-8c7f-3aca7434679f">
+			<Component Id="Serilog.Sinks.Trace.dll" Guid="a415fbdf-ac57-485f-80c2-040e25dea05f">
 			  <File Id="Serilog.Sinks.Trace.dll" Name="Serilog.Sinks.Trace.dll" Source="$(var.SpotifySongTagger_TargetDir)Serilog.Sinks.Trace.dll" />
 			</Component>
-			<Component Id="Serilog.Sinks.File.dll" Guid="eb67ab1c-0383-4b3d-8223-1b9f0671fb9f">
+			<Component Id="Serilog.Sinks.File.dll" Guid="92a13b0e-131d-4f1f-9e85-1d8053ad644b">
 			  <File Id="Serilog.Sinks.File.dll" Name="Serilog.Sinks.File.dll" Source="$(var.SpotifySongTagger_TargetDir)Serilog.Sinks.File.dll" />
 			</Component>
-			<Component Id="Serilog.dll" Guid="01a38461-da0e-41dd-8a6e-6209b7f6ac78">
+			<Component Id="Newtonsoft.Json.dll" Guid="1d01ec14-d025-4a43-beaf-636b705f92ba">
+			  <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SpotifySongTagger_TargetDir)Newtonsoft.Json.dll" />
+			</Component>
+			<Component Id="Microsoft.EntityFrameworkCore.dll" Guid="70c33696-2936-4ca2-bb47-39c5f0ef3d30">
+			  <File Id="Microsoft.EntityFrameworkCore.dll" Name="Microsoft.EntityFrameworkCore.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.dll" />
+			</Component>
+			<Component Id="Serilog.dll" Guid="8a3ffb8c-d0f0-4f2d-a1c4-d16ecec637c6">
 			  <File Id="Serilog.dll" Name="Serilog.dll" Source="$(var.SpotifySongTagger_TargetDir)Serilog.dll" />
 			</Component>
-			<Component Id="Backend.dll" Guid="c518add7-f869-4a17-8c2c-b29f2876dba7">
+			<Component Id="Util.dll" Guid="2ce55e60-e0cb-4af2-8a2f-1564af0a3fa8">
+			  <File Id="Util.dll" Name="Util.dll" Source="$(var.SpotifySongTagger_TargetDir)Util.dll" />
+			</Component>
+			<Component Id="Backend.dll" Guid="3a0c1230-b0ad-4971-a677-35ff9134b7bf">
 			  <File Id="Backend.dll" Name="Backend.dll" Source="$(var.SpotifySongTagger_TargetDir)Backend.dll" />
 			</Component>
-			<Component Id="MaterialDesignThemes.Wpf.dll" Guid="a9c2b9cc-47fb-430b-8c55-96356d73607c">
+			<Component Id="MaterialDesignThemes.Wpf.dll" Guid="4c700542-54cc-41f9-aa68-c74e0cf78034">
 			  <File Id="MaterialDesignThemes.Wpf.dll" Name="MaterialDesignThemes.Wpf.dll" Source="$(var.SpotifySongTagger_TargetDir)MaterialDesignThemes.Wpf.dll" />
 			</Component>
-			<Component Id="SpotifySongTagger.dll" Guid="e74c5768-b10c-42a9-a187-55cf1ba78c8f">
+			<Component Id="SpotifySongTagger.dll" Guid="3fd29eee-778c-4049-ba99-a5110b1dc5b8">
 			  <File Id="SpotifySongTagger.dll" Name="SpotifySongTagger.dll" Source="$(var.SpotifySongTagger_TargetDir)SpotifySongTagger.dll" />
 			</Component>
-			<Component Id="Microsoft.Extensions.Caching.Memory.dll" Guid="1f56eb47-203a-49a6-9d6f-bc8e8a63caf9">
-			  <File Id="Microsoft.Extensions.Caching.Memory.dll" Name="Microsoft.Extensions.Caching.Memory.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Caching.Memory.dll" />
+			<Component Id="SpotifySongTagger.runtimeconfig.json" Guid="f2e9ab81-d2c7-4a07-b2be-2ae7cb5a686a">
+			  <File Id="SpotifySongTagger.runtimeconfig.json" Name="SpotifySongTagger.runtimeconfig.json" Source="$(var.SpotifySongTagger_TargetDir)SpotifySongTagger.runtimeconfig.json" />
 			</Component>
-			<Component Id="Microsoft.Extensions.Options.dll" Guid="33ab03a6-4ae0-417b-9b0a-9a9c4bcd1ec9">
-			  <File Id="Microsoft.Extensions.Options.dll" Name="Microsoft.Extensions.Options.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Options.dll" />
+			<Component Id="Updater.dll" Guid="7ce606ee-2079-4fb3-954f-0582880b39fd">
+			  <File Id="Updater.dll" Name="Updater.dll" Source="$(var.Updater_TargetDir)Updater.dll" />
+			</Component>
+			<Component Id="Microsoft.EntityFrameworkCore.Sqlite.dll" Guid="517f17f1-691c-4de9-8f7f-353be5f7876d">
+			  <File Id="Microsoft.EntityFrameworkCore.Sqlite.dll" Name="Microsoft.EntityFrameworkCore.Sqlite.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.EntityFrameworkCore.Sqlite.dll" />
+			</Component>
+			<Component Id="Microsoft.Extensions.Caching.Memory.dll" Guid="d6c3d013-ff5d-4b4b-b9fb-6ad0c7cf4efd">
+			  <File Id="Microsoft.Extensions.Caching.Memory.dll" Name="Microsoft.Extensions.Caching.Memory.dll" Source="$(var.SpotifySongTagger_TargetDir)Microsoft.Extensions.Caching.Memory.dll" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>

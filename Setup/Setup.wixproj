@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>653f9850-6983-4004-84d2-290e7e86a2d3</ProjectGuid>
+    <ProjectGuid>6d256850-c25b-42fb-bbbb-25b98b211fa6</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>Setup</OutputName>
     <OutputType>Package</OutputType>
@@ -25,9 +25,17 @@
     <Content Include="Setup.wax" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Frontend.Wpf\Frontend.Wpf.csproj">
-      <Name>Frontend.Wpf</Name>
+    <ProjectReference Include="..\SpotifySongTagger\SpotifySongTagger.csproj">
+      <Name>SpotifySongTagger</Name>
       <Project>{56dc5713-85fe-4918-b7d2-0541bd793c72}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Updater\Updater.csproj">
+      <Name>Updater</Name>
+      <Project>{4ddb98f8-48c3-49d7-b99f-a9626c87e9ce}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
