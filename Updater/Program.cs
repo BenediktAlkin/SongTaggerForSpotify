@@ -9,21 +9,15 @@ namespace Updater
 {
     public class Program
     {
-        private const string LOG_FILE = "updater.log";
         private const string APPLICATION_NAME = "SpotifySongTagger";
         private const string UPDATER_NAME = "Updater";
         public const string TEMP_DIR = "temp";
 
-        private static readonly Action<string> LogInformation = Log.Information;
-        private static readonly Action<string> LogError = Log.Error;
+        private static readonly Action<string> LogInformation = Console.WriteLine;
+        private static readonly Action<string> LogError = Console.WriteLine;
 
         private static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File(LOG_FILE)
-                .CreateLogger();
-
             Console.Title = $"{APPLICATION_NAME} {UPDATER_NAME}";
             Console.CursorVisible = false;
 
@@ -40,8 +34,6 @@ namespace Updater
             Process.Start($"{APPLICATION_NAME}.exe");
 
             LogInformation($"Finished updater");
-
-            Log.CloseAndFlush();
         }
 
         private static void TerminateApplication(int? procId)
