@@ -105,6 +105,7 @@ namespace SpotifySongTagger.Views
             try
             {
                 await ViewModel.LoadTracks(playlist.Id);
+                Log.Information($"Selected playlist {playlist.Name} with {ViewModel.TrackVMs.Count} songs");
             }
             catch (TaskCanceledException)
             {

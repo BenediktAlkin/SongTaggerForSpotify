@@ -10,7 +10,7 @@ namespace Updater
     public class Program
     {
         private const string LOG_FILE = "updater.log";
-        private const string APPLICATION_NAME = "Application";
+        private const string APPLICATION_NAME = "SpotifySongTagger";
         private const string UPDATER_NAME = "Updater";
         public const string TEMP_DIR = "temp";
 

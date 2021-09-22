@@ -17,50 +17,59 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-        <!-- logged in user info -->
-        <StackPanel Orientation="Horizontal">
-            <Label Style="{StaticResource MaterialDesignLabel}" 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <!-- logged in user info -->
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource MaterialDesignLabel}" 
                Content="Logged in as"
                Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
-            <Label Style="{StaticResource MaterialDesignLabel}" 
+                <Label Style="{StaticResource MaterialDesignLabel}" 
                Content="{Binding DataContainer.User.Id}"
                FontWeight="Bold"
                Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
-        </StackPanel>
+            </StackPanel>
 
-        <!-- logout button -->
-        <Button Click="LoginButton_Click"
+            <!-- logout button -->
+            <Button Click="LoginButton_Click"
                 Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
                 Width="128"
                 Content="Logout"/>
 
-
-        <!-- login button -->
-        <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>
-        <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+            <!-- login button -->
+            <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>
+            <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                 Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"
                 materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
                 Width="128"
                 Content="Login"
                 IsEnabledChanged="Button_IsEnabledChanged">
-            <Button.CommandParameter>
-                <StackPanel Margin="16">
-                    <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                <Button.CommandParameter>
+                    <StackPanel Margin="16">
+                        <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
                                  HorizontalAlignment="Center" Margin="16"
                                  IsIndeterminate="True"
                                  Value="0" />
-                    <Label Style="{StaticResource MaterialDesignLabel}"
+                        <Label Style="{StaticResource MaterialDesignLabel}"
                            Content="Waiting for login in opened browser window"/>
-                    <Button 
+                        <Button 
                         Style="{StaticResource DialogButton}"
                         IsCancel="True" 
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         HorizontalAlignment="Center"
                         Content="CANCEL"
                         Click="LoginDialog_Cancel"/>
-                </StackPanel>
-            </Button.CommandParameter>
-        </Button>
-    </StackPanel>
+                    </StackPanel>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+
+
+        <TextBlock Grid.Row="1" Text="{Binding FullApplicationName}" HorizontalAlignment="Center" Margin="8"/>
+    </Grid>
+    
 </UserControl>
