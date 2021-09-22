@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  application_name: Spotify Song Tagger
+  updater_name: Updater
+  build_config: Release
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # prepare version update
+    - name: Extract tag
+      uses: olegtarasov/get-tag@v2.1
+      id: tagName
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    # update versions locally
+    - name: Update application version
+      run: python buildscripts/update_version.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.application_name }}/${{ env.application_name }}.csproj
+    - name: Update updater version
+      run: python buildscripts/update_version.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.updater_name }}/${{ env.updater_name }}.csproj
+    - name: Push updated version number
+      uses: test-room-7/action-update-file@v1
+      with:
+          file-path: |
+              ${{ env.application_name }}/${{ env.application_name }}.csproj
+              ${{ env.updater_name }}/${{ env.updater_name }}.csproj
+          commit-msg: Update version number
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+    # setup runtime
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    
+    # publish program to {application_name}/{build_config}
+    - name: Publish program
+      run: dotnet publish ${{ env.project_path }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
+    # publish updater to {application_name}/{build_config}
+    - name: Publish updater
+      run: dotnet publish ${{ env.project_path }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
+    
+    
+    
+    # zip {application_name}/{build_config} into a zip file where the root folder has name {application_name}
+    - name: Zip portable build
+      uses: papeloto/action-zip@v1
+      with:
+        files: ${{ env.application_name }}/${{ env.build_config }}
+        dest: Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
+        recursive: false
+
+    - name: Release build
+      uses: softprops/action-gh-release@v1
+      with:
+        files: Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
