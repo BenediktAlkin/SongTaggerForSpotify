@@ -30,6 +30,7 @@ namespace Backend.Entities.GraphNodes
 
         protected override bool CanAddInput(GraphNode input) => false;
 
+        public override Task<List<Track>> GetInput() => Task.FromResult(new List<Track>());
         public override async Task<List<Track>> GetResult()
         {
             if (PlaylistId == Constants.LIKED_SONGS_PLAYLIST_ID)

@@ -8,12 +8,16 @@ namespace Backend.Entities.GraphNodes
     {
         protected override bool CanAddInput(GraphNode input) => Inputs.Count() < 1;
 
-        public override async Task<List<Track>> GetResult()
+        public override async Task<List<Track>> GetInput()
         {
             if (Inputs == null || Inputs.Count() == 0)
                 return new List<Track>();
 
-            var inputs = await Inputs.First().GetResult();
+            return await Inputs.First().GetResult();
+        }
+        public override async Task<List<Track>> GetResult()
+        {
+            var inputs = await GetInput();
             return inputs.Distinct().ToList();
         }
     }

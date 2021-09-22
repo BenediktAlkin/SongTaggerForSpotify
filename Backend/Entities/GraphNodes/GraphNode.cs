@@ -87,7 +87,7 @@ namespace Backend.Entities.GraphNodes
             return false;
         }
 
-
+        public abstract Task<List<Track>> GetInput();
         public abstract Task<List<Track>> GetResult();
         public virtual bool IsValid => true;
 

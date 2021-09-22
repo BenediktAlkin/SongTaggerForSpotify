@@ -6,6 +6,8 @@ namespace Backend.Entities.GraphNodes
 {
     public class ConcatNode : GraphNode
     {
+        public override async Task<List<Track>> GetInput() => await GetResult();
+
         public override async Task<List<Track>> GetResult()
         {
             if (Inputs == null)

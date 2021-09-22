@@ -5,25 +5,25 @@ using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class TagFilterNode : GraphNode
+    public class ArtistFilterNode : GraphNode
     {
-        private int? tagId;
-        public int? TagId
+        private int? artistId;
+        public int? ArtistId
         {
-            get => tagId;
+            get => artistId;
             set
             {
-                SetProperty(ref tagId, value, nameof(TagId));
+                SetProperty(ref artistId, value, nameof(ArtistId));
                 GraphGeneratorPage.NotifyIsValidChanged();
             }
         }
-        private Tag tag;
-        public Tag Tag
+        private Artist artist;
+        public Artist Artist
         {
-            get => tag;
+            get => artist;
             set
             {
-                SetProperty(ref tag, value, nameof(Tag));
+                SetProperty(ref artist, value, nameof(Artist));
                 GraphGeneratorPage.NotifyIsValidChanged();
             }
         }
@@ -31,7 +31,7 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => Inputs.Count() < 1;
         public override async Task<List<Track>> GetInput()
         {
-            if (Inputs == null || Inputs.Count() == 0)
+            if (Inputs == null || !Inputs.Any())
                 return new List<Track>();
 
             return await Inputs.First().GetResult();
@@ -49,9 +49,9 @@ namespace Backend.Entities.GraphNodes
             }
 
             // filter
-            //return tracks.Where(t => t.Tags.Select(tag => tag.Name).Contains(Tag.Name)).ToList();
-            return tracks.Where(t => t.Tags.Contains(Tag)).ToList();
+            //return tracks.Where(t => t.Artists.Select(a => a.Name).Contains(Artist.Name)).ToList();
+            return tracks.Where(t => t.Artists.Contains(Artist)).ToList();
         }
-        public override bool IsValid => TagId != null || Tag != null;
+        public override bool IsValid => ArtistId != null || Artist != null;
     }
 }

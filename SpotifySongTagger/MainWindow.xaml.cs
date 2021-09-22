@@ -35,6 +35,7 @@ namespace SpotifySongTagger
                 .CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 
+#if !DEBUG
             // check for update and update
             Action shutdownAction = () =>
             {
@@ -42,6 +43,7 @@ namespace SpotifySongTagger
                 Application.Current.Shutdown();
             };
             await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SpotifySongTagger", typeof(MainWindow).Assembly.GetName().Version, "Updater", "Application", shutdownAction);
+#endif
             await ConnectionManager.TryInitFromSavedToken();
             ViewModel.CheckedForUpdates = true;
 

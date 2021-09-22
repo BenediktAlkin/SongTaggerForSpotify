@@ -21,6 +21,7 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => Inputs.Count() < 1;
         protected override bool CanAddOutput(GraphNode output) => false;
 
+        public override async Task<List<Track>> GetInput() => await GetResult();
         public override async Task<List<Track>> GetResult()
         {
             if (Inputs == null || Inputs.Count() == 0)
