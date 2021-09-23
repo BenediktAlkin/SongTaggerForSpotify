@@ -176,11 +176,11 @@ namespace SpotifySongTagger.Views.Controls
         private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
-            var from = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;
-            var to = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
+            var from = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
+            var to = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;
+            ConnectionManager.Instance.Database.SaveChanges();
             Log.Information($"{frameworkElement.DataContext} changed from {from} to {to}");
             await ViewModel.RefreshInputResults();
-            ConnectionManager.Instance.Database.SaveChanges();
         }
     }
 }

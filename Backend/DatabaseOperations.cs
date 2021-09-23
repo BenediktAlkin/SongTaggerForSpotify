@@ -222,11 +222,50 @@ namespace Backend
             await DataContainer.Instance.LoadSourcePlaylists(forceReload: true);
         }
 
-        public static async Task<List<Playlist>> SourcePlaylistCurrentUsers()
+        public static async Task<List<Track>> PlaylistTracks(string playlistId, bool includeAlbums=true, bool includeArtists=true, bool includeTags=true)
+        {
+            IQueryable<Track> query = Db.Tracks
+                .Include(t => t.Playlists);
+            if (includeAlbums)
+                query = query.Include(t => t.Album);
+            if (includeArtists)
+                query = query.Include(t => t.Artists);
+            if(includeTags)
+                query = query.Include(t => t.Tags);
+
+            return playlistId switch
+            {
+                Constants.ALL_SONGS_PLAYLIST_ID => await query.ToListAsync(),
+                Constants.UNTAGGED_SONGS_PLAYLIST_ID => await query.Where(t => t.Tags.Count == 0).ToListAsync(),
+                _ => await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync(),
+            };
+        }
+
+        private static readonly string[] SPECIAL_PLAYLIST_IDS = { Constants.ALL_SONGS_PLAYLIST_ID, Constants.LIKED_SONGS_PLAYLIST_ID, Constants.UNTAGGED_SONGS_PLAYLIST_ID };
+        public static async Task<List<Playlist>> PlaylistsFollowed()
         {
             var playlists = Db.Playlists;
             var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
-            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name)).OrderBy(p => p.Name).ToListAsync();
+            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !SPECIAL_PLAYLIST_IDS.Contains(p.Id))
+                .OrderBy(p => p.Name).ToListAsync();
+        }
+        public static List<Playlist> PlaylistsSpecial()
+        {
+            static Playlist GetOrCreate(string specialPlaylistId)
+            {
+                var playlist = Db.Playlists.FirstOrDefault(p => p.Id == specialPlaylistId);
+                if (playlist == null)
+                {
+                    playlist = new Playlist { Id = specialPlaylistId, Name = specialPlaylistId };
+                    Db.Playlists.Add(playlist);
+                }
+                return playlist;
+            }
+
+            // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
+            var specialPlaylists = SPECIAL_PLAYLIST_IDS.Select(pid => GetOrCreate(pid)).ToList();
+            Db.SaveChanges();
+            return specialPlaylists;
         }
     }
 }

@@ -1,8 +1,4 @@
 
-            ViewModel.ClearAllInputResults();
-
-Special playlists (All, untagged)
-async operations in getresult
 
 installer does not provide access to the folders
 maybe replace listboxes with buttons with itemscontrol to use buttons and that can be disabled

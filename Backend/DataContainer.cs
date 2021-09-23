@@ -5,6 +5,7 @@ using Serilog;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Util;
 
@@ -51,7 +52,9 @@ namespace Backend
 
             Log.Information("Loading source playlists");
             IsLoadingSourcePlaylists = true;
-            SourcePlaylists = await DatabaseOperations.SourcePlaylistCurrentUsers();
+            var followedPlaylists = await DatabaseOperations.PlaylistsFollowed();
+            var specialPlaylists = DatabaseOperations.PlaylistsSpecial();
+            SourcePlaylists = specialPlaylists.Concat(followedPlaylists).ToList();
             IsLoadingSourcePlaylists = false;
         }
 

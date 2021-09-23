@@ -16,6 +16,7 @@ namespace Backend.Entities.GraphNodes
             {
                 SetProperty(ref playlistId, value, nameof(PlaylistId));
                 GraphGeneratorPage?.NotifyIsValidChanged();
+                PropagateForward(gn => gn.ClearResult());
             }
         }
         private Playlist playlist;
@@ -26,6 +27,7 @@ namespace Backend.Entities.GraphNodes
             {
                 SetProperty(ref playlist, value, nameof(Playlist));
                 GraphGeneratorPage?.NotifyIsValidChanged();
+                PropagateForward(gn => gn.ClearResult());
             }
         }
 
@@ -44,23 +46,11 @@ namespace Backend.Entities.GraphNodes
         {
             if (InputResult != null) return;
 
-            IncludedArtists = false;
-            IncludedTags = false;
+            IncludedArtists = AnyForward(gn => gn.RequiresArtists);
+            IncludedTags = AnyForward(gn => gn.RequiresTags);
 
-            IQueryable<Track> tracks = Db.Tracks;
-            if (AnyForward(gn => gn.RequiresArtists))
-            {
-                tracks = tracks.Include(t => t.Artists);
-                IncludedArtists = true;
-            }
-            if (AnyForward(gn => gn.RequiresTags))
-            {
-                tracks = tracks.Include(t => t.Tags);
-                IncludedTags = true;
-            }
-
-            InputResult = await tracks.Where(t => t.Playlists.Contains(Playlist)).ToListAsync();
-            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count})");
+            InputResult = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: false, includeArtists: IncludedArtists, includeTags: IncludedTags);
+            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} IncludedArtist={IncludedArtists} IncludedTags={IncludedTags})");
         }
 
 

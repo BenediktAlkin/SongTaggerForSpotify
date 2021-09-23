@@ -22,7 +22,7 @@ namespace SpotifySongTagger.ViewModels
         #region NodeTypes
         public List<NodeType> NodeTypes { get; } = new List<NodeType>
         {
-            new NodeType {Name = "Input", Type = typeof(PlaylistInputNode) },
+            new NodeType {Name = "Playlist Input", Type = typeof(PlaylistInputNode) },
             new NodeType {Name = "Concat", Type = typeof(ConcatNode) },
             new NodeType {Name = "Deduplicate", Type = typeof(DeduplicateNode) },
             new NodeType {Name = "Filter Artist", Type = typeof(FilterArtistNode) },

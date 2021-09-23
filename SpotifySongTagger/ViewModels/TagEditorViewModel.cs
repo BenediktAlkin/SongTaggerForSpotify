@@ -30,14 +30,8 @@ namespace SpotifySongTagger.ViewModels
         {
             IsLoadingTracks = true;
             TrackVMs.Clear();
-            var tracks = await ConnectionManager.Instance.Database.Tracks
-                .Include(t => t.Album)
-                .Include(t => t.Artists)
-                .Include(t => t.Tags)
-                .Include(t => t.Playlists)
-                .Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId))
-                .ToListAsync();
-
+            var tracks = await DatabaseOperations.PlaylistTracks(playlistId);
+                
             // check if the playlist is still selected
             if (SelectedPlaylist.Id == playlistId)
             {
