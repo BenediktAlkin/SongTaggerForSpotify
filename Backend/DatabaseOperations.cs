@@ -160,7 +160,7 @@ namespace Backend
             var dbTracksTask = Db.Tracks.Include(t => t.Tags).Include(t => t.Playlists).ToListAsync(cancellationToken);
 
             // get full library from spotify
-            var tracks = await SpotifyOperations.GetFullLibrary(generatedPlaylistIds);
+            var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(generatedPlaylistIds);
 
             // get db data
             var dbTracks = (await dbTracksTask).ToDictionary(t => t.Id, t => t);
@@ -170,7 +170,7 @@ namespace Backend
 
             // replace duplicate objects within data
             Log.Information("Start removing duplicated objects within library");
-            foreach (var track in tracks.Values)
+            foreach (var track in spotifyTracks.Values)
             {
                 ReplaceAlbumWithDbAlbum(dbAlbums, track);
                 ReplaceArtistWithDbArtist(dbArtists, track);
@@ -183,14 +183,14 @@ namespace Backend
             var nonTaggedTracks = dbTracks.Values.Where(t => t.Tags.Count == 0);
             foreach (var nonTaggedTrack in nonTaggedTracks)
             {
-                if (!tracks.ContainsKey(nonTaggedTrack.Id))
+                if (!spotifyTracks.ContainsKey(nonTaggedTrack.Id))
                     Db.Tracks.Remove(nonTaggedTrack);
             }
             Log.Information("Finished removing untracked tracks from db");
 
             // push spotify library to db
             Log.Information("Start pushing library to database");
-            foreach (var track in tracks.Values)
+            foreach (var track in spotifyTracks.Values)
             {
                 if (dbTracks.TryGetValue(track.Id, out var dbTrack))
                 {
@@ -208,11 +208,16 @@ namespace Backend
             Log.Information("Finished pushing library to database");
 
             // remove unfollowed playlists
-            Log.Information("Remove old playlists from database");
+            Log.Information("Update playlists in database (remove unfollowed ones, rename)");
             var allPlaylists = await Db.Playlists.ToListAsync(cancellationToken);
+            var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
             Db.Playlists.RemoveRange(allPlaylists.Where(p => p.Tracks == null || p.Tracks.Count == 0));
+            // update playlist names
+            foreach (var spotifyPlaylist in spotifyPlaylists)
+                allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
+                
             await Db.SaveChangesAsync(cancellationToken);
-            Log.Information("Finished removing old playlists from database");
+            Log.Information("Finished updating playlists");
 
             await DataContainer.Instance.LoadSourcePlaylists(forceReload: true);
         }

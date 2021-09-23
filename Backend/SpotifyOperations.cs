@@ -150,7 +150,7 @@ namespace Backend
             }
         }
 
-        public static async Task<Dictionary<string, Track>> GetFullLibrary(List<string> generatedPlaylistIds)
+        public static async Task<(List<Playlist>, Dictionary<string, Track>)> GetFullLibrary(List<string> generatedPlaylistIds)
         {
             var likedTracksTask = SpotifyOperations.LikedTracks();
             var playlistsTask = SpotifyOperations.PlaylistCurrentUsers();
@@ -195,7 +195,7 @@ namespace Backend
                 }
             }
             Log.Information("Finished fetching full spotify library");
-            return tracks;
+            return (playlists, tracks);
         }
     }
 }
