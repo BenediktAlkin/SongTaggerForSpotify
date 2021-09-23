@@ -82,7 +82,8 @@ namespace Backend
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid)) return;
 
-            var tracks = await assignTagNode.GetResult();
+            await assignTagNode.CalculateOutputResult();
+            var tracks = assignTagNode.OutputResult;
             foreach (var track in tracks)
                 track.Tags.Add(assignTagNode.Tag);
             await Db.SaveChangesAsync();
@@ -152,8 +153,8 @@ namespace Backend
         {
             Log.Information("Syncing library");
             // exclude generated playlists from library
-            await DataContainer.Instance.LoadOutputNodes();
-            var generatedPlaylistIds = DataContainer.Instance.OutputNodes.Select(pl => pl.GeneratedPlaylistId).ToList();
+            var playlistOutputNodes = await ConnectionManager.Instance.Database.PlaylistOutputNodes.ToListAsync(cancellationToken);
+            var generatedPlaylistIds = playlistOutputNodes.Select(pl => pl.GeneratedPlaylistId).ToList();
 
             // start retrieving all tracks from db
             var dbTracksTask = Db.Tracks.Include(t => t.Tags).Include(t => t.Playlists).ToListAsync(cancellationToken);
@@ -219,8 +220,8 @@ namespace Backend
         public static async Task<List<Playlist>> SourcePlaylistCurrentUsers()
         {
             var playlists = Db.Playlists;
-            var generatedPlaylists = Db.OutputNodes.Select(p => p.PlaylistName);
-            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name)).ToListAsync();
+            var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
+            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name)).OrderBy(p => p.Name).ToListAsync();
         }
     }
 }

@@ -18,9 +18,7 @@ namespace Backend
             // no discriminator is set to distinguish between the classes
             builder.Entity<ConcatNode>().HasDiscriminator<string>("Discriminator").HasValue("ConcatNode");
             builder.Entity<DeduplicateNode>().HasDiscriminator<string>("Discriminator").HasValue("DeduplicateNode");
-            builder.Entity<TagFilterNode>().HasDiscriminator<string>("Discriminator").HasValue("TagFilterNode");
-            builder.Entity<ArtistFilterNode>().HasDiscriminator<string>("Discriminator").HasValue("ArtistFilterNode");
-            builder.Entity<AssignTagNode>().HasDiscriminator<string>("Discriminator").HasValue("AssignTagNode");
+            builder.Entity<FilterTagNode>().HasDiscriminator<string>("Discriminator").HasValue("FilterTagNode");
         }
 
 
@@ -30,8 +28,8 @@ namespace Backend
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Track> Tracks { get; set; }
         public DbSet<GraphNode> GraphNodes { get; set; }
-        public DbSet<OutputNode> OutputNodes { get; set; }
-        public DbSet<InputNode> InputNodes { get; set; }
+        public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
+        public DbSet<PlaylistInputNode> PlaylistInputNodes { get; set; }
         public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }
     }
 }

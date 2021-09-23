@@ -16,15 +16,10 @@ namespace SpotifySongTagger.Views
             ViewModel = new PlaylistGeneratorViewModel();
             DataContext = ViewModel;
         }
-        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            await PlaylistGeneratorViewModel.Init();
-        }
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e) => await PlaylistGeneratorViewModel.Init();
 
-        private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e)
-        {
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
+
+        private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
         private void AddGraphGeneratorPageDialog_Add(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(ViewModel.NewGraphGeneratorPageName))

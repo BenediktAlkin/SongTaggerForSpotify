@@ -76,23 +76,5 @@ namespace Backend
             Tags = new ObservableCollection<Tag>(dbTags);
             IsLoadingTags = false;
         }
-
-
-        // all output nodes
-        private ObservableCollection<OutputNode> outputNodes;
-        public ObservableCollection<OutputNode> OutputNodes
-        {
-            get => outputNodes;
-            set => SetProperty(ref outputNodes, value, nameof(OutputNodes));
-        }
-        public async Task LoadOutputNodes()
-        {
-            if (OutputNodes != null) return;
-
-            var dbNodes = await ConnectionManager.Instance.Database.OutputNodes.ToListAsync();
-            OutputNodes = new ObservableCollection<OutputNode>(dbNodes);
-        }
-
-
     }
 }

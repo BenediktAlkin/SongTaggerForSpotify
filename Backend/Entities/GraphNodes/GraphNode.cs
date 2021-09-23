@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,6 +43,8 @@ namespace Backend.Entities.GraphNodes
 
             if (HasCycles(this))
                 RemoveOutput(input);
+            else
+                PropagateBackward(gn => gn.OnConnectionAdded(input, this));
         }
         public void AddOutput(GraphNode output)
         {
@@ -50,6 +53,8 @@ namespace Backend.Entities.GraphNodes
 
             if (HasCycles(this))
                 RemoveOutput(output);
+            else
+                PropagateBackward(gn => gn.OnConnectionAdded(this, output));
         }
 
         public void RemoveInput(GraphNode input) => ((List<GraphNode>)Inputs).Remove(input);
@@ -57,6 +62,8 @@ namespace Backend.Entities.GraphNodes
 
         protected virtual bool CanAddInput(GraphNode input) => true;
         protected virtual bool CanAddOutput(GraphNode output) => true;
+
+        protected virtual void OnConnectionAdded(GraphNode from, GraphNode to) { }
         #endregion
 
         #region validity checks
@@ -96,13 +103,59 @@ namespace Backend.Entities.GraphNodes
         #endregion
 
 
-        public virtual async Task<List<Track>> GetInput()
+        private List<Track> inputResult;
+        public List<Track> InputResult
         {
-            if (Inputs == null || !Inputs.Any())
-                return new List<Track>();
-            return await Inputs.First().GetResult();
+            get => inputResult;
+            set
+            {
+                SetProperty(ref inputResult, value, nameof(InputResult));
+                OnInputResultChanged();
+            }
         }
-        public virtual Task<List<Track>> GetResult() => GetInput();
+        private List<Track> outputResult;
+        public List<Track> OutputResult
+        {
+            get => outputResult;
+            set => SetProperty(ref outputResult, value, nameof(OutputResult));
+        }
+        protected virtual void OnInputResultChanged() { }
+        public void ClearResult()
+        {
+            InputResult = null;
+            OutputResult = null;
+        }
+        public virtual async Task CalculateInputResult()
+        {
+            if (InputResult != null) return;
+
+            if (Inputs == null || !Inputs.Any())
+                InputResult = new List<Track>();
+            else
+            {
+                var concated = new List<Track>();
+                foreach (var input in Inputs)
+                {
+                    await input.CalculateOutputResult();
+                    concated.AddRange(input.OutputResult);
+                }
+                InputResult = concated;
+                Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count})");
+            }
+        }
+        protected virtual Task MapInputToOutput()
+        {
+            OutputResult = InputResult;
+            return Task.CompletedTask;
+        }
+        public async Task CalculateOutputResult()
+        {
+            if (OutputResult != null) return;
+
+            if (InputResult == null)
+                await CalculateInputResult();
+            await MapInputToOutput();
+        }
 
 
         public virtual bool IsValid => true;
@@ -112,7 +165,18 @@ namespace Backend.Entities.GraphNodes
 
         public bool AnyForward(Func<GraphNode, bool> predicate) => predicate(this) || Outputs.Any(o => o.AnyForward(predicate));
         public bool AnyBackward(Func<GraphNode, bool> predicate) => predicate(this) || Inputs.Any(i => i.AnyBackward(predicate));
-
+        public void PropagateForward(Action<GraphNode> action)
+        {
+            action(this);
+            foreach (var output in Outputs)
+                output.PropagateForward(action);
+        }
+        public void PropagateBackward(Action<GraphNode> action)
+        {
+            action(this);
+            foreach (var input in Inputs)
+                input.PropagateBackward(action);
+        }
 
         public override string ToString() => GetType().Name;
     }

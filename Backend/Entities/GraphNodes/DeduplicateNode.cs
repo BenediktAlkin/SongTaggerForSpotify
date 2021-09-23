@@ -7,11 +7,10 @@ namespace Backend.Entities.GraphNodes
     public class DeduplicateNode : GraphNode
     {
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
-
-        public override async Task<List<Track>> GetResult()
+        protected override Task MapInputToOutput()
         {
-            var tracks = await GetInput();
-            return tracks.Distinct().ToList();
+            OutputResult = InputResult.Distinct().ToList();
+            return Task.CompletedTask;
         }
     }
 }

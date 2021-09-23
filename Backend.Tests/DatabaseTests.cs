@@ -10,15 +10,15 @@ namespace Backend.Tests
         [Test]
         public void Graph_Saving()
         {
-            var input = new InputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-            var output = new OutputNode { PlaylistName = "ChilloutLoungeCopy" };
+            var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
+            var output = new PlaylistOutputNode { PlaylistName = "ChilloutLoungeCopy" };
             output.AddInput(input);
-            Db.OutputNodes.Add(output);
+            Db.PlaylistOutputNodes.Add(output);
             Db.SaveChanges();
 
-            var nodes = Db.OutputNodes.ToList();
-            Assert.AreEqual(1, Db.OutputNodes.Count());
-            Assert.AreEqual(1, Db.InputNodes.Count());
+            var nodes = Db.PlaylistOutputNodes.ToList();
+            Assert.AreEqual(1, Db.PlaylistOutputNodes.Count());
+            Assert.AreEqual(1, Db.PlaylistInputNodes.Count());
         }
     }
 }

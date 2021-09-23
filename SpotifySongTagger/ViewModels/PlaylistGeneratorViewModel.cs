@@ -16,19 +16,17 @@ namespace SpotifySongTagger.ViewModels
         public static async Task Init()
         {
             await DataContainer.LoadSourcePlaylists();
-            await DataContainer.LoadTags();
-            await DataContainer.LoadOutputNodes();
         }
 
 
         #region NodeTypes
         public List<NodeType> NodeTypes { get; } = new List<NodeType>
         {
-            new NodeType {Name = "Input", Type = typeof(InputNode) },
+            new NodeType {Name = "Input", Type = typeof(PlaylistInputNode) },
             new NodeType {Name = "Concat", Type = typeof(ConcatNode) },
             new NodeType {Name = "Deduplicate", Type = typeof(DeduplicateNode) },
-            new NodeType {Name = "Tag Filter", Type = typeof(TagFilterNode) },
-            new NodeType {Name = "Output", Type = typeof(OutputNode) },
+            new NodeType {Name = "Tag Filter", Type = typeof(FilterTagNode) },
+            new NodeType {Name = "Output", Type = typeof(PlaylistOutputNode) },
             new NodeType {Name = "Assign Tag", Type = typeof(AssignTagNode) },
         };
         public NodeType SelectedNodeType { get; set; }
@@ -77,7 +75,7 @@ namespace SpotifySongTagger.ViewModels
         {
             // add to db
             var page = new GraphGeneratorPage { Name = name };
-            var node = new OutputNode { PlaylistName = name };
+            var node = new PlaylistOutputNode { PlaylistName = name };
             page.GraphNodes.Add(node);
             ConnectionManager.Instance.Database.GraphGeneratorPages.Add(page);
             ConnectionManager.Instance.Database.SaveChanges();

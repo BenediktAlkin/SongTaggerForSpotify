@@ -18,6 +18,14 @@ namespace SpotifySongTagger.Views.Controls
             // DataContext is set from outside because the DataContext changes when another Page is selected
         }
 
+        private async void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            UpdateCanvasSize();
+            ViewModel.ClearAllInputResults();
+            await ViewModel.RefreshInputResults();
+        }
+
+
         #region move elements in canvas
         private void FrameworkElement_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -48,7 +56,7 @@ namespace SpotifySongTagger.Views.Controls
             e.Handled = true;
             Log.Information($"MouseDown {sender.GetType()} {ViewModel.PressedMouseButton} {curPos.X:N2}/{curPos.Y:N2}");
         }
-        private void FrameworkElement_MouseUp(object sender, MouseButtonEventArgs e)
+        private async void FrameworkElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (ViewModel == null) return;
 
@@ -68,7 +76,7 @@ namespace SpotifySongTagger.Views.Controls
                 Log.Information("Right release");
                 // add connection
                 var nodeVM = ViewModel.GetHoveredGraphNodeViewModel(e.GetPosition(Canvas));
-                ViewModel.AddConnection(nodeVM);
+                await ViewModel.AddConnection(nodeVM);
                 ViewModel.NewArrowStartPoint = default;
                 ViewModel.NewArrow = null;
             }
@@ -118,6 +126,7 @@ namespace SpotifySongTagger.Views.Controls
         }
         #endregion
 
+
         private void Selectable_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Canvas.Focus();
@@ -131,32 +140,34 @@ namespace SpotifySongTagger.Views.Controls
             ViewModel.SelectedObject = null;
         }
 
-        private void Canvas_KeyDown(object sender, KeyEventArgs e)
+
+        private async void Canvas_KeyDown(object sender, KeyEventArgs e)
         {
             // canvas has to be in focus for this event to fire
             if (e.Key == Key.Escape)
                 ViewModel.SelectedObject = null;
 
             if (e.Key == Key.Delete || e.Key == Key.Return)
-                ViewModel.DeleteSelected();
+                await ViewModel.DeleteSelected();
         }
 
-        private void OutputNodeName_TextChanged(object sender, TextChangedEventArgs e)
+        private void PlaylistOutputNodeName_TextChanged(object sender, TextChangedEventArgs e)
         {
             // if validation gives an error for NewTagName, it is not updated in the ViewModel
             var textBox = sender as TextBox;
             var frameworkElement = sender as FrameworkElement;
-            var outputNode = frameworkElement.DataContext as OutputNode;
+            var outputNode = frameworkElement.DataContext as PlaylistOutputNode;
 
             outputNode.PlaylistName = textBox.Text;
         }
 
+        #region UpdateCanvasSize
         private void UpdateCanvasSize_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateCanvasSize();
-        private void UpdateCanvasSize_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) => UpdateCanvasSize();
         private void UpdateCanvasSize()
         {
             if (ViewModel == null) return;
             ViewModel.UpdateCanvasSize(Canvas.ActualWidth, Canvas.ActualHeight);
         }
+        #endregion
     }
 }

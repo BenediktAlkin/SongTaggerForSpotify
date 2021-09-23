@@ -23,7 +23,7 @@
     <Canvas 
         Name="Canvas" 
         SizeChanged="UpdateCanvasSize_SizeChanged"
-        DataContextChanged="UpdateCanvasSize_DataContextChanged"
+        DataContextChanged="OnDataContextChanged"
         Background="Transparent" ClipToBounds="True" 
         MouseMove="FrameworkElement_MouseMove" MouseUp="FrameworkElement_MouseUp" MouseDown="UnselectAll" 
         KeyDown="Canvas_KeyDown" Focusable="True">
@@ -31,53 +31,7 @@
         <!-- GraphNodes -->
         <ItemsControl ItemsSource="{Binding GraphNodeVMs}">
             <ItemsControl.Resources>
-                <!-- output node view -->
-                <DataTemplate x:Key="OutputNodeView">
-                    <TextBox materialDesign:HintAssist.Hint="Playlist" Style="{DynamicResource MaterialDesignTextBox}" Margin="0 0 0 20" TextChanged="OutputNodeName_TextChanged">
-                        <TextBox.Text>
-                            <Binding Path="PlaylistName" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
-                </DataTemplate>
-                <!-- input node view -->
-                <DataTemplate x:Key="InputNodeView">
-                    <ComboBox materialDesign:HintAssist.Hint="Playlist"
-                                  materialDesign:HintAssist.HintOpacity=".26"
-                                  ItemsSource="{Binding DataContext.DataContainer.SourcePlaylists, ElementName=GraphEditorUserControl}"
-                                  SelectedItem="{Binding Playlist}"
-                               Margin="0 0 0 20">
-                        <ComboBox.Text>
-                            <Binding Path="Playlist" Converter="{StaticResource ObjectToStringConverter}">
-                                <Binding.ValidationRules>
-                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </ComboBox.Text>
-                    </ComboBox>
-                </DataTemplate>
-                <!-- plain node view -->
-                <DataTemplate x:Key="PlainNodeView"/>
-                <!-- tag filter node view -->
-                <DataTemplate x:Key="TagFilterNodeView">
-                    <ComboBox materialDesign:HintAssist.Hint="Tag"
-                            materialDesign:HintAssist.HintOpacity=".26"
-                            ItemsSource="{Binding DataContext.DataContainer.Tags, ElementName=GraphEditorUserControl}"
-                            SelectedItem="{Binding Tag}"
-                            Margin="0 0 0 20">
-                        <ComboBox.Text>
-                            <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">
-                                <Binding.ValidationRules>
-                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </ComboBox.Text>
-                    </ComboBox>
-                </DataTemplate>
-                <!-- assign tag node view -->
+                <!-- AssignTagNodeView -->
                 <DataTemplate x:Key="AssignTagNodeView">
                     <ComboBox materialDesign:HintAssist.Hint="Tag"
                             materialDesign:HintAssist.HintOpacity=".26"
@@ -93,6 +47,52 @@
                         </ComboBox.Text>
                     </ComboBox>
                 </DataTemplate>
+                <!-- FilterTagNodeView -->
+                <DataTemplate x:Key="FilterTagNodeView">
+                    <ComboBox materialDesign:HintAssist.Hint="Tag"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding ValidTags}"
+                            SelectedItem="{Binding Tag}"
+                            Margin="0 0 0 20">
+                        <ComboBox.Text>
+                            <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">
+                                <Binding.ValidationRules>
+                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.Text>
+                    </ComboBox>
+                </DataTemplate>
+                <!-- PlaylistInputNodeView -->
+                <DataTemplate x:Key="PlaylistInputNodeView">
+                    <ComboBox materialDesign:HintAssist.Hint="Playlist"
+                                  materialDesign:HintAssist.HintOpacity=".26"
+                                  ItemsSource="{Binding DataContext.DataContainer.SourcePlaylists, ElementName=GraphEditorUserControl}"
+                                  SelectedItem="{Binding Playlist}"
+                               Margin="0 0 0 20">
+                        <ComboBox.Text>
+                            <Binding Path="Playlist" Converter="{StaticResource ObjectToStringConverter}">
+                                <Binding.ValidationRules>
+                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.Text>
+                    </ComboBox>
+                </DataTemplate>
+                <!-- PlaylistOutputNodeView -->
+                <DataTemplate x:Key="PlaylistOutputNodeView">
+                    <TextBox materialDesign:HintAssist.Hint="Playlist" Style="{DynamicResource MaterialDesignTextBox}" Margin="0 0 0 20" TextChanged="PlaylistOutputNodeName_TextChanged">
+                        <TextBox.Text>
+                            <Binding Path="PlaylistName" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </DataTemplate>
+                <!-- plain node view -->
+                <DataTemplate x:Key="PlainNodeView"/>
             </ItemsControl.Resources>
             <!-- canvas -->
             <ItemsControl.ItemsPanel>
@@ -126,11 +126,8 @@
                                     <ContentControl.Style>
                                         <Style TargetType="ContentControl">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="OutputNode">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource OutputNodeView}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="InputNode">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource InputNodeView}" />
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="AssignTagNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource AssignTagNodeView}" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="ConcatNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
@@ -138,11 +135,14 @@
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="DeduplicateNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="TagFilterNode">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource TagFilterNodeView}" />
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterTagNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource FilterTagNodeView}" />
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="AssignTagNode">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource AssignTagNodeView}" />
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistInputNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource PlaylistInputNodeView}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistOutputNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource PlaylistOutputNodeView}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

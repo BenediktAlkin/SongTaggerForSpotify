@@ -11,12 +11,13 @@ namespace SpotifySongTagger.Converters
         {
             switch (value.GetType().Name)
             {
-                case nameof(OutputNode): return "Output";
-                case nameof(InputNode): return "Input";
+                case nameof(AssignTagNode): return "Assign Tag";
                 case nameof(ConcatNode): return "Concatenate";
                 case nameof(DeduplicateNode): return "Deduplicate";
-                case nameof(TagFilterNode): return "TagFilter";
-                case nameof(AssignTagNode): return "AssignTag";
+                case nameof(FilterArtistNode): return "Filter Artist";
+                case nameof(FilterTagNode): return "Filter Tag";
+                case nameof(PlaylistInputNode): return "Playlist Input";
+                case nameof(PlaylistOutputNode): return "Playlist Output";
             }
             return "Unknown Node";
         }

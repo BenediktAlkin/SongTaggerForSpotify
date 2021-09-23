@@ -2,7 +2,7 @@
 
 namespace Backend.Entities.GraphNodes
 {
-    public class OutputNode : GraphNode
+    public class PlaylistOutputNode : GraphNode
     {
         private string playlistName;
         public string PlaylistName
@@ -19,7 +19,6 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override bool CanAddOutput(GraphNode output) => false;
 
-        public override string ToString() => $"{base.ToString()} {PlaylistName}";
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistName);
     }
 }

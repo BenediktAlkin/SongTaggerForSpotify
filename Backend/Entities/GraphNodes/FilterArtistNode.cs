@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class ArtistFilterNode : GraphNode
+    public class FilterArtistNode : GraphNode
     {
         private int? artistId;
         public int? ArtistId
@@ -27,12 +27,28 @@ namespace Backend.Entities.GraphNodes
             }
         }
 
-        protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
-        public override async Task<List<Track>> GetResult()
+        private List<Artist> validArtists;
+        public List<Artist> ValidArtists
         {
-            var tracks = await GetInput();
-            return tracks.Where(t => t.Artists.Contains(Artist)).ToList();
+            get => validArtists;
+            private set => SetProperty(ref validArtists, value, nameof(ValidArtists));
         }
+        protected override void OnInputResultChanged()
+        {
+            if (InputResult == null)
+                ValidArtists = null;
+            else
+                ValidArtists = InputResult.SelectMany(track => track.Artists).Distinct().OrderBy(tag => tag.Name).ToList();
+        }
+
+        protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
+
+        protected override Task MapInputToOutput()
+        {
+            OutputResult = InputResult.Where(t => t.Artists.Contains(Artist)).ToList();
+            return Task.CompletedTask;
+        }
+
         public override bool IsValid => ArtistId != null || Artist != null;
         public override bool RequiresArtists => true;
     }

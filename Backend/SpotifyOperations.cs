@@ -97,29 +97,29 @@ namespace Backend
             }).ToList();
         }
 
-        public static async Task SyncOutputNode(OutputNode outputNode)
+        public static async Task SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
         {
-            if (outputNode.AnyBackward(gn => !gn.IsValid)) return;
-            if (outputNode.GeneratedPlaylistId == null)
+            if (playlistOutputNode.AnyBackward(gn => !gn.IsValid)) return;
+            if (playlistOutputNode.GeneratedPlaylistId == null)
             {
                 // create playlist
-                var request = new PlaylistCreateRequest(outputNode.PlaylistName);
+                var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName);
                 var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
-                outputNode.GeneratedPlaylistId = createdPlaylist.Id;
+                playlistOutputNode.GeneratedPlaylistId = createdPlaylist.Id;
             }
             else
             {
-                var playlistDetails = await Spotify.Playlists.Get(outputNode.GeneratedPlaylistId);
+                var playlistDetails = await Spotify.Playlists.Get(playlistOutputNode.GeneratedPlaylistId);
                 // follow playlist if it was unfollowed
                 var followCheckReq = new FollowCheckPlaylistRequest(new List<string> { DataContainer.Instance.User.Id });
-                if (!(await Spotify.Follow.CheckPlaylist(outputNode.GeneratedPlaylistId, followCheckReq)).First())
-                    await Spotify.Follow.FollowPlaylist(outputNode.GeneratedPlaylistId);
+                if (!(await Spotify.Follow.CheckPlaylist(playlistOutputNode.GeneratedPlaylistId, followCheckReq)).First())
+                    await Spotify.Follow.FollowPlaylist(playlistOutputNode.GeneratedPlaylistId);
 
                 // rename playlist if name changed
-                if (playlistDetails.Name != outputNode.PlaylistName)
+                if (playlistDetails.Name != playlistOutputNode.PlaylistName)
                 {
-                    var changeNameReq = new PlaylistChangeDetailsRequest { Name = outputNode.PlaylistName };
-                    await Spotify.Playlists.ChangeDetails(outputNode.GeneratedPlaylistId, changeNameReq);
+                    var changeNameReq = new PlaylistChangeDetailsRequest { Name = playlistOutputNode.PlaylistName };
+                    await Spotify.Playlists.ChangeDetails(playlistOutputNode.GeneratedPlaylistId, changeNameReq);
                 }
 
 
@@ -131,20 +131,21 @@ namespace Backend
                         Positions = Enumerable.Range(0, playlistDetails.Tracks.Total.Value).ToList(),
                         SnapshotId = playlistDetails.SnapshotId,
                     };
-                    await Spotify.Playlists.RemoveItems(outputNode.GeneratedPlaylistId, request);
+                    await Spotify.Playlists.RemoveItems(playlistOutputNode.GeneratedPlaylistId, request);
                 }
             }
 
             // add all tracks
             const int BATCH_SIZE = 100;
-            var tracks = await outputNode.GetResult();
+            await playlistOutputNode.CalculateOutputResult();
+            var tracks = playlistOutputNode.OutputResult;
             for (var i = 0; i < tracks.Count; i += BATCH_SIZE)
             {
                 var request = new PlaylistAddItemsRequest(
                     Enumerable.Range(0, Math.Min(tracks.Count - i, BATCH_SIZE))
                         .Select(i => $"spotify:track:{tracks[i].Id}")
                         .ToList());
-                await Spotify.Playlists.AddItems(outputNode.GeneratedPlaylistId, request);
+                await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
             }
         }
 

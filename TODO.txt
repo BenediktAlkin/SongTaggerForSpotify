@@ -1,3 +1,6 @@
+
+            ViewModel.ClearAllInputResults();
+
 Special playlists (All, untagged)
 async operations in getresult
 

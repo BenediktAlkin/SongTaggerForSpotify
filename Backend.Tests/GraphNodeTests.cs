@@ -59,8 +59,8 @@ namespace Backend.Tests
         [TestCaseSource(nameof(PlaylistIdxs))]
         public void Input_Output(int playlistIdx)
         {
-            var inputNode = new InputNode { Playlist = Playlists[playlistIdx] };
-            var outputNode = new OutputNode();
+            var inputNode = new PlaylistInputNode { Playlist = Playlists[playlistIdx] };
+            var outputNode = new PlaylistOutputNode();
             outputNode.AddInput(inputNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -68,7 +68,7 @@ namespace Backend.Tests
                 var nTracks = N_TRACKS / N_PLAYLISTS;
                 if (playlistIdx < N_TRACKS - nTracks * N_PLAYLISTS)
                     nTracks++;
-                Assert.AreEqual(nTracks, outputNode.GetResult().Result.Count);
+                Assert.AreEqual(nTracks, outputNode.GetOutputResult().Result.Count);
                 Assert.AreEqual(1, DatabaseQueryLogger.Instance.MessageCount);
             }
         }
@@ -78,8 +78,8 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new InputNode { Playlist = playlist });
-            Assert.AreEqual(N_TRACKS, concatNode.GetResult().Result.Count);
+                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+            Assert.AreEqual(N_TRACKS, concatNode.GetOutputResult().Result.Count);
         }
 
         [Test]
@@ -87,13 +87,13 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new InputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new InputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
             var deduplicateNode = new DeduplicateNode();
             deduplicateNode.AddInput(concatNode);
-            Assert.AreEqual(N_TRACKS * 2, concatNode.GetResult().Result.Count);
-            Assert.AreEqual(N_TRACKS, deduplicateNode.GetResult().Result.Count);
+            Assert.AreEqual(N_TRACKS * 2, concatNode.GetOutputResult().Result.Count);
+            Assert.AreEqual(N_TRACKS, deduplicateNode.GetOutputResult().Result.Count);
         }
 
         [Test]
@@ -102,10 +102,10 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new InputNode { Playlist = playlist });
-            var tagFilterNode = new TagFilterNode { Tag = Tags[tagIdx] };
+                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+            var tagFilterNode = new FilterTagNode { Tag = Tags[tagIdx] };
             tagFilterNode.AddInput(concatNode);
-            var outputNode = new OutputNode();
+            var outputNode = new PlaylistOutputNode();
             outputNode.AddInput(tagFilterNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -113,7 +113,7 @@ namespace Backend.Tests
                 var nTracks = N_TRACKS / N_TAGS;
                 if (tagIdx < N_TRACKS - nTracks * N_TAGS)
                     nTracks++;
-                Assert.AreEqual(nTracks, outputNode.GetResult().Result.Count);
+                Assert.AreEqual(nTracks, outputNode.GetOutputResult().Result.Count);
             }
         }
     }

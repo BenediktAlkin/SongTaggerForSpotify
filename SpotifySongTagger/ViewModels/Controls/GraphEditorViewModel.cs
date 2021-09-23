@@ -5,6 +5,7 @@ using SpotifySongTagger.Utils;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -22,6 +23,17 @@ namespace SpotifySongTagger.ViewModels.Controls
                 GraphNodeVMs.Add(nodeViewModel);
         }
 
+        public void ClearAllInputResults()
+        {
+            foreach (var nodeVM in GraphNodeVMs)
+                nodeVM.GraphNode.ClearResult();
+        }
+        public async Task RefreshInputResults()
+        {
+            foreach (var nodeVM in GraphNodeVMs)
+                await nodeVM.GraphNode.CalculateInputResult();
+        }
+
         private GraphGeneratorPage graphGeneratorPage;
         public GraphGeneratorPage GraphGeneratorPage
         {
@@ -37,49 +49,6 @@ namespace SpotifySongTagger.ViewModels.Controls
         {
             get => pressedMouseButton;
             set => SetProperty(ref pressedMouseButton, value, nameof(PressedMouseButton));
-        }
-
-
-
-        #region new arrow
-        public Point NewArrowStartPoint { get; set; }
-        private Geometry newArrow;
-        public Geometry NewArrow
-        {
-            get => newArrow;
-            set => SetProperty(ref newArrow, value, nameof(NewArrow));
-        }
-        #endregion
-
-        public GraphNodeViewModel ClickedNodeViewModel { get; set; }
-        private ISelectable selectedObject;
-        public ISelectable SelectedObject
-        {
-            get => selectedObject;
-            set
-            {
-                if (selectedObject != null)
-                    selectedObject.IsSelected = false;
-                SetProperty(ref selectedObject, value, nameof(SelectedObject));
-                if (value != null)
-                    selectedObject.IsSelected = true;
-            }
-        }
-
-        private double CanvasWidth { get; set; }
-        private double CanvasHeight { get; set; }
-
-        public void UpdateCanvasSize(double newWidth, double newHeight)
-        {
-            CanvasWidth = newWidth;
-            CanvasHeight = newHeight;
-            foreach (var nodeVM in GraphNodeVMs)
-            {
-                nodeVM.CanvasWidth = newWidth;
-                nodeVM.CanvasHeight = newHeight;
-            }
-            foreach (var nodeVM in GraphNodeVMs)
-                nodeVM.UpdateArrows(false);
         }
         public void SaveMovedGraphNodePosition()
         {
@@ -102,6 +71,16 @@ namespace SpotifySongTagger.ViewModels.Controls
             nodeVM.CanvasHeight = CanvasHeight;
             GraphNodeVMs.Add(nodeVM);
         }
+
+
+        #region new arrow
+        public Point NewArrowStartPoint { get; set; }
+        private Geometry newArrow;
+        public Geometry NewArrow
+        {
+            get => newArrow;
+            set => SetProperty(ref newArrow, value, nameof(NewArrow));
+        }
         public GraphNodeViewModel GetHoveredGraphNodeViewModel(Point pos)
         {
             foreach (var nodeVM in GraphNodeVMs)
@@ -114,7 +93,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             }
             return null;
         }
-        public void AddConnection(GraphNodeViewModel to)
+        public async Task AddConnection(GraphNodeViewModel to)
         {
             if (to == null) return;
 
@@ -125,13 +104,35 @@ namespace SpotifySongTagger.ViewModels.Controls
             // update in ui
             ClickedNodeViewModel.GenerateArrows();
             ClickedNodeViewModel.UpdateArrows(false);
+
+            // update input results
+            to.GraphNode.PropagateForward(gn => gn.ClearResult());
+            await RefreshInputResults();
         }
-        public void DeleteSelected()
+        #endregion
+
+        #region selected object
+        public GraphNodeViewModel ClickedNodeViewModel { get; set; }
+        private ISelectable selectedObject;
+        public ISelectable SelectedObject
+        {
+            get => selectedObject;
+            set
+            {
+                if (selectedObject != null)
+                    selectedObject.IsSelected = false;
+                SetProperty(ref selectedObject, value, nameof(SelectedObject));
+                if (value != null)
+                    selectedObject.IsSelected = true;
+            }
+        }
+        public async Task DeleteSelected()
         {
             if (SelectedObject == null) return;
 
             if (SelectedObject is GraphNodeViewModel nodeVM)
             {
+                var successorNodes = nodeVM.GraphNode.Outputs;
                 // remove from db
                 ConnectionManager.Instance.Database.GraphNodes.Remove(nodeVM.GraphNode);
                 ConnectionManager.Instance.Database.SaveChanges();
@@ -140,6 +141,11 @@ namespace SpotifySongTagger.ViewModels.Controls
                 GraphNodeVMs.Remove(nodeVM);
                 foreach (var prevNode in nodeVM.GraphNode.Inputs)
                     GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == prevNode).GenerateArrows();
+
+                // update input results
+                foreach(var successorNode in successorNodes)
+                    successorNode.PropagateForward(gn => gn.ClearResult());
+                await RefreshInputResults();
             }
             if (SelectedObject is GraphNodeArrowViewModel arrowVM)
             {
@@ -149,7 +155,30 @@ namespace SpotifySongTagger.ViewModels.Controls
 
                 // update ui
                 GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == arrowVM.FromNode).GenerateArrows();
+
+                // update input results
+                arrowVM.ToNode.PropagateForward(gn => gn.ClearResult());
+                await RefreshInputResults();
             }
         }
+        #endregion
+
+        #region canvas size
+        private double CanvasWidth { get; set; }
+        private double CanvasHeight { get; set; }
+        public void UpdateCanvasSize(double newWidth, double newHeight)
+        {
+            CanvasWidth = newWidth;
+            CanvasHeight = newHeight;
+            foreach (var nodeVM in GraphNodeVMs)
+            {
+                nodeVM.CanvasWidth = newWidth;
+                nodeVM.CanvasHeight = newHeight;
+            }
+            foreach (var nodeVM in GraphNodeVMs)
+                nodeVM.UpdateArrows(false);
+        }
+        #endregion
+
     }
 }
