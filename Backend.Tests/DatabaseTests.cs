@@ -5,36 +5,17 @@ using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tests.Backend
+namespace Backend.Tests
 {
-    public class DatabaseTests
+    public class DatabaseTests : BaseTests
     {
-        private DatabaseContext Db;
-
-        [SetUp]
-        public void SetUp()
-        {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateLogger();
-            ConnectionManager.InitDb("TestDb");
-            Db = ConnectionManager.Instance.Database;
-        }
-        [TearDown]
-        public void TearDown()
-        {
-            Log.CloseAndFlush();
-        }
 
         [Test]
         public void Graph_Saving()
         {
             var input = new InputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-            var output = new OutputNode
-            {
-                PlaylistName = "ChilloutLoungeCopy",
-                Inputs = new List<GraphNode> { input },
-            };
+            var output = new OutputNode { PlaylistName = "ChilloutLoungeCopy" };
+            output.AddInput(input);
             Db.OutputNodes.Add(output);
             Db.SaveChanges();
 

@@ -16,6 +16,7 @@ namespace SpotifySongTagger.Converters
                 case nameof(ConcatNode): return "Concatenate";
                 case nameof(DeduplicateNode): return "Deduplicate";
                 case nameof(TagFilterNode): return "TagFilter";
+                case nameof(AssignTagNode): return "AssignTag";
             }
             return "Unknown Node";
         }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -12,7 +14,7 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref playlistId, value, nameof(PlaylistId));
-                GraphGeneratorPage.NotifyIsValidChanged();
+                GraphGeneratorPage?.NotifyIsValidChanged();
             }
         }
         private Playlist playlist;
@@ -22,7 +24,7 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref playlist, value, nameof(Playlist));
-                GraphGeneratorPage.NotifyIsValidChanged();
+                GraphGeneratorPage?.NotifyIsValidChanged();
             }
         }
 
@@ -30,14 +32,17 @@ namespace Backend.Entities.GraphNodes
 
         protected override bool CanAddInput(GraphNode input) => false;
 
-        public override Task<List<Track>> GetInput() => Task.FromResult(new List<Track>());
         public override async Task<List<Track>> GetResult()
         {
-            if (PlaylistId == Constants.LIKED_SONGS_PLAYLIST_ID)
-                return await SpotifyOperations.LikedTracks();
+            IQueryable<Track> tracks = Db.Tracks;
+            if (AnyForward(gn => gn.RequiresArtists))
+                tracks = tracks.Include(t => t.Artists);
+            if (AnyForward(gn => gn.RequiresTags))
+                tracks = tracks.Include(t => t.Tags);
 
-            return await SpotifyOperations.PlaylistItems(PlaylistId);
+            return await tracks.Where(t => t.Playlists.Contains(Playlist)).ToListAsync();
         }
+
         public override string ToString() => $"{base.ToString()} {PlaylistId}";
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistId) || Playlist != null;
     }

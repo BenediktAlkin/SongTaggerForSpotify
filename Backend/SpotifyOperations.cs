@@ -1,5 +1,6 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SpotifyAPI.Web;
 using System;
@@ -99,6 +100,7 @@ namespace Backend
 
         public static async Task SyncOutputNode(OutputNode outputNode)
         {
+            if (outputNode.AnyBackward(gn => !gn.IsValid)) return;
             if (outputNode.GeneratedPlaylistId == null)
             {
                 // create playlist

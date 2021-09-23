@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class TagFilterNode : GraphNode
+    public class AssignTagNode : GraphNode
     {
         private int? tagId;
         public int? TagId
@@ -29,11 +29,7 @@ namespace Backend.Entities.GraphNodes
         }
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
-        public override async Task<List<Track>> GetResult()
-        {
-            var tracks = await GetInput();
-            return tracks.Where(t => t.Tags.Contains(Tag)).ToList();
-        }
+        protected override bool CanAddOutput(GraphNode output) => false;
 
         public override bool IsValid => TagId != null || Tag != null;
         public override bool RequiresTags => true;

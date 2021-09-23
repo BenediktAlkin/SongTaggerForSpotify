@@ -6,27 +6,10 @@ using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tests.Backend
+namespace Backend.Tests
 {
-    public class OperationsTests
+    public class OperationsTests : BaseTests
     {
-        private DatabaseContext Db;
-
-        [SetUp]
-        public void SetUp()
-        {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateLogger();
-            ConnectionManager.InitDb("TestDb");
-            Db = ConnectionManager.Instance.Database;
-        }
-        [TearDown]
-        public void TearDown()
-        {
-            Log.CloseAndFlush();
-        }
-
         [Test]
         public void Sync_OutputNode()
         {

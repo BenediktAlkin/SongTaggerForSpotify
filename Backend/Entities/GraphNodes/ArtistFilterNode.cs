@@ -14,7 +14,7 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref artistId, value, nameof(ArtistId));
-                GraphGeneratorPage.NotifyIsValidChanged();
+                GraphGeneratorPage?.NotifyIsValidChanged();
             }
         }
         private Artist artist;
@@ -24,34 +24,17 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref artist, value, nameof(Artist));
-                GraphGeneratorPage.NotifyIsValidChanged();
+                GraphGeneratorPage?.NotifyIsValidChanged();
             }
         }
 
-        protected override bool CanAddInput(GraphNode input) => Inputs.Count() < 1;
-        public override async Task<List<Track>> GetInput()
-        {
-            if (Inputs == null || !Inputs.Any())
-                return new List<Track>();
-
-            return await Inputs.First().GetResult();
-        }
+        protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         public override async Task<List<Track>> GetResult()
         {
             var tracks = await GetInput();
-
-            // populate tracks with tags
-            var dbTracks = await ConnectionManager.Instance.Database.Tracks.Include(t => t.Tags).ToDictionaryAsync(t => t.Id, t => t);
-            foreach (var track in tracks)
-            {
-                if (dbTracks.TryGetValue(track.Id, out var dbTrack))
-                    track.Tags = dbTrack.Tags;
-            }
-
-            // filter
-            //return tracks.Where(t => t.Artists.Select(a => a.Name).Contains(Artist.Name)).ToList();
             return tracks.Where(t => t.Artists.Contains(Artist)).ToList();
         }
         public override bool IsValid => ArtistId != null || Artist != null;
+        public override bool RequiresArtists => true;
     }
 }

@@ -77,7 +77,22 @@
                         </ComboBox.Text>
                     </ComboBox>
                 </DataTemplate>
-
+                <!-- assign tag node view -->
+                <DataTemplate x:Key="AssignTagNodeView">
+                    <ComboBox materialDesign:HintAssist.Hint="Tag"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding DataContext.DataContainer.Tags, ElementName=GraphEditorUserControl}"
+                            SelectedItem="{Binding Tag}"
+                            Margin="0 0 0 20">
+                        <ComboBox.Text>
+                            <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">
+                                <Binding.ValidationRules>
+                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.Text>
+                    </ComboBox>
+                </DataTemplate>
             </ItemsControl.Resources>
             <!-- canvas -->
             <ItemsControl.ItemsPanel>
@@ -125,6 +140,9 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="TagFilterNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource TagFilterNodeView}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="AssignTagNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource AssignTagNodeView}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

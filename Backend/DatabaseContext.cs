@@ -19,6 +19,8 @@ namespace Backend
             builder.Entity<ConcatNode>().HasDiscriminator<string>("Discriminator").HasValue("ConcatNode");
             builder.Entity<DeduplicateNode>().HasDiscriminator<string>("Discriminator").HasValue("DeduplicateNode");
             builder.Entity<TagFilterNode>().HasDiscriminator<string>("Discriminator").HasValue("TagFilterNode");
+            builder.Entity<ArtistFilterNode>().HasDiscriminator<string>("Discriminator").HasValue("ArtistFilterNode");
+            builder.Entity<AssignTagNode>().HasDiscriminator<string>("Discriminator").HasValue("AssignTagNode");
         }
 
 

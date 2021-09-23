@@ -38,7 +38,7 @@ namespace SpotifySongTagger.Views
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             Log.Information("Logout");
-            ConnectionManager.Instance.Logout();
+            ConnectionManager.Logout();
         }
 
         private void LoginDialog_Cancel(object sender, RoutedEventArgs e)

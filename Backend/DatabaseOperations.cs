@@ -1,4 +1,5 @@
 ﻿using Backend.Entities;
+using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
@@ -47,6 +48,8 @@ namespace Backend
                 return false;
             return true;
         }
+
+
         public static void EditTag(Tag tag, string newName)
         {
             if (!CanEditTag(tag, newName)) return;
@@ -74,6 +77,15 @@ namespace Backend
             track.Tags.Add(dbTag);
             Db.SaveChanges();
             return true;
+        }
+        public static async Task AssignTags(AssignTagNode assignTagNode)
+        {
+            if (assignTagNode.AnyBackward(gn => !gn.IsValid)) return;
+
+            var tracks = await assignTagNode.GetResult();
+            foreach (var track in tracks)
+                track.Tags.Add(assignTagNode.Tag);
+            await Db.SaveChangesAsync();
         }
         public static bool RemoveAssignment(Track track, Tag tag)
         {

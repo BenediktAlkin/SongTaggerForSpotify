@@ -18,17 +18,8 @@ namespace Backend.Entities.GraphNodes
         }
         public string GeneratedPlaylistId { get; set; }
 
-        protected override bool CanAddInput(GraphNode input) => Inputs.Count() < 1;
+        protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override bool CanAddOutput(GraphNode output) => false;
-
-        public override async Task<List<Track>> GetInput() => await GetResult();
-        public override async Task<List<Track>> GetResult()
-        {
-            if (Inputs == null || Inputs.Count() == 0)
-                return new List<Track>();
-
-            return await Inputs.First().GetResult();
-        }
 
         public override string ToString() => $"{base.ToString()} {PlaylistName}";
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistName);

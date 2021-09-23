@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <?define SpotifySongTagger_TargetDir=$(var.SpotifySongTagger.TargetDir)?>
   <?define Updater_TargetDir=$(var.Updater.TargetDir)?>
 	<Product Id="d41bde06-14ce-4fb0-9644-b16920db14e3" Name="SpotifySongTagger" Language="1033" Version="1.0.0.0" Manufacturer="SpotifySongTagger" UpgradeCode="cfaf6289-7d61-427f-8bf2-6ddf18644555">
@@ -26,6 +27,15 @@
       <Directory Id="DesktopFolder" Name="Desktop" />
 		</Directory>
 	</Fragment>
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="INSTALLFOLDER_Permission" Guid="37dbc0e3-ba2c-48d8-9839-042d93d4bc45">
+        <CreateFolder>
+          <util:PermissionEx User="Users" GenericAll="yes"/>
+        </CreateFolder>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
   <Fragment>
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut" Guid="ef8cc152-e973-4fe7-bf74-518cf6386b03">

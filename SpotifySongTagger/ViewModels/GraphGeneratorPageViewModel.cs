@@ -30,9 +30,12 @@ namespace SpotifySongTagger.ViewModels
         public async Task Run()
         {
             var outputNodes = GraphGeneratorPage.GraphNodes.Where(gn => gn is OutputNode).Cast<OutputNode>();
+            var assignTagNodes = GraphGeneratorPage.GraphNodes.Where(gn => gn is AssignTagNode).Cast<AssignTagNode>();
             IsRunning = true;
             foreach (var outputNode in outputNodes)
                 await SpotifyOperations.SyncOutputNode(outputNode);
+            foreach (var assignTagNode in assignTagNodes)
+                await DatabaseOperations.AssignTags(assignTagNode);
             IsRunning = false;
             Log.Information($"finished page {GraphGeneratorPage.Name}");
         }

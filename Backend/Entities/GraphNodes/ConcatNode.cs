@@ -6,18 +6,15 @@ namespace Backend.Entities.GraphNodes
 {
     public class ConcatNode : GraphNode
     {
-        public override async Task<List<Track>> GetInput() => await GetResult();
-
-        public override async Task<List<Track>> GetResult()
+        public override async Task<List<Track>> GetInput()
         {
             if (Inputs == null)
                 return new List<Track>();
 
-            var inputs = new List<List<Track>>();
+            var concated = new List<Track>();
             foreach (var input in Inputs)
-                inputs.Add(await input.GetResult());
-
-            return inputs.SelectMany(tracks => tracks).ToList();
+                concated.AddRange(await input.GetResult());
+            return concated;
         }
     }
 }

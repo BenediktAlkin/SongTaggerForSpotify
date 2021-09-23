@@ -24,11 +24,12 @@ namespace SpotifySongTagger.ViewModels
         #region NodeTypes
         public List<NodeType> NodeTypes { get; } = new List<NodeType>
         {
+            new NodeType {Name = "Input", Type = typeof(InputNode) },
             new NodeType {Name = "Concat", Type = typeof(ConcatNode) },
             new NodeType {Name = "Deduplicate", Type = typeof(DeduplicateNode) },
-            new NodeType {Name = "Input", Type = typeof(InputNode) },
-            new NodeType {Name = "Output", Type = typeof(OutputNode) },
             new NodeType {Name = "Tag Filter", Type = typeof(TagFilterNode) },
+            new NodeType {Name = "Output", Type = typeof(OutputNode) },
+            new NodeType {Name = "Assign Tag", Type = typeof(AssignTagNode) },
         };
         public NodeType SelectedNodeType { get; set; }
         #endregion
