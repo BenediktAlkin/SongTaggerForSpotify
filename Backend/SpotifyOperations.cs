@@ -1,6 +1,5 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SpotifyAPI.Web;
 using System;

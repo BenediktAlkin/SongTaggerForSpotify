@@ -17,7 +17,7 @@ namespace Backend
         public static PlayerManager Instance { get; } = new PlayerManager();
         private PlayerManager() { }
 
-        private SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
+        private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
         public void SetTheme(bool isDarkTheme)
         {
@@ -25,7 +25,7 @@ namespace Backend
                 AlbumUrl = isDarkTheme ? SPOTIFY_ICON_DARK : SPOTIFY_ICON_LIGHT;
         }
 
-        public bool IsPremiumUser => DataContainer.Instance.User != null && DataContainer.Instance.User.Product == "premium";
+        public static bool IsPremiumUser => DataContainer.Instance.User != null && DataContainer.Instance.User.Product == "premium";
 
         public delegate void TrackChangedEventHandler(string newId);
         public event TrackChangedEventHandler OnTrackChanged;

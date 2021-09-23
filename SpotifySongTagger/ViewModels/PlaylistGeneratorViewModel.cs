@@ -13,7 +13,7 @@ namespace SpotifySongTagger.ViewModels
 {
     public class PlaylistGeneratorViewModel : BaseViewModel
     {
-        public async Task Init()
+        public static async Task Init()
         {
             await DataContainer.LoadSourcePlaylists();
             await DataContainer.LoadTags();
@@ -97,9 +97,9 @@ namespace SpotifySongTagger.ViewModels
             GraphGeneratorPageVMs.Remove(toDelete);
         }
 
-        public void EditGraphGeneratorPageName(GraphGeneratorPage page, string newName)
+        public void EditGraphGeneratorPageName()
         {
-            page.Name = newName;
+            SelectedGraphGeneratorPageVM.GraphGeneratorPage.Name = NewGraphGeneratorPageName;
             ConnectionManager.Instance.Database.SaveChanges();
         }
 

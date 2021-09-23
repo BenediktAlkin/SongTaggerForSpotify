@@ -18,7 +18,7 @@ namespace SpotifySongTagger.Views
         }
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            await ViewModel.Init();
+            await PlaylistGeneratorViewModel.Init();
         }
 
         private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e)
@@ -114,7 +114,7 @@ namespace SpotifySongTagger.Views
 
         private void EditPageDialog_Save(object sender, RoutedEventArgs e)
         {
-            ViewModel.EditGraphGeneratorPageName(ViewModel.SelectedGraphGeneratorPageVM.GraphGeneratorPage, ViewModel.NewGraphGeneratorPageName);
+            ViewModel.EditGraphGeneratorPageName();
             ViewModel.NewGraphGeneratorPageName = null;
         }
 

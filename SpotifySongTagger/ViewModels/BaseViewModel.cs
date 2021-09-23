@@ -6,9 +6,9 @@ namespace SpotifySongTagger.ViewModels
 {
     public abstract class BaseViewModel : NotifyPropertyChangedBase
     {
-        public DataContainer DataContainer => DataContainer.Instance;
-        public Settings Settings => Settings.Instance;
-        public PlayerManager PlayerManager => PlayerManager.Instance;
+        public static DataContainer DataContainer => DataContainer.Instance;
+        public static Settings Settings => Settings.Instance;
+        public static PlayerManager PlayerManager => PlayerManager.Instance;
 
     }
 }

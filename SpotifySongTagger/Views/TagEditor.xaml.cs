@@ -28,19 +28,19 @@ namespace SpotifySongTagger.Views
         }
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            ViewModel.PlayerManager.OnTrackChanged += ViewModel.UpdatePlayingTrack;
-            ViewModel.PlayerManager.OnProgressChanged += ViewModel.SetProgressSpotify;
+            BaseViewModel.PlayerManager.OnTrackChanged += ViewModel.UpdatePlayingTrack;
+            BaseViewModel.PlayerManager.OnProgressChanged += ViewModel.SetProgressSpotify;
 
             Task updatePlaybackInfoTask = null;
             if (!Settings.Instance.HidePlayer)
             {
-                ViewModel.PlayerManager.StartUpdateTrackInfoTimer();
-                ViewModel.PlayerManager.StartUpdatePlaybackInfoTimer();
-                updatePlaybackInfoTask = ViewModel.PlayerManager.UpdatePlaybackInfo();
+                BaseViewModel.PlayerManager.StartUpdateTrackInfoTimer();
+                BaseViewModel.PlayerManager.StartUpdatePlaybackInfoTimer();
+                updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
             }
-            await ViewModel.DataContainer.LoadSourcePlaylists();
+            await BaseViewModel.DataContainer.LoadSourcePlaylists();
             Log.Debug("Finished loading playlists");
-            await ViewModel.DataContainer.LoadTags();
+            await BaseViewModel.DataContainer.LoadTags();
             Log.Debug("Finished loading tags");
 
             if (updatePlaybackInfoTask != null)
@@ -48,10 +48,10 @@ namespace SpotifySongTagger.Views
         }
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            ViewModel.PlayerManager.OnTrackChanged -= ViewModel.UpdatePlayingTrack;
-            ViewModel.PlayerManager.OnProgressChanged -= ViewModel.SetProgressSpotify;
-            ViewModel.PlayerManager.StopUpdateTrackInfoTimer();
-            ViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
+            BaseViewModel.PlayerManager.OnTrackChanged -= ViewModel.UpdatePlayingTrack;
+            BaseViewModel.PlayerManager.OnProgressChanged -= ViewModel.SetProgressSpotify;
+            BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
+            BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
         }
 
         private void Tag_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -80,7 +80,7 @@ namespace SpotifySongTagger.Views
             // assign tag to track
             var tag = e.Data.GetData(DataFormats.StringFormat) as string;
             var trackVM = (TrackViewModel)dataGrid.Items.GetItemAt(index);
-            ViewModel.AssignTag(trackVM.Track, tag);
+            AssignTag(trackVM.Track, tag);
             Log.Information($"Assigned {tag} to {trackVM.Track.Name}");
             e.Handled = true;
         }
@@ -89,7 +89,7 @@ namespace SpotifySongTagger.Views
         {
             var chip = sender as Chip;
             var tag = chip.DataContext as Tag;
-            ViewModel.RemoveAssignment(ViewModel.SelectedTrackVM.Track, tag);
+            ViewModel.RemoveAssignment(tag);
         }
 
 
@@ -118,7 +118,7 @@ namespace SpotifySongTagger.Views
         }
         private void AddTagDialog_Add(object sender, RoutedEventArgs e)
         {
-            ViewModel.AddTag(ViewModel.NewTagName);
+            ViewModel.AddTag();
             ViewModel.NewTagName = null;
         }
         public void EditTagDialog_Cancel(object sender, RoutedEventArgs e)
@@ -128,7 +128,7 @@ namespace SpotifySongTagger.Views
         }
         private void EditTagDialog_Save(object sender, RoutedEventArgs e)
         {
-            ViewModel.EditTag(ViewModel.ClickedTag, ViewModel.NewTagName);
+            ViewModel.EditTag();
             ViewModel.NewTagName = null;
             ViewModel.ClickedTag = null;
         }
@@ -140,7 +140,7 @@ namespace SpotifySongTagger.Views
 
         private void DeleteTagDialog_Delete(object sender, RoutedEventArgs e)
         {
-            ViewModel.DeleteTag(ViewModel.ClickedTag);
+            ViewModel.DeleteTag();
             ViewModel.NewTagName = null;
             ViewModel.ClickedTag = null;
         }
@@ -182,7 +182,7 @@ namespace SpotifySongTagger.Views
 
         private async void PlayTrack(object sender, MouseButtonEventArgs e)
         {
-            await ViewModel.PlayerManager.SetTrack(ViewModel.SelectedTrackVM.Track);
+            await BaseViewModel.PlayerManager.SetTrack(ViewModel.SelectedTrackVM.Track);
         }
 
         private void DisableVolumeUpdates(object sender, DragStartedEventArgs e) => ViewModel.DisableVolumeUpdates = true;
@@ -196,11 +196,11 @@ namespace SpotifySongTagger.Views
             await SetVolume(sender);
             ViewModel.DisableVolumeUpdates = false;
         }
-        private async Task SetVolume(object sender)
+        private static async Task SetVolume(object sender)
         {
             var slider = sender as Slider;
             var newVolume = (int)slider.Value;
-            await ViewModel.PlayerManager.SetVolume(newVolume);
+            await BaseViewModel.PlayerManager.SetVolume(newVolume);
         }
 
         private void DisableProgressUpdates(object sender, DragStartedEventArgs e)
@@ -217,11 +217,11 @@ namespace SpotifySongTagger.Views
             if (ViewModel.ProgressSource == ProgressUpdateSource.Spotify) return;
             await SetProgress(sender);
         }
-        private async Task SetProgress(object sender)
+        private static async Task SetProgress(object sender)
         {
             var slider = sender as Slider;
             var newProgress = (int)slider.Value;
-            await ViewModel.PlayerManager.SetProgress(newProgress);
+            await BaseViewModel.PlayerManager.SetProgress(newProgress);
         }
 
     }

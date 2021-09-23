@@ -74,24 +74,25 @@ namespace SpotifySongTagger.ViewModels
 
 
 
-        public void AssignTag(Track track, string tag) => DatabaseOperations.AssignTag(track, tag);
-        public void RemoveAssignment(Track track, Tag tag) => DatabaseOperations.RemoveAssignment(track, tag);
+        public static void AssignTag(Track track, string tag) => DatabaseOperations.AssignTag(track, tag);
+        public void RemoveAssignment(Tag tag) => DatabaseOperations.RemoveAssignment(SelectedTrackVM.Track, tag);
         public bool CanAddTag => DatabaseOperations.CanAddTag(NewTagName);
-        public void AddTag(string tag)
+        public void AddTag()
         {
+            var tag = NewTagName;
             if (string.IsNullOrEmpty(tag)) return;
             DatabaseOperations.AddTag(tag);
         }
         public bool CanEditTag => DatabaseOperations.CanEditTag(ClickedTag, NewTagName);
-        public void EditTag(Tag tag, string newName)
+        public void EditTag()
         {
-            if (tag == null) return;
-            DatabaseOperations.EditTag(tag, newName);
+            if (ClickedTag == null) return;
+            DatabaseOperations.EditTag(ClickedTag, NewTagName);
         }
-        public void DeleteTag(Tag tag)
+        public void DeleteTag()
         {
-            if (tag == null) return;
-            DatabaseOperations.DeleteTag(tag);
+            if (ClickedTag == null) return;
+            DatabaseOperations.DeleteTag(ClickedTag);
         }
 
         private bool isTagEditMode;

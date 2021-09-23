@@ -27,11 +27,11 @@ namespace Backend
         public SpotifyClient Spotify { get; private set; }
         public DatabaseContext Database { get; private set; }
 
-        public static void InitDb(string dbName, bool dropDb=false, Action<string> logTo=null)
+        public static void InitDb(string dbName, bool dropDb = false, Action<string> logTo = null)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
             if (logTo != null)
-                optionsBuilder.LogTo(logTo, minimumLevel:Microsoft.Extensions.Logging.LogLevel.Information);
+                optionsBuilder.LogTo(logTo, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);
         }
         public static async Task TryInitFromSavedToken()
@@ -194,7 +194,7 @@ namespace Backend
             response.ContentType = "text/html";
             response.ContentEncoding = Encoding.UTF8;
             response.ContentLength64 = html.LongLength;
-            await response.OutputStream.WriteAsync(html, 0, html.Length);
+            await response.OutputStream.WriteAsync(html.AsMemory(0, html.Length));
             Server.Close();
 
             // stop server

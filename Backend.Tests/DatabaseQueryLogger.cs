@@ -1,9 +1,5 @@
 ﻿using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
@@ -21,7 +17,7 @@ namespace Backend.Tests
                 Log.Information(msg);
                 MessageCount++;
             }
-                
+
         }
 
 
@@ -36,6 +32,7 @@ namespace Backend.Tests
             {
                 Instance.IsEnabled = false;
                 Instance.MessageCount = 0;
+                GC.SuppressFinalize(this);
             }
         }
 

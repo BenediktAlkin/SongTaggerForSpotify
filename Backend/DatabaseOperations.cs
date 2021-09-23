@@ -208,7 +208,7 @@ namespace Backend
 
             // remove unfollowed playlists
             Log.Information("Remove old playlists from database");
-            var allPlaylists = await Db.Playlists.ToListAsync();
+            var allPlaylists = await Db.Playlists.ToListAsync(cancellationToken);
             Db.Playlists.RemoveRange(allPlaylists.Where(p => p.Tracks == null || p.Tracks.Count == 0));
             await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished removing old playlists from database");

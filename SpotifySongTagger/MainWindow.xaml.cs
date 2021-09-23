@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using Util;
 
 namespace SpotifySongTagger
 {
@@ -102,7 +101,7 @@ namespace SpotifySongTagger
 
             SetTheme(isDarkTheme);
         }
-        private void SetTheme(bool isDarkTheme)
+        private static void SetTheme(bool isDarkTheme)
         {
             var paletteHelper = new PaletteHelper();
             var theme = paletteHelper.GetTheme();

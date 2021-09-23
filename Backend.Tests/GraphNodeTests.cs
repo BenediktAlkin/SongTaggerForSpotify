@@ -1,13 +1,8 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using NUnit.Framework;
-using Serilog;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
@@ -25,7 +20,6 @@ namespace Backend.Tests
 
         // test case sources
         private static readonly IEnumerable<int> PlaylistIdxs = Enumerable.Range(0, N_PLAYLISTS);
-        private static readonly IEnumerable<int> ArtistIdxs = Enumerable.Range(0, N_ARTISTS);
         private static readonly IEnumerable<int> TagIdxs = Enumerable.Range(0, N_TAGS);
 
         [SetUp]

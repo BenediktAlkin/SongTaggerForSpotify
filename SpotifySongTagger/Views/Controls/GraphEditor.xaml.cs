@@ -109,7 +109,7 @@ namespace SpotifySongTagger.Views.Controls
         {
             UpdateSize(sender);
         }
-        private void UpdateSize(object sender)
+        private static void UpdateSize(object sender)
         {
             var frameworkElement = sender as FrameworkElement;
             var nodeVM = frameworkElement.DataContext as GraphNodeViewModel;

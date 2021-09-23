@@ -36,6 +36,6 @@ namespace SpotifySongTagger.Utils
             }
         }
 
-        public void Refresh() => CommandManager.InvalidateRequerySuggested();
+        public static void Refresh() => CommandManager.InvalidateRequerySuggested();
     }
 }

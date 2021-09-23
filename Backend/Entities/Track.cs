@@ -27,7 +27,8 @@ namespace Backend.Entities
         public string ArtistsString => string.Join(", ", Artists.Select(a => a.Name));
 
 
+        public override bool Equals(object obj) => obj is Track other ? Equals(other) : false;
         public bool Equals(Track other) => Id == other.Id;
-        public override int GetHashCode() => Name.GetHashCode();
+        public override int GetHashCode() => Id.GetHashCode();
     }
 }

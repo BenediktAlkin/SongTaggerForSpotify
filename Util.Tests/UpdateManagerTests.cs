@@ -53,7 +53,7 @@ namespace Util.Tests
             return stdout;
         }
 
-        private async Task RemoveAllFiles()
+        private static async Task RemoveAllFiles()
         {
             // avoid access denied to remove files because of other tests
             var timeout = 0;
