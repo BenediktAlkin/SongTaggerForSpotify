@@ -32,7 +32,14 @@ namespace Backend
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
             if (logTo != null)
                 optionsBuilder.LogTo(logTo, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
-            Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);
+            try
+            {
+                Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);
+            }catch(Exception e)
+            {
+                Log.Error($"Failed to initialize Database {e.Message}");
+                throw;
+            }
         }
         public static async Task TryInitFromSavedToken()
         {
@@ -91,8 +98,9 @@ namespace Backend
                 Instance.Spotify = client;
                 InitDb(DataContainer.Instance.User.Id);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log.Information($"Failed to initialize spotify client {e.Message}");
                 return false;
             }
             return true;

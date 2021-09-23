@@ -106,7 +106,6 @@ namespace SpotifySongTagger.ViewModels.Controls
             ClickedNodeViewModel.UpdateArrows(false);
 
             // update input results
-            to.GraphNode.PropagateForward(gn => gn.ClearResult());
             await RefreshInputResults();
         }
         #endregion

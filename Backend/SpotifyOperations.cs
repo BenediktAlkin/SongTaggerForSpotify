@@ -100,6 +100,7 @@ namespace Backend
         public static async Task SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
         {
             if (playlistOutputNode.AnyBackward(gn => !gn.IsValid)) return;
+
             if (playlistOutputNode.GeneratedPlaylistId == null)
             {
                 // create playlist

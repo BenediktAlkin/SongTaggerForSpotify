@@ -37,9 +37,27 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding DataContext.DataContainer.Tags, ElementName=GraphEditorUserControl}"
                             SelectedItem="{Binding Tag}"
+                            SelectionChanged="UpdateGraphNode"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">
+                                <Binding.ValidationRules>
+                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.Text>
+                    </ComboBox>
+                </DataTemplate>
+                <!-- FilterArtistNodeView -->
+                <DataTemplate x:Key="FilterArtistNodeView">
+                    <ComboBox materialDesign:HintAssist.Hint="Artist"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding ValidArtists}"
+                            SelectedItem="{Binding Artist}"
+                            SelectionChanged="UpdateGraphNode"
+                            Margin="0 0 0 20">
+                        <ComboBox.Text>
+                            <Binding Path="Artist" Converter="{StaticResource ObjectToStringConverter}">
                                 <Binding.ValidationRules>
                                     <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
                                 </Binding.ValidationRules>
@@ -53,6 +71,7 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding ValidTags}"
                             SelectedItem="{Binding Tag}"
+                            SelectionChanged="UpdateGraphNode"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">
@@ -66,10 +85,11 @@
                 <!-- PlaylistInputNodeView -->
                 <DataTemplate x:Key="PlaylistInputNodeView">
                     <ComboBox materialDesign:HintAssist.Hint="Playlist"
-                                  materialDesign:HintAssist.HintOpacity=".26"
-                                  ItemsSource="{Binding DataContext.DataContainer.SourcePlaylists, ElementName=GraphEditorUserControl}"
-                                  SelectedItem="{Binding Playlist}"
-                               Margin="0 0 0 20">
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding DataContext.DataContainer.SourcePlaylists, ElementName=GraphEditorUserControl}"
+                            SelectedItem="{Binding Playlist}"
+                            SelectionChanged="UpdateGraphNode"
+                            Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Playlist" Converter="{StaticResource ObjectToStringConverter}">
                                 <Binding.ValidationRules>
@@ -134,6 +154,9 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="DeduplicateNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterArtistNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource FilterArtistNodeView}" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterTagNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource FilterTagNodeView}" />

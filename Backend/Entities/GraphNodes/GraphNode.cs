@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Util;
@@ -37,24 +38,41 @@ namespace Backend.Entities.GraphNodes
 
         public void AddInput(GraphNode input)
         {
-
-            if (CanAddInput(input) && input.CanAddOutput(this))
-                ((List<GraphNode>)Inputs).Add(input);
+            if(!CanAddInput(input) || !input.CanAddOutput(this))
+            {
+                Log.Information($"Connection {input} to {this} is invalid");
+                return;
+            }
+            ((List<GraphNode>)Inputs).Add(input);
 
             if (HasCycles(this))
+            {
+                Log.Information($"Connection {input} to {this} would introduce cycle");
                 RemoveOutput(input);
-            else
-                PropagateBackward(gn => gn.OnConnectionAdded(input, this));
+                return;
+            }
+            Log.Information($"Connected {input} to {this}");
+            PropagateBackward(gn => gn.OnConnectionAdded(input, this));
+            PropagateForward(gn => gn.ClearResult());
         }
         public void AddOutput(GraphNode output)
         {
-            if (CanAddOutput(output) && output.CanAddInput(this))
-                ((List<GraphNode>)Outputs).Add(output);
+            if (!CanAddOutput(output) || !output.CanAddInput(this))
+            {
+                Log.Information($"Connection {this} to {output} is invalid");
+                return;
+            }
+            ((List<GraphNode>)Outputs).Add(output);
 
             if (HasCycles(this))
+            {
+                Log.Information($"Connection {this} to {output} would introduce cycle");
                 RemoveOutput(output);
-            else
-                PropagateBackward(gn => gn.OnConnectionAdded(this, output));
+                return;
+            }
+            Log.Information($"Connected {this} to {output}");
+            PropagateBackward(gn => gn.OnConnectionAdded(this, output));
+            output.PropagateForward(gn => gn.ClearResult());
         }
 
         public void RemoveInput(GraphNode input) => ((List<GraphNode>)Inputs).Remove(input);
@@ -104,6 +122,7 @@ namespace Backend.Entities.GraphNodes
 
 
         private List<Track> inputResult;
+        [NotMapped]
         public List<Track> InputResult
         {
             get => inputResult;
@@ -114,6 +133,7 @@ namespace Backend.Entities.GraphNodes
             }
         }
         private List<Track> outputResult;
+        [NotMapped]
         public List<Track> OutputResult
         {
             get => outputResult;
@@ -122,8 +142,9 @@ namespace Backend.Entities.GraphNodes
         protected virtual void OnInputResultChanged() { }
         public void ClearResult()
         {
-            InputResult = null;
-            OutputResult = null;
+            // use private methods to not throw OnInputResultChanged()
+            inputResult = null;
+            outputResult = null;
         }
         public virtual async Task CalculateInputResult()
         {
@@ -134,13 +155,22 @@ namespace Backend.Entities.GraphNodes
             else
             {
                 var concated = new List<Track>();
+                var hasValidInput = false;
                 foreach (var input in Inputs)
                 {
                     await input.CalculateOutputResult();
-                    concated.AddRange(input.OutputResult);
+                    if(input.OutputResult != null)
+                    {
+                        concated.AddRange(input.OutputResult);
+                        hasValidInput = true;
+                    }
+                        
                 }
-                InputResult = concated;
-                Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count})");
+                if (hasValidInput)
+                {
+                    Log.Information($"Calculated InputResult for {this} (count={concated.Count})");
+                    InputResult = concated;
+                }
             }
         }
         protected virtual Task MapInputToOutput()
@@ -155,6 +185,8 @@ namespace Backend.Entities.GraphNodes
             if (InputResult == null)
                 await CalculateInputResult();
             await MapInputToOutput();
+            if(OutputResult != null)
+                Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
         }
 
 
@@ -165,15 +197,17 @@ namespace Backend.Entities.GraphNodes
 
         public bool AnyForward(Func<GraphNode, bool> predicate) => predicate(this) || Outputs.Any(o => o.AnyForward(predicate));
         public bool AnyBackward(Func<GraphNode, bool> predicate) => predicate(this) || Inputs.Any(i => i.AnyBackward(predicate));
-        public void PropagateForward(Action<GraphNode> action)
+        public void PropagateForward(Action<GraphNode> action, bool applyToSelf=true)
         {
-            action(this);
+            if(applyToSelf)
+                action(this);
             foreach (var output in Outputs)
                 output.PropagateForward(action);
         }
-        public void PropagateBackward(Action<GraphNode> action)
+        public void PropagateBackward(Action<GraphNode> action, bool applyToSelf = true)
         {
-            action(this);
+            if(applyToSelf)
+                action(this);
             foreach (var input in Inputs)
                 input.PropagateBackward(action);
         }

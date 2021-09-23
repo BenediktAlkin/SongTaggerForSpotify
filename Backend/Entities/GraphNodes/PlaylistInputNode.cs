@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,6 +60,7 @@ namespace Backend.Entities.GraphNodes
             }
 
             InputResult = await tracks.Where(t => t.Playlists.Contains(Playlist)).ToListAsync();
+            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count})");
         }
 
 

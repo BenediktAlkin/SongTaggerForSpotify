@@ -16,6 +16,8 @@ namespace Backend.Entities.GraphNodes
             {
                 SetProperty(ref tagId, value, nameof(TagId));
                 GraphGeneratorPage?.NotifyIsValidChanged();
+                OutputResult = null;
+                PropagateForward(gn => gn.ClearResult(), applyToSelf:false);
             }
         }
         private Tag tag;
@@ -26,10 +28,13 @@ namespace Backend.Entities.GraphNodes
             {
                 SetProperty(ref tag, value, nameof(Tag));
                 GraphGeneratorPage?.NotifyIsValidChanged();
+                OutputResult = null;
+                PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
         }
 
         private List<Tag> validTags;
+        [NotMapped]
         public List<Tag> ValidTags 
         {
             get => validTags;
@@ -47,7 +52,8 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override Task MapInputToOutput()
         {
-            OutputResult = InputResult.Where(t => t.Tags.Contains(Tag)).ToList();
+            if(Tag != null)
+                OutputResult = InputResult.Where(t => t.Tags.Contains(Tag)).ToList();
             return Task.CompletedTask;
         }
 

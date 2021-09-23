@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace Backend.Entities.GraphNodes
             {
                 SetProperty(ref artistId, value, nameof(ArtistId));
                 GraphGeneratorPage?.NotifyIsValidChanged();
+                OutputResult = null;
+                PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
         }
         private Artist artist;
@@ -24,10 +27,13 @@ namespace Backend.Entities.GraphNodes
             {
                 SetProperty(ref artist, value, nameof(Artist));
                 GraphGeneratorPage?.NotifyIsValidChanged();
+                OutputResult = null;
+                PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
         }
 
         private List<Artist> validArtists;
+        [NotMapped]
         public List<Artist> ValidArtists
         {
             get => validArtists;
@@ -45,7 +51,8 @@ namespace Backend.Entities.GraphNodes
 
         protected override Task MapInputToOutput()
         {
-            OutputResult = InputResult.Where(t => t.Artists.Contains(Artist)).ToList();
+            if(Artist != null)
+                OutputResult = InputResult.Where(t => t.Artists.Contains(Artist)).ToList();
             return Task.CompletedTask;
         }
 

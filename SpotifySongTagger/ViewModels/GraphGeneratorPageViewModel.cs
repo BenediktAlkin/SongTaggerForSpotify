@@ -31,13 +31,14 @@ namespace SpotifySongTagger.ViewModels
         {
             var playlistOutputNodes = GraphGeneratorPage.GraphNodes.Where(gn => gn is PlaylistOutputNode).Cast<PlaylistOutputNode>();
             var assignTagNodes = GraphGeneratorPage.GraphNodes.Where(gn => gn is AssignTagNode).Cast<AssignTagNode>();
+            Log.Information($"Run page {GraphGeneratorPage.Name}");
             IsRunning = true;
             foreach (var playlistOutputNode in playlistOutputNodes)
                 await SpotifyOperations.SyncPlaylistOutputNode(playlistOutputNode);
             foreach (var assignTagNode in assignTagNodes)
                 await DatabaseOperations.AssignTags(assignTagNode);
             IsRunning = false;
-            Log.Information($"finished page {GraphGeneratorPage.Name}");
+            Log.Information($"Finished page {GraphGeneratorPage.Name}");
         }
     }
 }

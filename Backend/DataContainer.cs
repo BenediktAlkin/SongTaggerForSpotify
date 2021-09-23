@@ -1,6 +1,7 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -48,6 +49,7 @@ namespace Backend
         {
             if (!forceReload && sourcePlaylists != null) return;
 
+            Log.Information("Loading source playlists");
             IsLoadingSourcePlaylists = true;
             SourcePlaylists = await DatabaseOperations.SourcePlaylistCurrentUsers();
             IsLoadingSourcePlaylists = false;
@@ -71,6 +73,7 @@ namespace Backend
         {
             if (Tags != null) return;
 
+            Log.Information("Loading tags");
             IsLoadingTags = true;
             var dbTags = await ConnectionManager.Instance.Database.Tags.ToListAsync();
             Tags = new ObservableCollection<Tag>(dbTags);

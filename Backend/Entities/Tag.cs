@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Backend.Entities.GraphNodes;
+using System.Collections.Generic;
 using Util;
 
 namespace Backend.Entities

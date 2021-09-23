@@ -122,12 +122,14 @@ namespace SpotifySongTagger.Views
         private async void RunAll(object sender, RoutedEventArgs e)
         {
             if (ViewModel.IsRunningAll) return;
+            Log.Information("RunAll GraphGeneratorPages");
             ViewModel.IsRunningAll = true;
             foreach (var ggpVM in ViewModel.GraphGeneratorPageVMs)
                 ggpVM.IsRunning = true;
             foreach (var ggpVM in ViewModel.GraphGeneratorPageVMs)
                 await ggpVM.Run();
             ViewModel.IsRunningAll = false;
+            Log.Information("Finished RunAll GraphGeneratorPages");
         }
     }
 }

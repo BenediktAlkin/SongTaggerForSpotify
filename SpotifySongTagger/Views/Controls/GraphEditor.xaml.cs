@@ -1,6 +1,8 @@
-﻿using Backend.Entities.GraphNodes;
+﻿using Backend;
+using Backend.Entities.GraphNodes;
 using Serilog;
 using SpotifySongTagger.Utils;
+using SpotifySongTagger.ViewModels;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Windows;
@@ -23,6 +25,7 @@ namespace SpotifySongTagger.Views.Controls
             UpdateCanvasSize();
             ViewModel.ClearAllInputResults();
             await ViewModel.RefreshInputResults();
+            await BaseViewModel.DataContainer.LoadTags();
         }
 
 
@@ -63,17 +66,16 @@ namespace SpotifySongTagger.Views.Controls
             if (ViewModel.PressedMouseButton == MouseButton.Left)
             {
                 // stop moving node
+                Log.Information($"StopMovingNode {sender.GetType()}");
                 if (ViewModel.ClickedNodeViewModel == null) return;
 
                 ViewModel.SaveMovedGraphNodePosition();
                 ViewModel.ClickedNodeViewModel = null;
                 ViewModel.LastMousePos = default;
                 e.Handled = true;
-                Log.Information($"StopMovingNode {sender.GetType()}");
             }
             if (ViewModel.PressedMouseButton == MouseButton.Right)
             {
-                Log.Information("Right release");
                 // add connection
                 var nodeVM = ViewModel.GetHoveredGraphNodeViewModel(e.GetPosition(Canvas));
                 await ViewModel.AddConnection(nodeVM);
@@ -103,7 +105,7 @@ namespace SpotifySongTagger.Views.Controls
             }
 
             e.Handled = true;
-            Log.Information($"MouseMove {sender.GetType()} {curPos.X:N2}/{curPos.Y:N2}");
+            //Log.Information($"MouseMove {sender.GetType()} {curPos.X:N2}/{curPos.Y:N2}");
         }
         #endregion
 
@@ -159,6 +161,7 @@ namespace SpotifySongTagger.Views.Controls
             var outputNode = frameworkElement.DataContext as PlaylistOutputNode;
 
             outputNode.PlaylistName = textBox.Text;
+            ConnectionManager.Instance.Database.SaveChanges();
         }
 
         #region UpdateCanvasSize
@@ -169,5 +172,15 @@ namespace SpotifySongTagger.Views.Controls
             ViewModel.UpdateCanvasSize(Canvas.ActualWidth, Canvas.ActualHeight);
         }
         #endregion
+
+        private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            var from = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;
+            var to = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
+            Log.Information($"{frameworkElement.DataContext} changed from {from} to {to}");
+            await ViewModel.RefreshInputResults();
+            ConnectionManager.Instance.Database.SaveChanges();
+        }
     }
 }

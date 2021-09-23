@@ -25,8 +25,9 @@ namespace SpotifySongTagger.ViewModels
             new NodeType {Name = "Input", Type = typeof(PlaylistInputNode) },
             new NodeType {Name = "Concat", Type = typeof(ConcatNode) },
             new NodeType {Name = "Deduplicate", Type = typeof(DeduplicateNode) },
-            new NodeType {Name = "Tag Filter", Type = typeof(FilterTagNode) },
-            new NodeType {Name = "Output", Type = typeof(PlaylistOutputNode) },
+            new NodeType {Name = "Filter Artist", Type = typeof(FilterArtistNode) },
+            new NodeType {Name = "Filter Tag", Type = typeof(FilterTagNode) },
+            new NodeType {Name = "Playlist Output", Type = typeof(PlaylistOutputNode) },
             new NodeType {Name = "Assign Tag", Type = typeof(AssignTagNode) },
         };
         public NodeType SelectedNodeType { get; set; }

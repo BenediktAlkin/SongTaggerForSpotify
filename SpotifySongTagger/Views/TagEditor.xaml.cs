@@ -39,9 +39,7 @@ namespace SpotifySongTagger.Views
                 updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
             }
             await BaseViewModel.DataContainer.LoadSourcePlaylists();
-            Log.Debug("Finished loading playlists");
             await BaseViewModel.DataContainer.LoadTags();
-            Log.Debug("Finished loading tags");
 
             if (updatePlaybackInfoTask != null)
                 await updatePlaybackInfoTask;
