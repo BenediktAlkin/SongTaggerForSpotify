@@ -3,6 +3,7 @@ using Backend.Entities.GraphNodes;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
@@ -23,10 +24,10 @@ namespace Backend.Tests
         }
 
         [Test]
-        public void FilterNode_NewPlaylist()
+        public async Task FilterNode_NewPlaylist()
         {
             // sync library
-            DatabaseOperations.SyncLibrary().Wait();
+            await DatabaseOperations.SyncLibrary();
 
             // define graphs
             var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
@@ -48,7 +49,8 @@ namespace Backend.Tests
             Db.PlaylistOutputNodes.Add(output2);
 
             // get tracks and add some tags
-            var tracks = input.GetOutputResult().Result;
+            await input.CalculateOutputResult();
+            var tracks = input.OutputResult;
             foreach (var i in new[] { 1, 5, 9, 13 })
                 Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag1);
             foreach (var i in new[] { 5, 10, 15, 20, 30 })
@@ -58,16 +60,16 @@ namespace Backend.Tests
             Db.SaveChanges();
 
             // create playlists
-            SpotifyOperations.SyncPlaylistOutputNode(output1).Wait();
-            SpotifyOperations.SyncPlaylistOutputNode(output2).Wait();
+            await SpotifyOperations.SyncPlaylistOutputNode(output1);
+            await SpotifyOperations.SyncPlaylistOutputNode(output2);
             Assert.AreEqual(4, SpotifyOperations.PlaylistItems(output1.GeneratedPlaylistId).Result.Count);
             Assert.AreEqual(5, SpotifyOperations.PlaylistItems(output2.GeneratedPlaylistId).Result.Count);
         }
         [Test]
-        public void FilterNode_UpdatePlaylist()
+        public async Task FilterNode_UpdatePlaylist()
         {
             // sync library
-            DatabaseOperations.SyncLibrary().Wait();
+            await DatabaseOperations.SyncLibrary();
 
             // define graphs
             var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
@@ -81,29 +83,30 @@ namespace Backend.Tests
             Db.PlaylistOutputNodes.Add(output);
 
             // get tracks and add some tags
-            var tracks = input.GetOutputResult().Result;
+            await input.CalculateOutputResult();
+            var tracks = input.OutputResult;
             foreach (var i in new[] { 1, 5, 9, 13 })
                 Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag);
             Db.Tags.Add(tag);
             Db.SaveChanges();
 
             // create playlists
-            SpotifyOperations.SyncPlaylistOutputNode(output).Wait();
+            await SpotifyOperations.SyncPlaylistOutputNode(output);
             Assert.AreEqual(4, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
 
             // add some more tags
             foreach (var i in new[] { 10, 20, 30 })
                 Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag);
             Db.SaveChanges();
-            SpotifyOperations.SyncPlaylistOutputNode(output).Wait();
+            await SpotifyOperations.SyncPlaylistOutputNode(output);
             Assert.AreEqual(7, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
         }
 
         [Test]
-        public void ConcatNode()
+        public async Task ConcatNode()
         {
             // sync library
-            DatabaseOperations.SyncLibrary().Wait();
+            await DatabaseOperations.SyncLibrary();
 
             // define graphs
             var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
@@ -116,14 +119,14 @@ namespace Backend.Tests
             Db.PlaylistOutputNodes.Add(output);
 
             // create playlists
-            SpotifyOperations.SyncPlaylistOutputNode(output).Wait();
+            await SpotifyOperations.SyncPlaylistOutputNode(output);
             Assert.AreEqual(200, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
         }
         [Test]
-        public void DeduplicateNode()
+        public async Task DeduplicateNode()
         {
             // sync library
-            DatabaseOperations.SyncLibrary().Wait();
+            await DatabaseOperations.SyncLibrary();
 
             // define graphs
             var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
@@ -137,7 +140,7 @@ namespace Backend.Tests
             Db.PlaylistOutputNodes.Add(output);
 
             // create playlists
-            SpotifyOperations.SyncPlaylistOutputNode(output).Wait();
+            await SpotifyOperations.SyncPlaylistOutputNode(output);
             Assert.AreEqual(100, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
         }
     }

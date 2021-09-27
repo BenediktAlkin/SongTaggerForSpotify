@@ -43,12 +43,19 @@ namespace Backend.Entities.GraphNodes
                 Log.Information($"Connection {input} to {this} is invalid");
                 return;
             }
+            if(Inputs.Contains(input) || input.Outputs.Contains(this))
+            {
+                Log.Information($"Connection {input} to {this} already exists");
+                return;
+            }
             ((List<GraphNode>)Inputs).Add(input);
+            ((List<GraphNode>)input.Outputs).Add(this);
 
             if (HasCycles(this))
             {
                 Log.Information($"Connection {input} to {this} would introduce cycle");
-                RemoveOutput(input);
+                RemoveInput(input);
+                input.RemoveOutput(this);
                 return;
             }
             Log.Information($"Connected {input} to {this}");
@@ -62,12 +69,19 @@ namespace Backend.Entities.GraphNodes
                 Log.Information($"Connection {this} to {output} is invalid");
                 return;
             }
+            if (Outputs.Contains(output) || output.Inputs.Contains(this))
+            {
+                Log.Information($"Connection {this} to {output} already exists");
+                return;
+            }
             ((List<GraphNode>)Outputs).Add(output);
+            ((List<GraphNode>)output.Inputs).Add(this);
 
             if (HasCycles(this))
             {
                 Log.Information($"Connection {this} to {output} would introduce cycle");
                 RemoveOutput(output);
+                output.RemoveInput(this);
                 return;
             }
             Log.Information($"Connected {this} to {output}");
@@ -85,35 +99,36 @@ namespace Backend.Entities.GraphNodes
         #endregion
 
         #region validity checks
-        private static bool HasCycles(GraphNode curNode, List<int> seenNodes = null) => HasForwardCycles(curNode) || HasBackwardCycles(curNode);
-        private static bool HasForwardCycles(GraphNode curNode, List<int> seenNodes = null)
+        private static bool HasCycles(GraphNode rootNode) 
+            => HasForwardCycles(rootNode, new()) || HasBackwardCycles(rootNode, new());
+        private static bool HasForwardCycles(GraphNode rootNode, List<GraphNode> seenNodes, GraphNode curNode=null)
         {
-            if (seenNodes == null)
-                seenNodes = new List<int>();
-
-            if (seenNodes.Contains(curNode.Id))
+            if (seenNodes.Contains(rootNode))
                 return true;
-            seenNodes.Add(curNode.Id);
+            if (curNode == null)
+                curNode = rootNode;
+            else
+                seenNodes.Add(curNode);
 
             foreach (var next in curNode.Outputs)
             {
-                if (HasForwardCycles(next, seenNodes))
+                if (HasForwardCycles(rootNode, seenNodes, next))
                     return true;
             }
             return false;
         }
-        private static bool HasBackwardCycles(GraphNode curNode, List<int> seenNodes = null)
+        private static bool HasBackwardCycles(GraphNode rootNode, List<GraphNode> seenNodes, GraphNode curNode=null)
         {
-            if (seenNodes == null)
-                seenNodes = new List<int>();
-
-            if (seenNodes.Contains(curNode.Id))
+            if (seenNodes.Contains(rootNode))
                 return true;
-            seenNodes.Add(curNode.Id);
+            if (curNode == null)
+                curNode = rootNode;
+            else
+                seenNodes.Add(curNode);
 
             foreach (var prev in curNode.Inputs)
             {
-                if (HasBackwardCycles(prev, seenNodes))
+                if (HasBackwardCycles(rootNode, seenNodes, prev))
                     return true;
             }
             return false;

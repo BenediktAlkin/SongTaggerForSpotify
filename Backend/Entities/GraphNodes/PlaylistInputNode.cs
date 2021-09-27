@@ -44,7 +44,7 @@ namespace Backend.Entities.GraphNodes
         private bool IncludedTags { get; set; }
         public override async Task CalculateInputResult()
         {
-            if (InputResult != null) return;
+            if (InputResult != null || Playlist == null) return;
 
             IncludedArtists = AnyForward(gn => gn.RequiresArtists);
             IncludedTags = AnyForward(gn => gn.RequiresTags);
