@@ -1,10 +1,13 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -148,6 +151,24 @@ namespace Backend
                 Db.Albums.Add(track.Album);
             }
         }
+        private static void ReplaceTagWithDbTag(Dictionary<int, Tag> tagDict, Track track)
+        {
+            for (var i = 0; i < track.Tags.Count; i++)
+            {
+                var tag = track.Tags[i];
+                if (tagDict.TryGetValue(tag.Id, out var addedTag))
+                {
+                    // replace artist with the artist that is already added to the dbContext
+                    track.Tags[i] = addedTag;
+                }
+                else
+                {
+                    // add artist to the dbContext
+                    tagDict[tag.Id] = tag;
+                    Db.Tags.Add(tag);
+                }
+            }
+        }
 
         public static async Task SyncLibrary(CancellationToken cancellationToken = default)
         {
@@ -161,6 +182,11 @@ namespace Backend
 
             // get full library from spotify
             var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(generatedPlaylistIds);
+            if(spotifyPlaylists == null && spotifyTracks == null)
+            {
+                Log.Error($"Error syncing library: could not retrieve Spotify library");
+                return;
+            }
 
             // get db data
             var dbTracks = (await dbTracksTask).ToDictionary(t => t.Id, t => t);
@@ -266,6 +292,55 @@ namespace Backend
             var specialPlaylists = SPECIAL_PLAYLIST_IDS.Select(pid => GetOrCreate(pid)).ToList();
             Db.SaveChanges();
             return specialPlaylists;
+        }
+
+
+
+        public static async Task ExportTags(string outPath)
+        {
+            var tracks = await Db.Tracks.Include(t => t.Tags).Include(t => t.Artists).Include(t => t.Album).ToListAsync();
+            // remove circular dependencies
+            foreach(var t in tracks)
+            {
+                foreach (var artist in t.Artists)
+                    artist.Tracks = null;
+                foreach (var tag in t.Tags)
+                    tag.Tracks = null;
+            }
+            var json = JsonConvert.SerializeObject(tracks, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            await File.WriteAllTextAsync(outPath, json);
+            Log.Information($"Exported {tracks.Count} tracks");
+        }
+        public static async Task ImportTags(string inPath)
+        {
+            // parse data from json
+            var json = await File.ReadAllTextAsync(inPath);
+            var tracks = JsonConvert.DeserializeObject<List<Track>>(json);
+
+            // merge with existing tags/tracks
+            var dbTracks = await Db.Tracks.Include(t => t.Tags).ToListAsync();
+            var dbTags = await Db.Tags.ToDictionaryAsync(t => t.Id, t => t);
+            var dbArtists = await Db.Artists.ToDictionaryAsync(a => a.Id, a => a);
+            var dbAlbums = await Db.Albums.ToDictionaryAsync(a => a.Id, a => a);
+            foreach(var track in tracks)
+            {
+                ReplaceTagWithDbTag(dbTags, track);
+                ReplaceArtistWithDbArtist(dbArtists, track);
+                ReplaceAlbumWithDbAlbum(dbAlbums, track);
+
+                // get dbTrack or add track to db
+                var dbTrack = dbTracks.FirstOrDefault(t => t.Id == track.Id);
+                if (dbTrack == null)
+                {
+                    Db.Tracks.Add(track);
+                    dbTrack = track;
+                }
+            }
+            await Db.SaveChangesAsync();
+            Log.Information($"Imported {tracks.Count} tracks");
         }
     }
 }

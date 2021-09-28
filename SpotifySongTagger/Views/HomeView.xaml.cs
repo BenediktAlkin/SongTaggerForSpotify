@@ -53,5 +53,29 @@ namespace SpotifySongTagger.Views
             if (!button.IsEnabled)
                 button.IsEnabled = true;
         }
+
+        private async void ImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog();
+            dialog.FileName = "";
+            dialog.DefaultExt = "";
+            dialog.Filter = $"SpotifySongTagger export (*.json)|*.json";
+
+            var result = dialog.ShowDialog();
+            if (result == true)
+                await DatabaseOperations.ImportTags(dialog.FileName);
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog();
+            dialog.FileName = "tags";
+            dialog.DefaultExt = ".json";
+            dialog.Filter = $"SpotifySongTagger export (*.json)|*.json";
+
+            var result = dialog.ShowDialog();
+            if (result == true)
+                await DatabaseOperations.ExportTags(dialog.FileName);
+        }
     }
 }

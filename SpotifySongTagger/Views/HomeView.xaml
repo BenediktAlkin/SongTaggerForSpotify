@@ -23,22 +23,38 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <!-- logged in user info -->
-            <StackPanel Orientation="Horizontal">
-                <Label Style="{StaticResource MaterialDesignLabel}" 
-                   Content="Logged in as"
-                   Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
-                <Label Style="{StaticResource MaterialDesignLabel}" 
-                   Content="{Binding DataContainer.User.Id}"
-                   FontWeight="Bold"
-                   Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
-            </StackPanel>
+            <!-- logged in view -->
+            <StackPanel>
+                <!-- user info -->
+                <StackPanel Orientation="Horizontal" Margin="8">
+                    <Label Style="{StaticResource MaterialDesignLabel}"
+                       Content="Logged in as"
+                       Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+                    <Label Style="{StaticResource MaterialDesignLabel}" 
+                       Content="{Binding DataContainer.User.Id}"
+                       FontWeight="Bold"
+                       Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+                </StackPanel>
+                <!-- import button -->
+                <Button Click="ImportButton_Click" Margin="8"
+                    Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
+                    Width="128"
+                    Content="Import Tags"/>
+                <!-- export button -->
+                <Button Click="ExportButton_Click" Margin="8"
+                    Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
+                    Width="128"
+                    Content="Export Tags"/>
 
-            <!-- logout button -->
-            <Button Click="LoginButton_Click"
-                Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
-                Width="128"
-                Content="Logout"/>
+
+                <!-- logout button -->
+                <Button Click="LoginButton_Click" Margin="8"
+                    Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
+                    Width="128"
+                    Content="Logout"/>
+
+            </StackPanel>
+            
 
             <!-- login button -->
             <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>

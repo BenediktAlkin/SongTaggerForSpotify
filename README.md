@@ -9,4 +9,5 @@ Limitations
 * Playing songs from the SpotifySongTagger app requires an active Spotify player (e.g. [Spotify Player](https://www.spotify.com/us/download/other/) or [Spotify Web Player](https://open.spotify.com/))
 * Only Spotify Premium users can play songs from the SpotifySongTagger app (the currently playing song is still displayed for non-premium users)
 * authorization TODO
-* offline files TODO
+* [local files](https://support.spotify.com/us/article/local-files/) are currently not supported
+* [unavailable songs](https://community.spotify.com/t5/iOS-iPhone-iPad/Song-unavailable/td-p/4816227#:~:text=The%20greyed%20out%20tracks%20just,to%20the%20individual%20music%20companies.) are currently not supported

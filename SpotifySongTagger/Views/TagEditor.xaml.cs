@@ -64,7 +64,6 @@ namespace SpotifySongTagger.Views
             {
                 var tag = chip.DataContext as Tag;
                 DragDrop.DoDragDrop(chip, tag.Name, DragDropEffects.Link);
-                Log.Information("Tag_PreviewMouseDown");
             }
         }
 

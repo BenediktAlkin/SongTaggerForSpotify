@@ -47,7 +47,7 @@ namespace SpotifySongTagger
             ViewModel.CheckedForUpdates = true;
 
             if (ConnectionManager.Instance.Spotify != null)
-                ((MainWindowViewModel)DataContext).SelectedIndex = 2;
+                ((MainWindowViewModel)DataContext).SelectedIndex = 0;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -82,6 +82,10 @@ namespace SpotifySongTagger
                 Log.Information("Cancelled sync library");
                 SyncCancellationTokenSource.Dispose();
                 SyncCancellationTokenSource = null;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error syncing library {e.Message}");
             }
 
 

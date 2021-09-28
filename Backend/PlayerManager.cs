@@ -2,6 +2,7 @@
 using Serilog;
 using SpotifyAPI.Web;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -116,7 +117,7 @@ namespace Backend
                 AutoReset = true,
                 Interval = 5000,
             };
-            UpdatePlaybackInfoTimer.Elapsed += async (sender, e) => await UpdatePlaybackInfo();
+            UpdatePlaybackInfoTimer.Elapsed += async (sender, e) => { try { await UpdatePlaybackInfo(); } catch (Exception ex) { Log.Error($"UpdatePlaybackInfo error: {ex.Message}"); } };
             UpdatePlaybackInfoTimer.Enabled = true;
         }
         public void StopUpdatePlaybackInfoTimer() => UpdatePlaybackInfoTimer.Enabled = false;
@@ -137,21 +138,35 @@ namespace Backend
         public async Task UpdatePlaybackInfo()
         {
             if (Spotify == null) return;
-            var info = await Spotify.Player.GetCurrentPlayback(new PlayerCurrentPlaybackRequest());
-            if (info == null) return;
+            try
+            {
+                var info = await Spotify.Player.GetCurrentPlayback(new PlayerCurrentPlaybackRequest());
+                if (info == null) return;
 
-            Volume = info.Device.VolumePercent ?? 0;
+                Volume = info.Device.VolumePercent ?? 0;
+            }
+            catch(Exception e)
+            {
+                Log.Error($"Error in UpdatePlaybackInfo {e.Message}");
+            }
         }
         public async Task UpdateTrackInfo()
         {
             if (Spotify == null) return;
-            var info = await Spotify.Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest());
-            if (info == null) return;
-            IsPlaying = info.IsPlaying;
-            Progress = info.ProgressMs ?? 0;
+            try
+            {
+                var info = await Spotify.Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest());
+                if (info == null) return;
+                IsPlaying = info.IsPlaying;
+                Progress = info.ProgressMs ?? 0;
 
-            if (info.Item is FullTrack track)
-                UpdateTrackInfo(track);
+                if (info.Item is FullTrack track)
+                    UpdateTrackInfo(track);
+            }
+            catch(Exception e)
+            {
+                Log.Error($"Error in UpdateTrackInfo {e.Message}");
+            }
         }
         public async Task Play()
         {
@@ -190,25 +205,73 @@ namespace Backend
         {
             if (!IsPremiumUser) return;
             if (Spotify == null) return;
-            var success = await Spotify.Player.SetVolume(new PlayerVolumeRequest(newVolume));
-            if (success)
-                Volume = newVolume;
+            try
+            {
+                var success = await Spotify.Player.SetVolume(new PlayerVolumeRequest(newVolume));
+                if (success)
+                    Volume = newVolume;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error in SetVolume {e.Message}");
+            }
         }
         public async Task SetProgress(int newProgress)
         {
             if (!IsPremiumUser) return;
             if (Spotify == null) return;
-            var success = await Spotify.Player.SeekTo(new PlayerSeekToRequest(newProgress));
-            if (success)
-                Progress = newProgress;
+            try
+            {
+                var success = await Spotify.Player.SeekTo(new PlayerSeekToRequest(newProgress));
+                if (success)
+                    Progress = newProgress;
+            }
+            catch(Exception e)
+            {
+                Log.Error($"Error in SetProgress {e.Message}");
+            }
         }
         public async Task SetTrack(Track t)
         {
             if (!IsPremiumUser) return;
             if (Spotify == null) return;
-            var success = await Spotify.Player.ResumePlayback(new PlayerResumePlaybackRequest { ContextUri = $"spotify:track:{t.Id}" });
-            if (success)
-                await UpdateTrackInfo();
+            try
+            {
+                var success = await Spotify.Player.ResumePlayback(new PlayerResumePlaybackRequest { Uris = new List<string> { $"spotify:track:{t.Id}" } });
+                if (success)
+                    await UpdateTrackInfo();
+            }
+            catch(Exception e)
+            {
+                // check if a device is available
+                var availableDevicesResponse = await Spotify.Player.GetAvailableDevices();
+                if(availableDevicesResponse.Devices.Count == 0)
+                {
+                    Log.Error($"No device is available");
+                    return;
+                }
+
+                // if no device is set as active, GetCurrentPlayback returns null
+                var playbackInfo = await Spotify.Player.GetCurrentPlayback();
+                if(playbackInfo == null)
+                {
+                    Log.Information($"No active device found --> using first device");
+                    await Spotify.Player.TransferPlayback(new PlayerTransferPlaybackRequest(new List<string> { availableDevicesResponse.Devices[0].Id }) { Play = false });
+                    // wait for playback to transfer
+                    await Task.Delay(1000);
+                    try
+                    {
+                        var success = await Spotify.Player.ResumePlayback(new PlayerResumePlaybackRequest { Uris = new List<string> { $"spotify:track:{t.Id}" } });
+                        if (success)
+                            await UpdateTrackInfo();
+                    }catch(Exception e2)
+                    {
+                        Log.Error($"Error in SetTrack could not ResumePlayback after using first available device {e2.Message}");
+                    }
+                    return;
+                }
+                Log.Error($"Error in SetTrack {e.Message}");
+            }
         }
     }
 }
