@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Serilog;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Serilog;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -42,7 +39,7 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => false;
         private bool IncludedArtists { get; set; }
         private bool IncludedTags { get; set; }
-        public override async Task CalculateInputResult(bool includeAll=false)
+        public override async Task CalculateInputResult(bool includeAll = false)
         {
             if (InputResult != null || Playlist == null) return;
 

@@ -63,7 +63,7 @@
                 <ListBox 
                     Name="MetaPlaylistsListBox"
                     Grid.Row="1"
-                    ItemsSource="{Binding DataContainer.SpecialPlaylists}" 
+                    ItemsSource="{Binding DataContainer.MetaPlaylists}" 
                     SelectionChanged="Playlists_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -88,7 +88,7 @@
                 <ListBox 
                     Name="LikedPlaylistsListBox"
                     Grid.Row="3"
-                    ItemsSource="{Binding DataContainer.FollowedPlaylists}" 
+                    ItemsSource="{Binding DataContainer.LikedPlaylists}" 
                     SelectionChanged="Playlists_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>

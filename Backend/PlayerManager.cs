@@ -145,7 +145,7 @@ namespace Backend
 
                 Volume = info.Device.VolumePercent ?? 0;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Error($"Error in UpdatePlaybackInfo {e.Message}");
             }
@@ -163,7 +163,7 @@ namespace Backend
                 if (info.Item is FullTrack track)
                     UpdateTrackInfo(track);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Error($"Error in UpdateTrackInfo {e.Message}");
             }
@@ -226,7 +226,7 @@ namespace Backend
                 if (success)
                     Progress = newProgress;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Error($"Error in SetProgress {e.Message}");
             }
@@ -241,11 +241,11 @@ namespace Backend
                 if (success)
                     await UpdateTrackInfo();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // check if a device is available
                 var availableDevicesResponse = await Spotify.Player.GetAvailableDevices();
-                if(availableDevicesResponse.Devices.Count == 0)
+                if (availableDevicesResponse.Devices.Count == 0)
                 {
                     Log.Error($"No device is available");
                     return;
@@ -253,7 +253,7 @@ namespace Backend
 
                 // if no device is set as active, GetCurrentPlayback returns null
                 var playbackInfo = await Spotify.Player.GetCurrentPlayback();
-                if(playbackInfo == null)
+                if (playbackInfo == null)
                 {
                     Log.Information($"No active device found --> using first device");
                     await Spotify.Player.TransferPlayback(new PlayerTransferPlaybackRequest(new List<string> { availableDevicesResponse.Devices[0].Id }) { Play = false });
@@ -264,7 +264,8 @@ namespace Backend
                         var success = await Spotify.Player.ResumePlayback(new PlayerResumePlaybackRequest { Uris = new List<string> { $"spotify:track:{t.Id}" } });
                         if (success)
                             await UpdateTrackInfo();
-                    }catch(Exception e2)
+                    }
+                    catch (Exception e2)
                     {
                         Log.Error($"Error in SetTrack could not ResumePlayback after using first available device {e2.Message}");
                     }

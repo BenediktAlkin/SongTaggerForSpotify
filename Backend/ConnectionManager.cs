@@ -35,7 +35,8 @@ namespace Backend
             try
             {
                 Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error($"Failed to initialize Database {e.Message}");
                 throw;

@@ -142,7 +142,7 @@ namespace SpotifySongTagger.ViewModels.Controls
                     GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == prevNode).GenerateArrows();
 
                 // update input results
-                foreach(var successorNode in successorNodes)
+                foreach (var successorNode in successorNodes)
                     successorNode.PropagateForward(gn => gn.ClearResult());
                 await RefreshInputResults();
             }

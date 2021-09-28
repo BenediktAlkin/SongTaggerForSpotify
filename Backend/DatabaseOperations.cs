@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -183,7 +182,7 @@ namespace Backend
 
             // get full library from spotify
             var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(generatedPlaylistIds);
-            if(spotifyPlaylists == null && spotifyTracks == null)
+            if (spotifyPlaylists == null && spotifyTracks == null)
             {
                 Log.Error($"Error syncing library: could not retrieve Spotify library");
                 return;
@@ -234,22 +233,22 @@ namespace Backend
             await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished pushing library to database");
 
-            // remove unfollowed playlists
-            Log.Information("Update playlists in database (remove unfollowed ones, rename)");
+            // remove unlikedplaylists
+            Log.Information("Update playlists in database (remove unliked ones, rename)");
             var allPlaylists = await Db.Playlists.ToListAsync(cancellationToken);
             var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
             Db.Playlists.RemoveRange(allPlaylists.Where(p => p.Tracks == null || p.Tracks.Count == 0));
             // update playlist names
             foreach (var spotifyPlaylist in spotifyPlaylists)
                 allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
-                
+
             await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished updating playlists");
 
             await DataContainer.Instance.LoadSourcePlaylists(forceReload: true);
         }
 
-        public static async Task<List<Track>> PlaylistTracks(string playlistId, bool includeAlbums=true, bool includeArtists=true, bool includeTags=true)
+        public static async Task<List<Track>> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
             IQueryable<Track> query = Db.Tracks
                 .Include(t => t.Playlists);
@@ -257,7 +256,7 @@ namespace Backend
                 query = query.Include(t => t.Album);
             if (includeArtists)
                 query = query.Include(t => t.Artists);
-            if(includeTags)
+            if (includeTags)
                 query = query.Include(t => t.Tags);
 
             return playlistId switch
@@ -268,31 +267,31 @@ namespace Backend
             };
         }
 
-        private static readonly string[] SPECIAL_PLAYLIST_IDS = { Constants.ALL_SONGS_PLAYLIST_ID, Constants.LIKED_SONGS_PLAYLIST_ID, Constants.UNTAGGED_SONGS_PLAYLIST_ID };
+        private static readonly string[] META_PLAYLIST_IDS = { Constants.ALL_SONGS_PLAYLIST_ID, Constants.LIKED_SONGS_PLAYLIST_ID, Constants.UNTAGGED_SONGS_PLAYLIST_ID };
         public static async Task<List<Playlist>> PlaylistsLiked()
         {
             var playlists = Db.Playlists;
             var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
-            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !SPECIAL_PLAYLIST_IDS.Contains(p.Id))
+            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !META_PLAYLIST_IDS.Contains(p.Id))
                 .OrderBy(p => p.Name).ToListAsync();
         }
-        public static List<Playlist> PlaylistsSpecial()
+        public static List<Playlist> PlaylistsMeta()
         {
-            static Playlist GetOrCreate(string specialPlaylistId)
+            static Playlist GetOrCreate(string metaPlaylistId)
             {
-                var playlist = Db.Playlists.FirstOrDefault(p => p.Id == specialPlaylistId);
+                var playlist = Db.Playlists.FirstOrDefault(p => p.Id == metaPlaylistId);
                 if (playlist == null)
                 {
-                    playlist = new Playlist { Id = specialPlaylistId, Name = specialPlaylistId };
+                    playlist = new Playlist { Id = metaPlaylistId, Name = metaPlaylistId };
                     Db.Playlists.Add(playlist);
                 }
                 return playlist;
             }
 
             // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
-            var specialPlaylists = SPECIAL_PLAYLIST_IDS.Select(pid => GetOrCreate(pid)).ToList();
+            var metaPlaylists = META_PLAYLIST_IDS.Select(pid => GetOrCreate(pid)).ToList();
             Db.SaveChanges();
-            return specialPlaylists;
+            return metaPlaylists;
         }
         public static List<Playlist> PlaylistsGenerated()
         {
@@ -302,7 +301,7 @@ namespace Backend
         public static async Task<List<Track>> GeneratedPlaylistTracks(string id)
         {
             var playlistOutputNode = Db.PlaylistOutputNodes.FirstOrDefault(p => p.GeneratedPlaylistId == id);
-            if(playlistOutputNode == null)
+            if (playlistOutputNode == null)
             {
                 Log.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
                 return new();
@@ -310,12 +309,12 @@ namespace Backend
             var graphGeneratorPage = Db.GraphGeneratorPages
                 .Include(ggp => ggp.GraphNodes).ThenInclude(node => node.Inputs)
                 .FirstOrDefault(ggp => ggp.Id == playlistOutputNode.GraphGeneratorPageId);
-            if(graphGeneratorPage == null)
+            if (graphGeneratorPage == null)
             {
                 Log.Error($"Could not find GraphGeneratorPage {playlistOutputNode.GraphGeneratorPageId} of OutputNode with GeneratedPlaylistId {playlistOutputNode.GeneratedPlaylistId}");
                 return new();
             }
-            await playlistOutputNode.CalculateOutputResult(includeAll:true);
+            await playlistOutputNode.CalculateOutputResult(includeAll: true);
             return playlistOutputNode.OutputResult;
         }
 
@@ -326,7 +325,7 @@ namespace Backend
         {
             var tracks = await Db.Tracks.Include(t => t.Tags).Include(t => t.Artists).Include(t => t.Album).ToListAsync();
             // remove circular dependencies
-            foreach(var t in tracks)
+            foreach (var t in tracks)
             {
                 foreach (var artist in t.Artists)
                     artist.Tracks = null;
@@ -351,7 +350,7 @@ namespace Backend
             var dbTags = await Db.Tags.ToDictionaryAsync(t => t.Id, t => t);
             var dbArtists = await Db.Artists.ToDictionaryAsync(a => a.Id, a => a);
             var dbAlbums = await Db.Albums.ToDictionaryAsync(a => a.Id, a => a);
-            foreach(var track in tracks)
+            foreach (var track in tracks)
             {
                 ReplaceTagWithDbTag(dbTags, track);
                 ReplaceArtistWithDbArtist(dbArtists, track);

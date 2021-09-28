@@ -1,5 +1,4 @@
 ﻿using Backend.Entities;
-using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SpotifyAPI.Web;
@@ -40,17 +39,17 @@ namespace Backend
             get => isLoadingSourcePlaylists;
             set => SetProperty(ref isLoadingSourcePlaylists, value, nameof(IsLoadingSourcePlaylists));
         }
-        private List<Playlist> specialPlaylists;
-        public List<Playlist> SpecialPlaylists
+        private List<Playlist> metaPlaylists;
+        public List<Playlist> MetaPlaylists
         {
-            get => specialPlaylists;
-            set => SetProperty(ref specialPlaylists, value, nameof(SpecialPlaylists));
+            get => metaPlaylists;
+            set => SetProperty(ref metaPlaylists, value, nameof(MetaPlaylists));
         }
-        private List<Playlist> followedPlaylists;
-        public List<Playlist> FollowedPlaylists
+        private List<Playlist> likedPlaylists;
+        public List<Playlist> LikedPlaylists
         {
-            get => followedPlaylists;
-            set => SetProperty(ref followedPlaylists, value, nameof(FollowedPlaylists));
+            get => likedPlaylists;
+            set => SetProperty(ref likedPlaylists, value, nameof(LikedPlaylists));
         }
         private List<Playlist> generatedPlaylists;
         public List<Playlist> GeneratedPlaylists
@@ -58,7 +57,7 @@ namespace Backend
             get => generatedPlaylists;
             set => SetProperty(ref generatedPlaylists, value, nameof(GeneratedPlaylists));
         }
-        // special playlists + followed playlists
+        // meta playlists + liked playlists
         private List<Playlist> sourcePlaylists;
         public List<Playlist> SourcePlaylists
         {
@@ -71,9 +70,9 @@ namespace Backend
 
             Log.Information("Loading source playlists");
             IsLoadingSourcePlaylists = true;
-            FollowedPlaylists = await DatabaseOperations.PlaylistsLiked();
-            SpecialPlaylists = DatabaseOperations.PlaylistsSpecial();
-            SourcePlaylists = SpecialPlaylists.Concat(FollowedPlaylists).ToList();
+            LikedPlaylists = await DatabaseOperations.PlaylistsLiked();
+            MetaPlaylists = DatabaseOperations.PlaylistsMeta();
+            SourcePlaylists = MetaPlaylists.Concat(LikedPlaylists).ToList();
             IsLoadingSourcePlaylists = false;
         }
         public void LoadGeneratedPlaylists()

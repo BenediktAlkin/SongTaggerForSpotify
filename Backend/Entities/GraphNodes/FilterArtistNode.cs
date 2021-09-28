@@ -51,7 +51,7 @@ namespace Backend.Entities.GraphNodes
 
         protected override Task MapInputToOutput()
         {
-            if(Artist != null)
+            if (Artist != null)
                 OutputResult = InputResult.Where(t => t.Artists.Contains(Artist)).ToList();
             return Task.CompletedTask;
         }

@@ -67,7 +67,7 @@ namespace Backend
                         "id," +
                         "name," +
                         "duration_ms," +
-                        "is_playable," + 
+                        "is_playable," +
                         "album(id,name,release_date,release_date_precision)," +
                         "artists(id,name)))," +
                 "next");
@@ -95,7 +95,8 @@ namespace Backend
                         Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
                     };
                 }).ToList();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error($"Error in PlaylistItems: {e.Message}");
                 return new();
@@ -116,7 +117,7 @@ namespace Backend
             else
             {
                 var playlistDetails = await Spotify.Playlists.Get(playlistOutputNode.GeneratedPlaylistId);
-                // follow playlist if it was unfollowed
+                // like playlist if it was unliked
                 var followCheckReq = new FollowCheckPlaylistRequest(new List<string> { DataContainer.Instance.User.Id });
                 if (!(await Spotify.Follow.CheckPlaylist(playlistOutputNode.GeneratedPlaylistId, followCheckReq)).First())
                     await Spotify.Follow.FollowPlaylist(playlistOutputNode.GeneratedPlaylistId);
@@ -203,7 +204,8 @@ namespace Backend
                 }
                 Log.Information("Finished fetching full spotify library");
                 return (playlists, tracks);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error($"Error in GetFullLibrary: {e.Message}");
                 return (null, null);
@@ -230,7 +232,8 @@ namespace Backend
                     },
                     Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
                 }).ToList();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error($"Error in GetTracks {e.Message} {e.InnerException?.Message}");
                 return new();

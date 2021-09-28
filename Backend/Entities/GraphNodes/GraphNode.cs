@@ -38,12 +38,12 @@ namespace Backend.Entities.GraphNodes
 
         public void AddInput(GraphNode input)
         {
-            if(!CanAddInput(input) || !input.CanAddOutput(this))
+            if (!CanAddInput(input) || !input.CanAddOutput(this))
             {
                 Log.Information($"Connection {input} to {this} is invalid");
                 return;
             }
-            if(Inputs.Contains(input) || input.Outputs.Contains(this))
+            if (Inputs.Contains(input) || input.Outputs.Contains(this))
             {
                 Log.Information($"Connection {input} to {this} already exists");
                 return;
@@ -99,9 +99,9 @@ namespace Backend.Entities.GraphNodes
         #endregion
 
         #region validity checks
-        private static bool HasCycles(GraphNode rootNode) 
+        private static bool HasCycles(GraphNode rootNode)
             => HasForwardCycles(rootNode, new()) || HasBackwardCycles(rootNode, new());
-        private static bool HasForwardCycles(GraphNode rootNode, List<GraphNode> seenNodes, GraphNode curNode=null)
+        private static bool HasForwardCycles(GraphNode rootNode, List<GraphNode> seenNodes, GraphNode curNode = null)
         {
             if (seenNodes.Contains(rootNode))
                 return true;
@@ -117,7 +117,7 @@ namespace Backend.Entities.GraphNodes
             }
             return false;
         }
-        private static bool HasBackwardCycles(GraphNode rootNode, List<GraphNode> seenNodes, GraphNode curNode=null)
+        private static bool HasBackwardCycles(GraphNode rootNode, List<GraphNode> seenNodes, GraphNode curNode = null)
         {
             if (seenNodes.Contains(rootNode))
                 return true;
@@ -161,7 +161,7 @@ namespace Backend.Entities.GraphNodes
             inputResult = null;
             outputResult = null;
         }
-        public virtual async Task CalculateInputResult(bool includeAll=false)
+        public virtual async Task CalculateInputResult(bool includeAll = false)
         {
             if (InputResult != null) return;
 
@@ -174,12 +174,12 @@ namespace Backend.Entities.GraphNodes
                 foreach (var input in Inputs)
                 {
                     await input.CalculateOutputResult(includeAll);
-                    if(input.OutputResult != null)
+                    if (input.OutputResult != null)
                     {
                         concated.AddRange(input.OutputResult);
                         hasValidInput = true;
                     }
-                        
+
                 }
                 if (hasValidInput)
                 {
@@ -193,14 +193,14 @@ namespace Backend.Entities.GraphNodes
             OutputResult = InputResult;
             return Task.CompletedTask;
         }
-        public async Task CalculateOutputResult(bool includeAll=false)
+        public async Task CalculateOutputResult(bool includeAll = false)
         {
             if (OutputResult != null) return;
 
             if (InputResult == null)
                 await CalculateInputResult(includeAll);
             await MapInputToOutput();
-            if(OutputResult != null)
+            if (OutputResult != null)
                 Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
         }
 
@@ -212,16 +212,16 @@ namespace Backend.Entities.GraphNodes
 
         public bool AnyForward(Func<GraphNode, bool> predicate) => predicate(this) || Outputs.Any(o => o.AnyForward(predicate));
         public bool AnyBackward(Func<GraphNode, bool> predicate) => predicate(this) || Inputs.Any(i => i.AnyBackward(predicate));
-        public void PropagateForward(Action<GraphNode> action, bool applyToSelf=true)
+        public void PropagateForward(Action<GraphNode> action, bool applyToSelf = true)
         {
-            if(applyToSelf)
+            if (applyToSelf)
                 action(this);
             foreach (var output in Outputs)
                 output.PropagateForward(action);
         }
         public void PropagateBackward(Action<GraphNode> action, bool applyToSelf = true)
         {
-            if(applyToSelf)
+            if (applyToSelf)
                 action(this);
             foreach (var input in Inputs)
                 input.PropagateBackward(action);
