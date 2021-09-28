@@ -42,15 +42,15 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => false;
         private bool IncludedArtists { get; set; }
         private bool IncludedTags { get; set; }
-        public override async Task CalculateInputResult()
+        public override async Task CalculateInputResult(bool includeAll=false)
         {
             if (InputResult != null || Playlist == null) return;
 
-            IncludedArtists = AnyForward(gn => gn.RequiresArtists);
-            IncludedTags = AnyForward(gn => gn.RequiresTags);
+            IncludedArtists = includeAll || AnyForward(gn => gn.RequiresArtists);
+            IncludedTags = includeAll || AnyForward(gn => gn.RequiresTags);
 
-            InputResult = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: false, includeArtists: IncludedArtists, includeTags: IncludedTags);
-            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} IncludedArtist={IncludedArtists} IncludedTags={IncludedTags})");
+            InputResult = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: includeAll, includeArtists: IncludedArtists, includeTags: IncludedTags);
+            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={includeAll})");
         }
 
 

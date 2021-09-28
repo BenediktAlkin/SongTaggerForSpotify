@@ -3,9 +3,11 @@ using Backend.Entities;
 using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SpotifySongTagger.ViewModels
 {
@@ -26,20 +28,23 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref selectedTrackVM, value, nameof(SelectedTrackVM));
         }
         public ObservableCollection<TrackViewModel> TrackVMs { get; } = new ObservableCollection<TrackViewModel>();
-        public async Task LoadTracks(string playlistId)
+        private async Task LoadTracks(string playlistId, ListBox sender, Func<string, Task<List<Track>>> getTracksFunc)
         {
             IsLoadingTracks = true;
             TrackVMs.Clear();
-            var tracks = await DatabaseOperations.PlaylistTracks(playlistId);
-                
+            var tracks = await getTracksFunc(playlistId);
+
             // check if the playlist is still selected
-            if (SelectedPlaylist.Id == playlistId)
+            var selectedPlaylist = sender.SelectedItem as Playlist;
+            if (selectedPlaylist.Id == playlistId)
             {
                 foreach (var track in tracks)
                     TrackVMs.Add(new TrackViewModel(track));
                 IsLoadingTracks = false;
             }
         }
+        public async Task LoadPlaylistTracks(string playlistId, ListBox sender) => await LoadTracks(playlistId, sender, id => DatabaseOperations.PlaylistTracks(id));
+        public async Task LoadGeneratedTracks(string playlistId, ListBox sender) => await LoadTracks(playlistId, sender, id => DatabaseOperations.GeneratedPlaylistTracks(id));
         public void UpdatePlayingTrack(string newId)
         {
             foreach (var trackVM in TrackVMs)
@@ -47,12 +52,6 @@ namespace SpotifySongTagger.ViewModels
         }
         #endregion
 
-        private Playlist selectedPlaylist;
-        public Playlist SelectedPlaylist
-        {
-            get => selectedPlaylist;
-            set => SetProperty(ref selectedPlaylist, value, nameof(SelectedPlaylist));
-        }
         private string newTagName;
         public string NewTagName
         {
@@ -126,6 +125,7 @@ namespace SpotifySongTagger.ViewModels
             User,
         }
         public void SetProgressSpotify(int newProgress) => SetProgress(newProgress, ProgressUpdateSource.Spotify);
+
         public void SetProgress(int newProgress, ProgressUpdateSource source)
         {
             if (DisableSpotifyProgressUpdates && source == ProgressUpdateSource.Spotify)

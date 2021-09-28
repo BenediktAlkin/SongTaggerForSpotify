@@ -11,7 +11,6 @@ namespace Backend.Entities
         public string Id { get; set; }
         public string Name { get; set; }
         public int DurationMs { get; set; }
-        public DateTime AddedAt { get; set; }
 
 
         public string AlbumId { get; set; }
@@ -24,7 +23,7 @@ namespace Backend.Entities
         public ObservableCollection<Tag> Tags { get; set; } = new ObservableCollection<Tag>();
 
 
-        public string ArtistsString => string.Join(", ", Artists.Select(a => a.Name));
+        public string ArtistsString => Artists == null ? string.Empty : string.Join(", ", Artists.Select(a => a.Name));
 
 
         public override bool Equals(object obj) => obj is Track other ? Equals(other) : false;

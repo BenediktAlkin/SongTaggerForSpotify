@@ -60,6 +60,7 @@ namespace Backend
             tag.Name = newName;
             Db.SaveChanges();
         }
+
         public static void DeleteTag(Tag tag)
         {
             Db.Tags.Remove(tag);
@@ -268,7 +269,7 @@ namespace Backend
         }
 
         private static readonly string[] SPECIAL_PLAYLIST_IDS = { Constants.ALL_SONGS_PLAYLIST_ID, Constants.LIKED_SONGS_PLAYLIST_ID, Constants.UNTAGGED_SONGS_PLAYLIST_ID };
-        public static async Task<List<Playlist>> PlaylistsFollowed()
+        public static async Task<List<Playlist>> PlaylistsLiked()
         {
             var playlists = Db.Playlists;
             var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
@@ -293,6 +294,31 @@ namespace Backend
             Db.SaveChanges();
             return specialPlaylists;
         }
+        public static List<Playlist> PlaylistsGenerated()
+        {
+            var playlistOutputNodes = Db.PlaylistOutputNodes.ToList();
+            return playlistOutputNodes.Select(node => new Playlist { Id = node.GeneratedPlaylistId, Name = node.PlaylistName }).OrderBy(p => p.Name).ToList();
+        }
+        public static async Task<List<Track>> GeneratedPlaylistTracks(string id)
+        {
+            var playlistOutputNode = Db.PlaylistOutputNodes.FirstOrDefault(p => p.GeneratedPlaylistId == id);
+            if(playlistOutputNode == null)
+            {
+                Log.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
+                return new();
+            }
+            var graphGeneratorPage = Db.GraphGeneratorPages
+                .Include(ggp => ggp.GraphNodes).ThenInclude(node => node.Inputs)
+                .FirstOrDefault(ggp => ggp.Id == playlistOutputNode.GraphGeneratorPageId);
+            if(graphGeneratorPage == null)
+            {
+                Log.Error($"Could not find GraphGeneratorPage {playlistOutputNode.GraphGeneratorPageId} of OutputNode with GeneratedPlaylistId {playlistOutputNode.GeneratedPlaylistId}");
+                return new();
+            }
+            await playlistOutputNode.CalculateOutputResult(includeAll:true);
+            return playlistOutputNode.OutputResult;
+        }
+
 
 
 

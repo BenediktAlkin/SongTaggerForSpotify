@@ -1,12 +1,13 @@
-export tags
-audio features
+export tags TODO tests
+
+audio features viewer/filter
 ignition/do you --> unavailable songs
 year filter node
 disjunct node
-check if playcount
+search function
+
 top tracks
 
-remove Track.AddedAt
 refactor new()
 
 installer does not provide access to the folders
@@ -16,3 +17,5 @@ graph editor: nodes attach to mouse if mouse is released over e.g. a textbox whi
 
 
 errors during tagging probbly occour when connection is used too long and therefore times out
+notice somehow if token gets invalid
+check if all spotify operations return empty results that do not lead to crashes

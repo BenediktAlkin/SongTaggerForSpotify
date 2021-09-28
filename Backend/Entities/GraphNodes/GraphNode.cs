@@ -161,7 +161,7 @@ namespace Backend.Entities.GraphNodes
             inputResult = null;
             outputResult = null;
         }
-        public virtual async Task CalculateInputResult()
+        public virtual async Task CalculateInputResult(bool includeAll=false)
         {
             if (InputResult != null) return;
 
@@ -173,7 +173,7 @@ namespace Backend.Entities.GraphNodes
                 var hasValidInput = false;
                 foreach (var input in Inputs)
                 {
-                    await input.CalculateOutputResult();
+                    await input.CalculateOutputResult(includeAll);
                     if(input.OutputResult != null)
                     {
                         concated.AddRange(input.OutputResult);
@@ -193,12 +193,12 @@ namespace Backend.Entities.GraphNodes
             OutputResult = InputResult;
             return Task.CompletedTask;
         }
-        public async Task CalculateOutputResult()
+        public async Task CalculateOutputResult(bool includeAll=false)
         {
             if (OutputResult != null) return;
 
             if (InputResult == null)
-                await CalculateInputResult();
+                await CalculateInputResult(includeAll);
             await MapInputToOutput();
             if(OutputResult != null)
                 Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");

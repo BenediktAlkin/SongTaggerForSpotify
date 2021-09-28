@@ -39,6 +39,7 @@ namespace SpotifySongTagger.Views
                 updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
             }
             await BaseViewModel.DataContainer.LoadSourcePlaylists();
+            BaseViewModel.DataContainer.LoadGeneratedPlaylists();
             await BaseViewModel.DataContainer.LoadTags();
 
             if (updatePlaybackInfoTask != null)
@@ -92,15 +93,27 @@ namespace SpotifySongTagger.Views
 
         private async void Playlists_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var playlist = ViewModel.SelectedPlaylist;
-            if (playlist == null)
+            // clear selection of other listboxes
+            if (sender != MetaPlaylistsListBox && MetaPlaylistsListBox != null) MetaPlaylistsListBox.SelectedItem = null;
+            if (sender != LikedPlaylistsListBox && LikedPlaylistsListBox != null) LikedPlaylistsListBox.SelectedItem = null;
+            if (sender != GeneratedPlaylistsListBox && GeneratedPlaylistsListBox != null) GeneratedPlaylistsListBox.SelectedItem = null;
+
+            // clear tracks
+            var listBox = sender as ListBox;
+            if (listBox.SelectedItem == null)
             {
                 ViewModel.TrackVMs.Clear();
                 return;
             }
+
+            // load new tracks
+            var playlist = listBox.SelectedItem as Playlist;
             try
             {
-                await ViewModel.LoadTracks(playlist.Id);
+                if (sender == GeneratedPlaylistsListBox)
+                    await ViewModel.LoadGeneratedTracks(playlist.Id, listBox);
+                else
+                    await ViewModel.LoadPlaylistTracks(playlist.Id, listBox);
                 Log.Information($"Selected playlist {playlist.Name} with {ViewModel.TrackVMs.Count} songs");
             }
             catch (TaskCanceledException)

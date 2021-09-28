@@ -40,6 +40,25 @@ namespace Backend
             get => isLoadingSourcePlaylists;
             set => SetProperty(ref isLoadingSourcePlaylists, value, nameof(IsLoadingSourcePlaylists));
         }
+        private List<Playlist> specialPlaylists;
+        public List<Playlist> SpecialPlaylists
+        {
+            get => specialPlaylists;
+            set => SetProperty(ref specialPlaylists, value, nameof(SpecialPlaylists));
+        }
+        private List<Playlist> followedPlaylists;
+        public List<Playlist> FollowedPlaylists
+        {
+            get => followedPlaylists;
+            set => SetProperty(ref followedPlaylists, value, nameof(FollowedPlaylists));
+        }
+        private List<Playlist> generatedPlaylists;
+        public List<Playlist> GeneratedPlaylists
+        {
+            get => generatedPlaylists;
+            set => SetProperty(ref generatedPlaylists, value, nameof(GeneratedPlaylists));
+        }
+        // special playlists + followed playlists
         private List<Playlist> sourcePlaylists;
         public List<Playlist> SourcePlaylists
         {
@@ -52,10 +71,15 @@ namespace Backend
 
             Log.Information("Loading source playlists");
             IsLoadingSourcePlaylists = true;
-            var followedPlaylists = await DatabaseOperations.PlaylistsFollowed();
-            var specialPlaylists = DatabaseOperations.PlaylistsSpecial();
-            SourcePlaylists = specialPlaylists.Concat(followedPlaylists).ToList();
+            FollowedPlaylists = await DatabaseOperations.PlaylistsLiked();
+            SpecialPlaylists = DatabaseOperations.PlaylistsSpecial();
+            SourcePlaylists = SpecialPlaylists.Concat(FollowedPlaylists).ToList();
             IsLoadingSourcePlaylists = false;
+        }
+        public void LoadGeneratedPlaylists()
+        {
+            Log.Information("Loading generated playlists");
+            GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated();
         }
 
 
