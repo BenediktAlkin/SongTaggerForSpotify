@@ -19,6 +19,7 @@ namespace SpotifySongTagger.Converters
                 case nameof(DeduplicateNode): name = "Deduplicate"; break;
                 case nameof(FilterArtistNode): name = "Filter Artist"; break;
                 case nameof(FilterTagNode): name = "Filter Tag"; break;
+                case nameof(FilterYearNode): name = "Filter Release Year"; break;
                 case nameof(PlaylistInputNode): name = "Playlist Input"; break;
                 case nameof(PlaylistOutputNode): name = "Playlist Output"; break;
                 case nameof(RemoveNode): name = "Remove"; break;

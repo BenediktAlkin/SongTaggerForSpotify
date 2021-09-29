@@ -33,21 +33,26 @@ namespace Backend.Entities.GraphNodes
         protected override void OnConnectionAdded(GraphNode from, GraphNode to)
         {
             if ((to.RequiresArtists && !IncludedArtists) ||
-                (to.RequiresTags && !IncludedTags))
+                (to.RequiresTags && !IncludedTags) ||
+                (to.RequiresAlbums && !IncludedAlbums))
                 ClearResult();
         }
         protected override bool CanAddInput(GraphNode input) => false;
         private bool IncludedArtists { get; set; }
         private bool IncludedTags { get; set; }
+        private bool IncludedAlbums { get; set; }
         public override async Task CalculateInputResult(bool includeAll = false)
         {
             if (InputResult != null || Playlist == null) return;
 
             IncludedArtists = includeAll || AnyForward(gn => gn.RequiresArtists);
             IncludedTags = includeAll || AnyForward(gn => gn.RequiresTags);
+            IncludedAlbums = includeAll || AnyForward(gn => gn.RequiresAlbums);
 
-            InputResult = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: includeAll, includeArtists: IncludedArtists, includeTags: IncludedTags);
-            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={includeAll})");
+            InputResult = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums, 
+                includeArtists: IncludedArtists, includeTags: IncludedTags);
+            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} " +
+                $"IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={IncludedAlbums})");
         }
 
 

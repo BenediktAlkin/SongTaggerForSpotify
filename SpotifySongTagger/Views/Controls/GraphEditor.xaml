@@ -18,6 +18,7 @@
         <converters:GraphNodeToNameConverter x:Key="GraphNodeToNameConverter"/>
         <converters:ObjectToTypeNameConverter x:Key="ObjectToTypeNameConverter"/>
         <converters:ObjectToStringConverter x:Key="ObjectToStringConverter"/>
+        <converters:IntToTextConverter x:Key="IntToTextConverter"/>
     </UserControl.Resources>
 
     <Canvas 
@@ -82,6 +83,35 @@
                         </ComboBox.Text>
                     </ComboBox>
                 </DataTemplate>
+                <!-- FilterYearView -->
+                <DataTemplate x:Key="FilterYearView">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" materialDesign:HintAssist.Hint="From" TextChanged="YearFilterNode_YearChanged">
+                            <TextBox.Text>
+                                <Binding Path="YearFrom" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource IntToTextConverter}">
+                                    <Binding.ValidationRules>
+                                        <validationRules:IsIntValidationRule ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <TextBlock Grid.Column="1" Text="-" Margin="5"/>
+                        <TextBox Grid.Column="2" materialDesign:HintAssist.Hint="To" TextChanged="YearFilterNode_YearChanged">
+                            <TextBox.Text>
+                                <Binding Path="YearTo" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource IntToTextConverter}">
+                                    <Binding.ValidationRules>
+                                        <validationRules:IsIntValidationRule ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </Grid>
+                </DataTemplate>
                 <!-- PlaylistInputNodeView -->
                 <DataTemplate x:Key="PlaylistInputNodeView">
                     <ComboBox materialDesign:HintAssist.Hint="Playlist"
@@ -134,7 +164,6 @@
                             <TextBlock Text="{Binding BaseSet, Converter={StaticResource GraphNodeToNameConverter}}"/>
                         </StackPanel>
                     </StackPanel>
-                    
                 </DataTemplate>
                 <!-- plain node view -->
                 <DataTemplate x:Key="PlainNodeView"/>
@@ -185,6 +214,9 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterTagNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource FilterTagNodeView}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterYearNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource FilterYearView}" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistInputNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlaylistInputNodeView}" />

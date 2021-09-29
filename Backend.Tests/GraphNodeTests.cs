@@ -47,6 +47,7 @@ namespace Backend.Tests
                     Name = $"Track{i}",
                     Playlists = new List<Playlist> { Playlists[i % Playlists.Count] },
                     Artists = new List<Artist> { Artists[i % Artists.Count] },
+                    Album = new Album { Id = $"Album{i}", Name = $"Album{i}", ReleaseDate = $"{2000 + i}" },
                 };
                 track.Tags.Add(Tags[i % Tags.Count]);
                 Tracks.Add(track);
@@ -120,6 +121,27 @@ namespace Backend.Tests
                     nTracks++;
                 await outputNode.CalculateOutputResult();
                 Assert.AreEqual(nTracks, outputNode.OutputResult.Count);
+            }
+        }
+
+        [Test]
+        [TestCase(2005, 2010)]
+        public async Task AllInputs_YearFilter_Output(int yearFrom, int yearTo)
+        {
+            var concatNode = new ConcatNode();
+            foreach (var playlist in Playlists)
+                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+            var yearFilterNode = new FilterYearNode{ YearFrom = yearFrom, YearTo = yearTo };
+            yearFilterNode.AddInput(concatNode);
+            var outputNode = new PlaylistOutputNode();
+            outputNode.AddInput(yearFilterNode);
+
+            using (new DatabaseQueryLogger.Context())
+            {
+                await outputNode.CalculateOutputResult();
+                Assert.AreEqual(yearTo - yearFrom + 1, outputNode.OutputResult.Count);
+                foreach(var track in outputNode.OutputResult)
+                    Assert.IsTrue(yearFrom <= track.Album.ReleaseYear && track.Album.ReleaseYear <= yearTo);
             }
         }
 

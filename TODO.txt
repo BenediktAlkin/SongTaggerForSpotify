@@ -1,5 +1,5 @@
-more nodes (year filter node, ...)
 improve node view
+info for nodes
 
 errors during tagging probbly occour when connection is used too long and therefore times out
 notice somehow if token gets invalid
@@ -7,6 +7,9 @@ check if all spotify operations return empty results that do not lead to crashes
 
 installer does not provide access to the folders
 check if the Resource blocks at the start of views are needed
+
+tutorial:
+- examples (create 80s 90s playlists from Liked Songs)
 
 minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node

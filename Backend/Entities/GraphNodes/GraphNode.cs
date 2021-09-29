@@ -221,6 +221,7 @@ namespace Backend.Entities.GraphNodes
         public virtual bool IsValid => true;
         public virtual bool RequiresTags => false;
         public virtual bool RequiresArtists => false;
+        public virtual bool RequiresAlbums => false;
 
 
         public bool AnyForward(Func<GraphNode, bool> predicate) => predicate(this) || Outputs.Any(o => o.AnyForward(predicate));
