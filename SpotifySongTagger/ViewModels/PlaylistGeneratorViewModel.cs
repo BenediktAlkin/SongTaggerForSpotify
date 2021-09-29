@@ -20,19 +20,30 @@ namespace SpotifySongTagger.ViewModels
 
 
         #region NodeTypes
-        public List<NodeType> NodeTypes { get; } = new()
+        public List<NodeTypeCategory> NodeTypeCategories { get; } = new()
         {
-            new NodeType {Name = "Playlist Input", Type = typeof(PlaylistInputNode) },
-            new NodeType {Name = "Concat", Type = typeof(ConcatNode) },
-            new NodeType {Name = "Deduplicate", Type = typeof(DeduplicateNode) },
-            new NodeType {Name = "Filter Artist", Type = typeof(FilterArtistNode) },
-            new NodeType { Name = "Filter Tag", Type = typeof(FilterTagNode) },
-            new NodeType { Name = "Filter Release Year", Type = typeof(FilterYearNode) },
-            new NodeType {Name = "Playlist Output", Type = typeof(PlaylistOutputNode) },
-            new NodeType {Name = "Assign Tag", Type = typeof(AssignTagNode) },
-            new NodeType {Name = "Remove", Type = typeof(RemoveNode) },
+            new NodeTypeCategory("Inputs", true, new[]
+            {
+                new NodeType("Playlist Input", typeof(PlaylistInputNode)),
+            }),
+            new NodeTypeCategory("Set Operations", true, new[]
+            {
+                new NodeType("Concat", typeof(ConcatNode)),
+                new NodeType("Deduplicate", typeof(DeduplicateNode)),
+                new NodeType("Remove", typeof(RemoveNode)),
+            }),
+            new NodeTypeCategory("Filters", true, new[]
+            {
+                new NodeType("Artist", typeof(FilterArtistNode)),
+                new NodeType("Tag", typeof(FilterTagNode)),
+                new NodeType("Release Year", typeof(FilterYearNode)),
+            }),
+            new NodeTypeCategory("Outputs", true, new[]
+            {
+                new NodeType("Playlist Output", typeof(PlaylistOutputNode)),
+                new NodeType("Assign Tag", typeof(AssignTagNode)),
+            }),
         };
-        public NodeType SelectedNodeType { get; set; }
         #endregion
 
         #region GraphGeneratorPages
@@ -106,9 +117,6 @@ namespace SpotifySongTagger.ViewModels
         #endregion
     }
 
-    public class NodeType
-    {
-        public string Name { get; set; }
-        public Type Type { get; set; }
-    }
+    public record NodeTypeCategory(string Name, bool IsExpanded, NodeType[] NodeTypes);
+    public record NodeType(string Name, Type Type);
 }

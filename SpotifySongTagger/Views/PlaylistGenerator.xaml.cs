@@ -19,30 +19,19 @@ namespace SpotifySongTagger.Views
         private async void UserControl_Loaded(object sender, RoutedEventArgs e) => await PlaylistGeneratorViewModel.Init();
 
 
-        private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
-        private void AddGraphGeneratorPageDialog_Add(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(ViewModel.NewGraphGeneratorPageName))
-            {
-                ViewModel.NewGraphGeneratorPageName = null;
-                return;
-            }
-            ViewModel.AddGraphGeneratorPage(ViewModel.NewGraphGeneratorPageName);
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
-
-
-
         #region drag & drop new nodes
-        private void NewNode_MouseDown(object sender, MouseButtonEventArgs e)
+        private void NodeType_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (ViewModel.SelectedGraphGeneratorPageVM == null) return;
-            if (ViewModel.SelectedNodeType == null) return;
+
+            var frameworkElement = sender as FrameworkElement;
+            var nodeType = frameworkElement.DataContext as NodeType;
+            if (nodeType == null) return;
 
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                DragDrop.DoDragDrop(sender as FrameworkElement, ViewModel.SelectedNodeType, DragDropEffects.Copy);
-                Log.Information("NewNode_MouseDown");
+                DragDrop.DoDragDrop(frameworkElement, nodeType, DragDropEffects.Copy);
+                Log.Information("NodeType_PreviewMouseDown");
             }
         }
         private void GraphEditor_Drop(object sender, DragEventArgs e)
@@ -58,7 +47,37 @@ namespace SpotifySongTagger.Views
         }
         #endregion
 
+        #region GraphGeneratorPages dialogues
+        private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
+        private void AddGraphGeneratorPageDialog_Add(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(ViewModel.NewGraphGeneratorPageName))
+            {
+                ViewModel.NewGraphGeneratorPageName = null;
+                return;
+            }
+            ViewModel.AddGraphGeneratorPage(ViewModel.NewGraphGeneratorPageName);
+            ViewModel.NewGraphGeneratorPageName = null;
+        }
+        
+        private void EditPageDialog_Cancel(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NewGraphGeneratorPageName = null;
+        }
+        private void EditPageDialog_Save(object sender, RoutedEventArgs e)
+        {
+            ViewModel.EditGraphGeneratorPageName();
+            ViewModel.NewGraphGeneratorPageName = null;
+        }
 
+        private void DeletePageDialog_Delete(object sender, RoutedEventArgs e)
+        {
+            ViewModel.RemoveGraphGeneratorPage(ViewModel.SelectedGraphGeneratorPageVM);
+            ViewModel.SelectedGraphGeneratorPageVM = null;
+        }
+        #endregion
+
+        #region GraphGeneratorPages actions
         private void DeleteGraphGeneratorPage_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = sender as ListBox;
@@ -102,23 +121,6 @@ namespace SpotifySongTagger.Views
             listBox.SelectedItem = null;
         }
 
-        private void EditPageDialog_Cancel(object sender, RoutedEventArgs e)
-        {
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
-
-        private void EditPageDialog_Save(object sender, RoutedEventArgs e)
-        {
-            ViewModel.EditGraphGeneratorPageName();
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
-
-        private void DeletePageDialog_Delete(object sender, RoutedEventArgs e)
-        {
-            ViewModel.RemoveGraphGeneratorPage(ViewModel.SelectedGraphGeneratorPageVM);
-            ViewModel.SelectedGraphGeneratorPageVM = null;
-        }
-
         private async void RunAll(object sender, RoutedEventArgs e)
         {
             if (ViewModel.IsRunningAll) return;
@@ -131,5 +133,7 @@ namespace SpotifySongTagger.Views
             ViewModel.IsRunningAll = false;
             Log.Information("Finished RunAll GraphGeneratorPages");
         }
+        #endregion
+
     }
 }

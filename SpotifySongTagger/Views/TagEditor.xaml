@@ -136,7 +136,6 @@
                 Drop="Tracks_Drop"
                 SelectionMode="Single"
                 CanUserReorderColumns="False"
-                ColumnHeaderHeight="{Binding ActualHeight, ElementName=PlaylistTitleStackPanel}"
                 MouseDoubleClick="PlayTrack"
                 RowHeaderWidth="0">
                 <!-- remove outline of a selcted cell -->
