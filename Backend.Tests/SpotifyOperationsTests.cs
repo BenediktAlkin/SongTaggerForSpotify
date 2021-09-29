@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
-    public class OperationsTests : BaseTests
+    public class SpotifyOperationsTests : BaseTests
     {
         [Test]
         public void Sync_OutputNode()
