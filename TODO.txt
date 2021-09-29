@@ -1,6 +1,5 @@
+explanation in songtagger
 improve UI lag
-settings for treeview expansions
-info for nodes
 
 errors during tagging probbly occour when connection is used too long and therefore times out
 notice somehow if token gets invalid
@@ -21,3 +20,4 @@ future
 - audio features viewer/filter
 - top tracks
 - check if everything that is cancelable has cancellationtokens
+- settings for treeview expansions

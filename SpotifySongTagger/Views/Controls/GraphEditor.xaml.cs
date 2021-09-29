@@ -142,7 +142,8 @@ namespace SpotifySongTagger.Views.Controls
         }
         private void UnselectAll(object sender, MouseButtonEventArgs e)
         {
-            ViewModel.SelectedObject = null;
+            if(ViewModel != null)
+                ViewModel.SelectedObject = null;
             Canvas.Focus(); // removes focus from GraphNode editable fields
         }
 
@@ -179,6 +180,7 @@ namespace SpotifySongTagger.Views.Controls
 
         private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
         {
+            if (ViewModel == null) return;
             var frameworkElement = sender as FrameworkElement;
             var from = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
             var to = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;

@@ -28,6 +28,7 @@
 
             <!-- node types -->
             <TreeView
+                IsEnabled="{Binding SelectedGraphGeneratorPage, Converter={StaticResource IsNotNullToBooleanConverter}}"
                 Grid.Row="0"
                 ItemsSource="{Binding NodeTypeCategories}">
                 <TreeView.Resources>
@@ -46,10 +47,10 @@
                         </Style.Triggers>
                     </Style>
                     <HierarchicalDataTemplate DataType="{x:Type viewmodels:NodeTypeCategory}" ItemsSource="{Binding NodeTypes}">
-                        <TextBlock Text="{Binding Name}" Margin="3,2" />
+                        <TextBlock Text="{Binding Name}" Margin="3,2" ToolTip="{Binding ToolTip}"  />
                     </HierarchicalDataTemplate>
                     <DataTemplate DataType="{x:Type viewmodels:NodeType}">
-                        <TextBlock Text="{Binding Name}" Margin="3 2" />
+                        <TextBlock Text="{Binding Name}" Margin="3 2" ToolTip="{Binding ToolTip}" />
                     </DataTemplate>
                 </TreeView.Resources>
             </TreeView>

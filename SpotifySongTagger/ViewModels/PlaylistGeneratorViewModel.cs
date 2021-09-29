@@ -22,26 +22,26 @@ namespace SpotifySongTagger.ViewModels
         #region NodeTypes
         public List<NodeTypeCategory> NodeTypeCategories { get; } = new()
         {
-            new NodeTypeCategory("Inputs", true, new[]
+            new NodeTypeCategory("Inputs", "provide songs for other nodes", true, new[]
             {
-                new NodeType("Playlist Input", typeof(PlaylistInputNode)),
+                new NodeType("Playlist Input", "all songs of a playlist", typeof(PlaylistInputNode)),
             }),
-            new NodeTypeCategory("Set Operations", true, new[]
+            new NodeTypeCategory("Set Operations", "perform set operations on their inputs", true, new[]
             {
-                new NodeType("Concat", typeof(ConcatNode)),
-                new NodeType("Deduplicate", typeof(DeduplicateNode)),
-                new NodeType("Remove", typeof(RemoveNode)),
+                new NodeType("Concat", "concatenate all inputs", typeof(ConcatNode)),
+                new NodeType("Deduplicate", "remove duplicates", typeof(DeduplicateNode)),
+                new NodeType("Remove", "removes a set from another set", typeof(RemoveNode)),
             }),
-            new NodeTypeCategory("Filters", true, new[]
+            new NodeTypeCategory("Filters", "remove all songs that do not match a filter", true, new[]
             {
-                new NodeType("Artist", typeof(FilterArtistNode)),
-                new NodeType("Tag", typeof(FilterTagNode)),
-                new NodeType("Release Year", typeof(FilterYearNode)),
+                new NodeType("Artist", "filter by artist", typeof(FilterArtistNode)),
+                new NodeType("Tag", "filter by tag", typeof(FilterTagNode)),
+                new NodeType("Release Year", "filter by release year", typeof(FilterYearNode)),
             }),
-            new NodeTypeCategory("Outputs", true, new[]
+            new NodeTypeCategory("Outputs", "generate an output", true, new[]
             {
-                new NodeType("Playlist Output", typeof(PlaylistOutputNode)),
-                new NodeType("Assign Tag", typeof(AssignTagNode)),
+                new NodeType("Playlist Output", "generate a playlist", typeof(PlaylistOutputNode)),
+                new NodeType("Assign Tag", "assign a tag", typeof(AssignTagNode)),
             }),
         };
         #endregion
@@ -116,6 +116,6 @@ namespace SpotifySongTagger.ViewModels
         #endregion
     }
 
-    public record NodeTypeCategory(string Name, bool IsExpanded, NodeType[] NodeTypes);
-    public record NodeType(string Name, Type Type);
+    public record NodeTypeCategory(string Name, string ToolTip, bool IsExpanded, NodeType[] NodeTypes);
+    public record NodeType(string Name, string ToolTip, Type Type);
 }
