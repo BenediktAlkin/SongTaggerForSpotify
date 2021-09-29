@@ -123,6 +123,64 @@ namespace Backend.Tests
             }
         }
 
+        [Test]
+        public async Task RemoveNode_NoInputs()
+        {
+            var removeNode = new RemoveNode();
+            await removeNode.CalculateOutputResult();
+            Assert.AreEqual(0, removeNode.OutputResult.Count);
+        }
+        [Test]
+        public async Task RemoveNode_NoInputSet()
+        {
+            var playlist = new PlaylistInputNode { Playlist = Playlists[0] };
+            var removeNode = new RemoveNode();
+            removeNode.AddInput(playlist);
+            removeNode.SwapSets();
+            await removeNode.CalculateOutputResult();
+            Assert.AreEqual(0, removeNode.OutputResult.Count);
+        }
+        [Test]
+        public async Task RemoveNode_NoRemoveSet()
+        {
+            var playlist = new PlaylistInputNode { Playlist = Playlists[0] };
+            var removeNode = new RemoveNode();
+            removeNode.AddInput(playlist);
+            await removeNode.CalculateOutputResult();
+            Assert.AreEqual(playlist.OutputResult.Count, removeNode.OutputResult.Count);
+        }
+
+        [Test]
+        public async Task RemoveNode_RemoveSameNode()
+        {
+            var playlist1 = new PlaylistInputNode { Playlist = Playlists[0] };
+            var playlist2 = new PlaylistInputNode { Playlist = Playlists[0] };
+            var removeNode = new RemoveNode();
+            removeNode.AddInput(playlist1);
+            removeNode.AddInput(playlist2);
+
+            await removeNode.CalculateOutputResult();
+            Assert.AreEqual(0, removeNode.OutputResult.Count);
+        }
+        [Test]
+        public async Task RemoveNode_UndoConcat()
+        {
+            var playlist1 = new PlaylistInputNode { Playlist = Playlists[0] };
+            var playlist2 = new PlaylistInputNode { Playlist = Playlists[1] };
+            var concatNode = new ConcatNode();
+            concatNode.AddInput(playlist1);
+            concatNode.AddInput(playlist2);
+
+            var removeNode = new RemoveNode();
+            removeNode.AddInput(concatNode);
+            removeNode.AddInput(playlist2);
+
+            await removeNode.CalculateOutputResult();
+            Assert.AreEqual(playlist1.OutputResult.Count, removeNode.OutputResult.Count);
+            foreach (var track in playlist1.OutputResult)
+                Assert.Contains(track, removeNode.OutputResult);
+        }
+
 
         [Test]
         public async Task DetectCycles_SameSource_NoCycle()

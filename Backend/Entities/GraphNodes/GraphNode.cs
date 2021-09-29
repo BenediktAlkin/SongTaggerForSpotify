@@ -61,6 +61,7 @@ namespace Backend.Entities.GraphNodes
             Log.Information($"Connected {input} to {this}");
             PropagateBackward(gn => gn.OnConnectionAdded(input, this));
             PropagateForward(gn => gn.ClearResult());
+            OnAddInput(input);
         }
         public void AddOutput(GraphNode output)
         {
@@ -87,10 +88,22 @@ namespace Backend.Entities.GraphNodes
             Log.Information($"Connected {this} to {output}");
             PropagateBackward(gn => gn.OnConnectionAdded(this, output));
             output.PropagateForward(gn => gn.ClearResult());
+            output.OnAddInput(this);
         }
 
-        public void RemoveInput(GraphNode input) => ((List<GraphNode>)Inputs).Remove(input);
-        public void RemoveOutput(GraphNode output) => ((List<GraphNode>)Outputs).Remove(output);
+        protected virtual void OnAddInput(GraphNode input) { }
+        protected virtual void OnRemoveInput(GraphNode input) { }
+
+        public void RemoveInput(GraphNode input)
+        {
+            ((List<GraphNode>)Inputs).Remove(input);
+            OnRemoveInput(input);
+        }
+        public void RemoveOutput(GraphNode output)
+        {
+            ((List<GraphNode>)Outputs).Remove(output);
+            output.OnRemoveInput(this);
+        }
 
         protected virtual bool CanAddInput(GraphNode input) => true;
         protected virtual bool CanAddOutput(GraphNode output) => true;

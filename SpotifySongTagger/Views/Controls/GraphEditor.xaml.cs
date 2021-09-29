@@ -23,8 +23,11 @@ namespace SpotifySongTagger.Views.Controls
         private async void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             UpdateCanvasSize();
-            ViewModel.ClearAllInputResults();
-            await ViewModel.RefreshInputResults();
+            if(ViewModel != null)
+            {
+                ViewModel.ClearAllInputResults();
+                await ViewModel.RefreshInputResults();
+            }
             await BaseViewModel.DataContainer.LoadTags();
         }
 
@@ -181,6 +184,13 @@ namespace SpotifySongTagger.Views.Controls
             ConnectionManager.Instance.Database.SaveChanges();
             Log.Information($"{frameworkElement.DataContext} changed from {from} to {to}");
             await ViewModel.RefreshInputResults();
+        }
+
+        private void SwapRemoveNodeInputs(object sender, RoutedEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            var removeNode = frameworkElement.DataContext as RemoveNode;
+            removeNode.SwapSets();
         }
     }
 }

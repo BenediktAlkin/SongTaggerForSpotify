@@ -29,6 +29,7 @@ namespace SpotifySongTagger.ViewModels
             new NodeType {Name = "Filter Tag", Type = typeof(FilterTagNode) },
             new NodeType {Name = "Playlist Output", Type = typeof(PlaylistOutputNode) },
             new NodeType {Name = "Assign Tag", Type = typeof(AssignTagNode) },
+            new NodeType {Name = "Remove", Type = typeof(RemoveNode) },
         };
         public NodeType SelectedNodeType { get; set; }
         #endregion

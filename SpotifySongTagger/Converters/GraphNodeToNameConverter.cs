@@ -9,17 +9,22 @@ namespace SpotifySongTagger.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            var name = "Unknown Node";
+            if (!(value is GraphNode gn)) return name;
+
             switch (value.GetType().Name)
             {
-                case nameof(AssignTagNode): return "Assign Tag";
-                case nameof(ConcatNode): return "Concatenate";
-                case nameof(DeduplicateNode): return "Deduplicate";
-                case nameof(FilterArtistNode): return "Filter Artist";
-                case nameof(FilterTagNode): return "Filter Tag";
-                case nameof(PlaylistInputNode): return "Playlist Input";
-                case nameof(PlaylistOutputNode): return "Playlist Output";
+                case nameof(AssignTagNode): name = "Assign Tag"; break;
+                case nameof(ConcatNode): name = "Concatenate"; break;
+                case nameof(DeduplicateNode): name = "Deduplicate"; break;
+                case nameof(FilterArtistNode): name = "Filter Artist"; break;
+                case nameof(FilterTagNode): name = "Filter Tag"; break;
+                case nameof(PlaylistInputNode): name = "Playlist Input"; break;
+                case nameof(PlaylistOutputNode): name = "Playlist Output"; break;
+                case nameof(RemoveNode): name = "Remove"; break;
             }
-            return "Unknown Node";
+
+            return $"{name} ({gn.Id})";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Binding.DoNothing;

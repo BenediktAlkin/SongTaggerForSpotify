@@ -111,6 +111,31 @@
                         </TextBox.Text>
                     </TextBox>
                 </DataTemplate>
+                <!-- RemoveNodeView -->
+                <DataTemplate x:Key="RemoveNodeView">
+                    <StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Remove"/>
+                            <TextBlock Text="{Binding RemoveSet, Converter={StaticResource GraphNodeToNameConverter}}"/>
+                        </StackPanel>
+                        <Button
+                            ToolTip="Swap"
+                            Style="{DynamicResource MaterialDesignToolButton}"
+                            Click="SwapRemoveNodeInputs"
+                            Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                            materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}">
+                            <materialDesign:PackIcon
+                                Height="24"
+                                Width="24"
+                                Kind="SwapVertical" />
+                        </Button>
+                        <StackPanel Orientation="Vertical">
+                                <TextBlock Text="from"/>
+                            <TextBlock Text="{Binding BaseSet, Converter={StaticResource GraphNodeToNameConverter}}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                </DataTemplate>
                 <!-- plain node view -->
                 <DataTemplate x:Key="PlainNodeView"/>
             </ItemsControl.Resources>
@@ -166,6 +191,9 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistOutputNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlaylistOutputNodeView}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="RemoveNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource RemoveNodeView}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

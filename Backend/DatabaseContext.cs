@@ -27,6 +27,7 @@ namespace Backend
             builder.Entity<FilterTagNode>().HasDiscriminator<string>("Discriminator").HasValue(nameof(FilterTagNode));
             builder.Entity<PlaylistInputNode>().HasDiscriminator<string>("Discriminator").HasValue(nameof(PlaylistInputNode));
             builder.Entity<PlaylistOutputNode>().HasDiscriminator<string>("Discriminator").HasValue(nameof(PlaylistOutputNode));
+            builder.Entity<RemoveNode>().HasDiscriminator<string>("Discriminator").HasValue(nameof(RemoveNode));
         }
 
 
