@@ -11,7 +11,7 @@ namespace Util
 
     public static class Github
     {
-        private static JsonSerializerSettings SerializerOptions { get; } = new JsonSerializerSettings
+        private static JsonSerializerSettings SerializerOptions { get; } = new()
         {
             ContractResolver = new DefaultContractResolver
             {

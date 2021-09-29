@@ -17,7 +17,6 @@ namespace SpotifySongTagger.ViewModels.Controls
         public GraphEditorViewModel(GraphGeneratorPage ggp)
         {
             GraphGeneratorPage = ggp;
-            GraphNodeVMs = new ObservableCollection<GraphNodeViewModel>();
             var nodeViewModels = ggp.GraphNodes.Select(gn => new GraphNodeViewModel(gn, GraphNodeVMs));
             foreach (var nodeViewModel in nodeViewModels)
                 GraphNodeVMs.Add(nodeViewModel);
@@ -40,7 +39,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             get => graphGeneratorPage;
             set => SetProperty(ref graphGeneratorPage, value, nameof(GraphGeneratorPage));
         }
-        public ObservableCollection<GraphNodeViewModel> GraphNodeVMs { get; }
+        public ObservableCollection<GraphNodeViewModel> GraphNodeVMs { get; } = new();
 
 
         public Point LastMousePos { get; set; }

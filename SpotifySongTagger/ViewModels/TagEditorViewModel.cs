@@ -25,7 +25,7 @@ namespace SpotifySongTagger.ViewModels
             get => selectedTrackVM;
             set => SetProperty(ref selectedTrackVM, value, nameof(SelectedTrackVM));
         }
-        public ObservableCollection<TrackViewModel> TrackVMs { get; } = new ObservableCollection<TrackViewModel>();
+        public ObservableCollection<TrackViewModel> TrackVMs { get; } = new();
         private async Task LoadTracks(string playlistId, ListBox sender, Func<string, Task<List<Track>>> getTracksFunc)
         {
             IsLoadingTracks = true;

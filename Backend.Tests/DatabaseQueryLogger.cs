@@ -5,7 +5,7 @@ namespace Backend.Tests
 {
     public class DatabaseQueryLogger
     {
-        public static DatabaseQueryLogger Instance { get; } = new DatabaseQueryLogger();
+        public static DatabaseQueryLogger Instance { get; } = new();
         private DatabaseQueryLogger() { }
 
         public int MessageCount { get; set; }

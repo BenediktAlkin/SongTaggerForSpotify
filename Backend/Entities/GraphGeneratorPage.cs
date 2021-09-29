@@ -14,14 +14,13 @@ namespace Backend.Entities
             get => name;
             set => SetProperty(ref name, value, nameof(Name));
         }
-        public ObservableCollection<GraphNode> GraphNodes { get; private set; }
+        public ObservableCollection<GraphNode> GraphNodes { get; } = new();
 
         public void NotifyIsValidChanged() => NotifyPropertyChanged(nameof(IsValid));
         public bool IsValid => GraphNodes.All(gn => gn.IsValid);
 
         public GraphGeneratorPage()
         {
-            GraphNodes = new ObservableCollection<GraphNode>();
             GraphNodes.CollectionChanged += (sender, e) => NotifyPropertyChanged(nameof(IsValid));
         }
     }

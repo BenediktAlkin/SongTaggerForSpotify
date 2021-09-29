@@ -1,17 +1,18 @@
-audio features viewer/filter
-year filter node
-search function
-
-top tracks
-
-refactor new()
-
-installer does not provide access to the folders
-maybe replace listboxes with buttons with itemscontrol to use buttons and that can be disabled
-check if the Resource blocks at the start of views are needed
-graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
-
+more nodes (year filter node, ...)
+improve node view
 
 errors during tagging probbly occour when connection is used too long and therefore times out
 notice somehow if token gets invalid
 check if all spotify operations return empty results that do not lead to crashes
+
+installer does not provide access to the folders
+check if the Resource blocks at the start of views are needed
+
+minor bugs:
+- graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
+
+
+future
+- search function (search for track and tag it)
+- audio features viewer/filter
+- top tracks

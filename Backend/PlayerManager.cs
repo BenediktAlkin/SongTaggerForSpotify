@@ -15,7 +15,7 @@ namespace Backend
         private const string SPOTIFY_ICON_LIGHT = "/Res/Spotify_Icon_RGB_Green.png";
         private const string SPOTIFY_ICON_DARK = "/Res/Spotify_Icon_RGB_White.png";
 
-        public static PlayerManager Instance { get; } = new PlayerManager();
+        public static PlayerManager Instance { get; } = new();
         private PlayerManager() { }
 
         private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;

@@ -8,7 +8,7 @@ namespace Updater
         private const string LOG_FILE = "updater.log";
         private const string FORMAT = "{0:yyyy-MM-dd HH:mm:ss.fff} [{1}] {2}";
 
-        private static StreamWriter Writer { get; } = new StreamWriter(File.OpenWrite(LOG_FILE));
+        private static StreamWriter Writer { get; } = new(File.OpenWrite(LOG_FILE));
 
         public static void CloseAndFlush()
         {

@@ -12,7 +12,7 @@ namespace Backend
 {
     public class DataContainer : NotifyPropertyChangedBase
     {
-        public static DataContainer Instance { get; } = new DataContainer();
+        public static DataContainer Instance { get; } = new();
         private DataContainer() { }
 
         public void Clear()

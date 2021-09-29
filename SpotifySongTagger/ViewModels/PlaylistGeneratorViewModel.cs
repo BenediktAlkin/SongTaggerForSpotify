@@ -20,7 +20,7 @@ namespace SpotifySongTagger.ViewModels
 
 
         #region NodeTypes
-        public List<NodeType> NodeTypes { get; } = new List<NodeType>
+        public List<NodeType> NodeTypes { get; } = new()
         {
             new NodeType {Name = "Playlist Input", Type = typeof(PlaylistInputNode) },
             new NodeType {Name = "Concat", Type = typeof(ConcatNode) },
@@ -42,8 +42,7 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref isRunningAll, value, nameof(IsRunningAll));
         }
         public ObservableCollection<GraphGeneratorPageViewModel> GraphGeneratorPageVMs { get; } =
-            new ObservableCollection<GraphGeneratorPageViewModel>(
-                ConnectionManager.Instance.Database.GraphGeneratorPages
+            new(ConnectionManager.Instance.Database.GraphGeneratorPages
                 .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs)
                 .Select(ggp => new GraphGeneratorPageViewModel(ggp)));
         private GraphGeneratorPageViewModel selectedGraphGeneratorPageVM;

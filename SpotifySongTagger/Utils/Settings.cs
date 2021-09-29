@@ -14,7 +14,7 @@ namespace SpotifySongTagger.Utils
     public class Settings
     {
         private const string FILE = "settings.json";
-        public static Settings Instance { get; } = new Settings();
+        public static Settings Instance { get; } = new();
 
 
         private const bool IS_DARK_THEME_DEFAULT = true;

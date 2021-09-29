@@ -18,7 +18,7 @@ namespace Backend
         private static readonly string SERVER_URL = $"http://localhost:{PORT}/";
         private static readonly string CALLBACK_URL = $"{SERVER_URL}callback/";
 
-        public static ConnectionManager Instance { get; } = new ConnectionManager();
+        public static ConnectionManager Instance { get; } = new();
         private ConnectionManager() { }
 
 

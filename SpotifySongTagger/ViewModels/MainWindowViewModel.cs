@@ -19,7 +19,7 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref checkedForUpdates, value, nameof(CheckedForUpdates));
         }
 
-        public List<MenuItem> MenuItems { get; } = new List<MenuItem>
+        public List<MenuItem> MenuItems { get; } = new()
         {
             new MenuItem { Name = "Login", ViewType = typeof(HomeView) },
             new MenuItem { Name = "Song Tagger", ViewType = typeof(TagEditor) },
@@ -48,7 +48,7 @@ namespace SpotifySongTagger.ViewModels
         public MainWindowViewModel(ISnackbarMessageQueue snackbarMessageQueue) { }
 
 
-        public CommandImpl SyncLibraryCommand { get; } = new CommandImpl(async sender =>
+        public CommandImpl SyncLibraryCommand { get; } = new(async sender =>
         {
             var viewModel = sender as MainWindowViewModel;
             await viewModel.SyncLibrary();

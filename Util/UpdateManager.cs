@@ -14,7 +14,7 @@ namespace Util
         public const string TEMP_DIR = "temp";
         public const string ZIP_DEFAULT_NAME = "temp.zip";
 
-        public static UpdateManager Instance { get; } = new UpdateManager();
+        public static UpdateManager Instance { get; } = new();
         private UpdateManager() { }
 
         public bool IsChecking => State == UpdatingState.Checking;

@@ -15,7 +15,7 @@ namespace Util.Tests
         private const string REPO = "UpdaterTest";
         private const string UPDATER_NAME = "Updater";
         private const string APPLICATION_NAME = "Application";
-        private static readonly Version MIN_VERSION = new Version(2, 0, 0);
+        private static readonly Version MIN_VERSION = new(2, 0, 0);
 
         private const int MAX_TIMEOUT = 10000;
         private const int TIMEOUT = 1000;
