@@ -13,11 +13,7 @@ namespace Backend
     public class DataContainer : NotifyPropertyChangedBase
     {
         public static DataContainer Instance { get; } = new();
-        private DataContainer()
-        {
-            MetaPlaylists.CollectionChanged += (sender, e) => NotifyPropertyChanged(nameof(SourcePlaylists));
-            LikedPlaylists.CollectionChanged += (sender, e) => NotifyPropertyChanged(nameof(SourcePlaylists));
-        }
+        private DataContainer() { }
 
         public void Clear()
         {
@@ -38,35 +34,45 @@ namespace Backend
         }
 
         #region playlists
-        private bool isLoadingSourcePlaylists;
-        public bool IsLoadingSourcePlaylists
+        private List<Playlist> metaPlaylists;
+        public List<Playlist> MetaPlaylists
         {
-            get => isLoadingSourcePlaylists;
-            set => SetProperty(ref isLoadingSourcePlaylists, value, nameof(IsLoadingSourcePlaylists));
+            get => metaPlaylists;
+            set
+            {
+                SetProperty(ref metaPlaylists, value, nameof(MetaPlaylists));
+                NotifyPropertyChanged(nameof(SourcePlaylists));
+            }
         }
-        public ObservableCollection<Playlist> MetaPlaylists { get; } = new();
-        public ObservableCollection<Playlist> LikedPlaylists { get; } = new();
-        public ObservableCollection<Playlist> GeneratedPlaylists { get; } = new();
+        private List<Playlist> likedPlaylists;
+        public List<Playlist> LikedPlaylists
+        {
+            get => likedPlaylists;
+            set
+            {
+                SetProperty(ref likedPlaylists, value, nameof(LikedPlaylists));
+                NotifyPropertyChanged(nameof(SourcePlaylists));
+            }
+        }
+        private List<Playlist> generatedPlaylists;
+        public List<Playlist> GeneratedPlaylists
+        {
+            get => generatedPlaylists;
+            set => SetProperty(ref generatedPlaylists, value, nameof(GeneratedPlaylists));
+        }
         // meta playlists + liked playlists
-        public List<Playlist> SourcePlaylists => MetaPlaylists.Concat(LikedPlaylists).ToList();
+        private static List<T> NullToEmptyList<T>(List<T> list) => list == null ? new() : list;
+        public List<Playlist> SourcePlaylists => NullToEmptyList(MetaPlaylists).Concat(NullToEmptyList(LikedPlaylists)).ToList();
         public async Task LoadSourcePlaylists()
         {
             Log.Information("Loading source playlists");
-            LikedPlaylists.Clear();
-            MetaPlaylists.Clear();
-            IsLoadingSourcePlaylists = true;
-            foreach (var playlist in await DatabaseOperations.PlaylistsLiked())
-                LikedPlaylists.Add(playlist);
-            foreach (var playlist in DatabaseOperations.PlaylistsMeta())
-                MetaPlaylists.Add(playlist);
-            IsLoadingSourcePlaylists = false;
+            LikedPlaylists = await DatabaseOperations.PlaylistsLiked();
+            MetaPlaylists = DatabaseOperations.PlaylistsMeta();
         }
         public void LoadGeneratedPlaylists()
         {
             Log.Information("Loading generated playlists");
-            GeneratedPlaylists.Clear();
-            foreach(var playlist in DatabaseOperations.PlaylistsGenerated())
-                GeneratedPlaylists.Add(playlist);
+            GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated();
         }
         #endregion
 

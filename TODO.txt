@@ -1,3 +1,4 @@
+check why playlists are unset
 explanation in songtagger
 improve UI lag
 

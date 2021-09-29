@@ -28,6 +28,7 @@
                 <sys:Double x:Key="SpotifyControlSize">24</sys:Double>
                 <sys:Double x:Key="SpotifyPlayPauseSize">36</sys:Double>
                 <converters:ObjectToTypeNameConverter x:Key="ObjectToTypeNameConverter"/>
+                <materialDesign:NullableToVisibilityConverter x:Key="InverseNullableToVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed"/>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -40,7 +41,11 @@
             </Grid.RowDefinitions>
 
             <!-- playlists -->
-            <TreeView Grid.Row="0" ItemsSource="{Binding PlaylistCategories}" SelectedItemChanged="Playlists_SelectionChanged">
+            <TreeView 
+                Grid.Row="0" 
+                ItemsSource="{Binding PlaylistCategories}"
+                SelectedItemChanged="Playlists_SelectionChanged" 
+                Visibility="{Binding IsLoadingPlaylists, Converter={StaticResource InverseBoolToVisConverter}}">
                 <TreeView.Resources>
                     <Style TargetType="TreeViewItem" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
                         <Style.Triggers>
@@ -58,14 +63,38 @@
                     </DataTemplate>
                 </TreeView.Resources>
             </TreeView>
+            <ProgressBar 
+                Grid.Column="0" 
+                Visibility="{Binding IsLoadingPlaylists, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Style="{StaticResource MaterialDesignCircularProgressBar}"
+                Value="0"
+                IsIndeterminate="True" />
             
             <GridSplitter Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1" />
             
+            <!-- instructions -->
+            <StackPanel 
+                Grid.Column="1" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" 
+                Visibility="{Binding SelectedPlaylist, Converter={StaticResource InverseNullableToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="1. Sync your Spotify library with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                    <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="2. Create tags with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                    <materialDesign:PackIcon Kind="Add" Width="48" Height="48" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="3. Select a playlist" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                <TextBlock Text="4. Double click song to play" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                <TextBlock Text="5. Drag &amp; drop tags onto songs" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+            </StackPanel>
             <!-- tracks -->
             <DataGrid 
                 Grid.Column="1"
                 ItemsSource="{Binding TrackVMs}" 
                 SelectedItem="{Binding SelectedTrackVM}"
+                Visibility="{Binding SelectedPlaylist, Converter={StaticResource NullableToVisibilityConverter}}"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 HeadersVisibility="All"
                 AllowDrop="True"
@@ -403,8 +432,8 @@
                     </Grid.ColumnDefinitions>
                     <Image Height="72" Width="72" Source="{Binding PlayerManager.AlbumUrl}" RenderOptions.BitmapScalingMode="Fant"/>
                     <StackPanel Grid.Column="1" Margin="6 0 0 0" VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Text="{Binding PlayerManager.TrackName}"/>
-                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding PlayerManager.ArtistsString}"/>
+                        <TextBlock Text="{Binding PlayerManager.TrackName}" FontWeight="Bold" FontSize="18"/>
+                        <TextBlock Text="{Binding PlayerManager.ArtistsString}" FontSize="14"/>
                     </StackPanel>
                 </Grid>
             </Grid>

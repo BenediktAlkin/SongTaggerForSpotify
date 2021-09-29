@@ -41,6 +41,7 @@ namespace SpotifySongTagger.Views
             }
             await BaseViewModel.DataContainer.LoadSourcePlaylists();
             BaseViewModel.DataContainer.LoadGeneratedPlaylists();
+            ViewModel.IsLoadingPlaylists = false;
             await BaseViewModel.DataContainer.LoadTags();
 
             if (updatePlaybackInfoTask != null)
@@ -102,14 +103,16 @@ namespace SpotifySongTagger.Views
             var playlist = treeView.SelectedItem as Playlist;
             if (treeView.SelectedItem == null || playlist == null)
             {
+                ViewModel.SelectedPlaylist = null;
                 ViewModel.TrackVMs.Clear();
                 return;
             }
 
             // load new tracks
+            ViewModel.SelectedPlaylist = playlist;
             try
             {
-                await ViewModel.LoadTracks(playlist, treeView);
+                await ViewModel.LoadTracks(playlist);
                 Log.Information($"Selected playlist {playlist.Name} with {ViewModel.TrackVMs.Count} songs");
             }
             catch (TaskCanceledException)

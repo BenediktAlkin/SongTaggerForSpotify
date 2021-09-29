@@ -26,7 +26,7 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref selectedTrackVM, value, nameof(SelectedTrackVM));
         }
         public ObservableCollection<TrackViewModel> TrackVMs { get; } = new();
-        public async Task LoadTracks(Playlist playlist, TreeView sender)
+        public async Task LoadTracks(Playlist playlist)
         {
             IsLoadingTracks = true;
             TrackVMs.Clear();
@@ -37,8 +37,7 @@ namespace SpotifySongTagger.ViewModels
                 tracks = await DatabaseOperations.PlaylistTracks(playlist.Id);
 
             // check if the playlist is still selected
-            var selectedPlaylist = sender.SelectedItem as Playlist;
-            if (selectedPlaylist.Id == playlist.Id)
+            if (SelectedPlaylist.Id == playlist.Id)
             {
                 foreach (var track in tracks)
                     TrackVMs.Add(new TrackViewModel(track));
@@ -71,6 +70,18 @@ namespace SpotifySongTagger.ViewModels
             new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
             new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
         };
+        private Playlist selectedPlaylist;
+        public Playlist SelectedPlaylist 
+        {
+            get => selectedPlaylist;
+            set => SetProperty(ref selectedPlaylist, value, nameof(SelectedPlaylist));
+        }
+        private bool isLoadingPlaylists = true;
+        public bool IsLoadingPlaylists
+        {
+            get => isLoadingPlaylists;
+            set => SetProperty(ref isLoadingPlaylists, value, nameof(IsLoadingPlaylists));
+        }
 
         public static void AssignTag(Track track, string tag) => DatabaseOperations.AssignTag(track, tag);
         public void RemoveAssignment(Tag tag) => DatabaseOperations.RemoveAssignment(SelectedTrackVM.Track, tag);
@@ -152,5 +163,5 @@ namespace SpotifySongTagger.ViewModels
         }
         #endregion
     }
-    public record PlaylistCategory(string Name, bool IsExpanded, ObservableCollection<Playlist> Playlists);
+    public record PlaylistCategory(string Name, bool IsExpanded, List<Playlist> Playlists);
 }

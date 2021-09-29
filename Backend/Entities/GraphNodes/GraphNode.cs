@@ -212,7 +212,9 @@ namespace Backend.Entities.GraphNodes
 
             if (InputResult == null)
                 await CalculateInputResult(includeAll);
-            await MapInputToOutput();
+            // input node is invalid --> InputResult stays null
+            if(InputResult != null)
+                await MapInputToOutput();
             if (OutputResult != null)
                 Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
         }
