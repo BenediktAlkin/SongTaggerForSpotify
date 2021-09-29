@@ -13,13 +13,19 @@ namespace Backend
     public class DataContainer : NotifyPropertyChangedBase
     {
         public static DataContainer Instance { get; } = new();
-        private DataContainer() { }
+        private DataContainer()
+        {
+            MetaPlaylists.CollectionChanged += (sender, e) => NotifyPropertyChanged(nameof(SourcePlaylists));
+            LikedPlaylists.CollectionChanged += (sender, e) => NotifyPropertyChanged(nameof(SourcePlaylists));
+        }
 
         public void Clear()
         {
             User = null;
-            SourcePlaylists = null;
             Tags = null;
+            MetaPlaylists.Clear();
+            LikedPlaylists.Clear();
+            GeneratedPlaylists.Clear();
         }
 
 
@@ -31,58 +37,41 @@ namespace Backend
             set => SetProperty(ref user, value, nameof(User));
         }
 
-
-        // source playlists
+        #region playlists
         private bool isLoadingSourcePlaylists;
         public bool IsLoadingSourcePlaylists
         {
             get => isLoadingSourcePlaylists;
             set => SetProperty(ref isLoadingSourcePlaylists, value, nameof(IsLoadingSourcePlaylists));
         }
-        private List<Playlist> metaPlaylists;
-        public List<Playlist> MetaPlaylists
-        {
-            get => metaPlaylists;
-            set => SetProperty(ref metaPlaylists, value, nameof(MetaPlaylists));
-        }
-        private List<Playlist> likedPlaylists;
-        public List<Playlist> LikedPlaylists
-        {
-            get => likedPlaylists;
-            set => SetProperty(ref likedPlaylists, value, nameof(LikedPlaylists));
-        }
-        private List<Playlist> generatedPlaylists;
-        public List<Playlist> GeneratedPlaylists
-        {
-            get => generatedPlaylists;
-            set => SetProperty(ref generatedPlaylists, value, nameof(GeneratedPlaylists));
-        }
+        public ObservableCollection<Playlist> MetaPlaylists { get; } = new();
+        public ObservableCollection<Playlist> LikedPlaylists { get; } = new();
+        public ObservableCollection<Playlist> GeneratedPlaylists { get; } = new();
         // meta playlists + liked playlists
-        private List<Playlist> sourcePlaylists;
-        public List<Playlist> SourcePlaylists
+        public List<Playlist> SourcePlaylists => MetaPlaylists.Concat(LikedPlaylists).ToList();
+        public async Task LoadSourcePlaylists()
         {
-            get => sourcePlaylists;
-            set => SetProperty(ref sourcePlaylists, value, nameof(SourcePlaylists));
-        }
-        public async Task LoadSourcePlaylists(bool forceReload = false)
-        {
-            if (!forceReload && sourcePlaylists != null) return;
-
             Log.Information("Loading source playlists");
+            LikedPlaylists.Clear();
+            MetaPlaylists.Clear();
             IsLoadingSourcePlaylists = true;
-            LikedPlaylists = await DatabaseOperations.PlaylistsLiked();
-            MetaPlaylists = DatabaseOperations.PlaylistsMeta();
-            SourcePlaylists = MetaPlaylists.Concat(LikedPlaylists).ToList();
+            foreach (var playlist in await DatabaseOperations.PlaylistsLiked())
+                LikedPlaylists.Add(playlist);
+            foreach (var playlist in DatabaseOperations.PlaylistsMeta())
+                MetaPlaylists.Add(playlist);
             IsLoadingSourcePlaylists = false;
         }
         public void LoadGeneratedPlaylists()
         {
             Log.Information("Loading generated playlists");
-            GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated();
+            GeneratedPlaylists.Clear();
+            foreach(var playlist in DatabaseOperations.PlaylistsGenerated())
+                GeneratedPlaylists.Add(playlist);
         }
+        #endregion
 
 
-        // all tags in the database
+        #region tags
         private bool isLoadingTags;
         public bool IsLoadingTags
         {
@@ -105,5 +94,6 @@ namespace Backend
             Tags = new ObservableCollection<Tag>(dbTags);
             IsLoadingTags = false;
         }
+        #endregion
     }
 }

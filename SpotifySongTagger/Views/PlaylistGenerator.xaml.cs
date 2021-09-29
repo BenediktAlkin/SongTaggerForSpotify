@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using Backend.Entities;
+using MaterialDesignThemes.Wpf;
 using Serilog;
 using SpotifySongTagger.ViewModels;
 using System.Windows;
@@ -22,7 +23,7 @@ namespace SpotifySongTagger.Views
         #region drag & drop new nodes
         private void NodeType_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (ViewModel.SelectedGraphGeneratorPageVM == null) return;
+            if (ViewModel.SelectedGraphGeneratorPage == null) return;
 
             var frameworkElement = sender as FrameworkElement;
             var nodeType = frameworkElement.DataContext as NodeType;
@@ -36,7 +37,7 @@ namespace SpotifySongTagger.Views
         }
         private void GraphEditor_Drop(object sender, DragEventArgs e)
         {
-            if (ViewModel.SelectedGraphGeneratorPageVM == null) return;
+            if (ViewModel.SelectedGraphGeneratorPage == null) return;
 
             var nodeType = (NodeType)e.Data.GetData(typeof(NodeType));
             var pos = e.GetPosition(GraphEditor);
@@ -72,8 +73,8 @@ namespace SpotifySongTagger.Views
 
         private void DeletePageDialog_Delete(object sender, RoutedEventArgs e)
         {
-            ViewModel.RemoveGraphGeneratorPage(ViewModel.SelectedGraphGeneratorPageVM);
-            ViewModel.SelectedGraphGeneratorPageVM = null;
+            ViewModel.RemoveGraphGeneratorPage(ViewModel.SelectedGraphGeneratorPage);
+            ViewModel.SelectedGraphGeneratorPage = null;
         }
         #endregion
 
@@ -87,7 +88,7 @@ namespace SpotifySongTagger.Views
             enumerator.MoveNext();
             var dialog = enumerator.Current;
 
-            ViewModel.SelectedGraphGeneratorPageVM = listBox.SelectedItem as GraphGeneratorPageViewModel;
+            ViewModel.SelectedGraphGeneratorPage = listBox.SelectedItem as GraphGeneratorPage;
 
             DialogHost.OpenDialogCommand.Execute(dialog, listBox);
 
@@ -103,8 +104,8 @@ namespace SpotifySongTagger.Views
             enumerator.MoveNext();
             var dialog = enumerator.Current;
 
-            ViewModel.SelectedGraphGeneratorPageVM = listBox.SelectedItem as GraphGeneratorPageViewModel;
-            ViewModel.NewGraphGeneratorPageName = ViewModel.SelectedGraphGeneratorPageVM.GraphGeneratorPage.Name;
+            ViewModel.SelectedGraphGeneratorPage = listBox.SelectedItem as GraphGeneratorPage;
+            ViewModel.NewGraphGeneratorPageName = ViewModel.SelectedGraphGeneratorPage.Name;
 
             DialogHost.OpenDialogCommand.Execute(dialog, listBox);
 
@@ -116,7 +117,7 @@ namespace SpotifySongTagger.Views
             var listBox = sender as ListBox;
             if (listBox.SelectedItem == null) return;
 
-            var pageVM = listBox.SelectedItem as GraphGeneratorPageViewModel;
+            var pageVM = listBox.SelectedItem as GraphGeneratorPage;
             await pageVM.Run();
             listBox.SelectedItem = null;
         }
@@ -126,9 +127,9 @@ namespace SpotifySongTagger.Views
             if (ViewModel.IsRunningAll) return;
             Log.Information("RunAll GraphGeneratorPages");
             ViewModel.IsRunningAll = true;
-            foreach (var ggpVM in ViewModel.GraphGeneratorPageVMs)
+            foreach (var ggpVM in ViewModel.GraphGeneratorPages)
                 ggpVM.IsRunning = true;
-            foreach (var ggpVM in ViewModel.GraphGeneratorPageVMs)
+            foreach (var ggpVM in ViewModel.GraphGeneratorPages)
                 await ggpVM.Run();
             ViewModel.IsRunningAll = false;
             Log.Information("Finished RunAll GraphGeneratorPages");

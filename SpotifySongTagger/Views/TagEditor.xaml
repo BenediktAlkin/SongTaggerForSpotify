@@ -27,6 +27,7 @@
                 <converters:BooleanToStringConverter x:Key="IsPremiumEmptyToolTipConverter" FalseValue="Requires Spotify Premium"/>
                 <sys:Double x:Key="SpotifyControlSize">24</sys:Double>
                 <sys:Double x:Key="SpotifyPlayPauseSize">36</sys:Double>
+                <converters:ObjectToTypeNameConverter x:Key="ObjectToTypeNameConverter"/>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -38,90 +39,25 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-
             <!-- playlists -->
-            <Grid Grid.Row="0" Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <!-- meta playlists title -->
-                <StackPanel Grid.Row="0">
-                    <TextBlock
-                        Margin="8 0 0 7"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="Meta Playlists"/>
-                    <Rectangle
-                        Height="1"
-                        Fill="{DynamicResource MaterialDesignDivider}"/>
-                </StackPanel>
-                <!-- meta playlists -->
-                <ListBox 
-                    Name="MetaPlaylistsListBox"
-                    Grid.Row="1"
-                    ItemsSource="{Binding DataContainer.MetaPlaylists}" 
-                    SelectionChanged="Playlists_SelectionChanged">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <!-- liked playlists title -->
-                <StackPanel Grid.Row="2">
-                    <Rectangle
-                        Height="1"
-                        Fill="{DynamicResource MaterialDesignDivider}"/>
-                    <TextBlock 
-                        Margin="8 8 0 8"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="Liked Playlists"/>
-                    <Rectangle
-                        Height="1"
-                        Fill="{DynamicResource MaterialDesignDivider}"/>
-                </StackPanel>
-                <!-- liked playlists -->
-                <ListBox 
-                    Name="LikedPlaylistsListBox"
-                    Grid.Row="3"
-                    ItemsSource="{Binding DataContainer.LikedPlaylists}" 
-                    SelectionChanged="Playlists_SelectionChanged">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <!-- generated playlists title -->
-                <StackPanel Grid.Row="4">
-                    <Rectangle
-                        Height="1"
-                        Fill="{DynamicResource MaterialDesignDivider}"/>
-                    <TextBlock 
-                        Margin="8 8 0 8"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="Generated Playlists"/>
-                    <Rectangle
-                        Height="1"
-                        Fill="{DynamicResource MaterialDesignDivider}"/>
-                </StackPanel>
-                <!-- generated playlists -->
-                <ListBox 
-                    Name="GeneratedPlaylistsListBox"
-                    Grid.Row="5"
-                    ItemsSource="{Binding DataContainer.GeneratedPlaylists}" 
-                    SelectionChanged="Playlists_SelectionChanged">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Grid>
+            <TreeView Grid.Row="0" ItemsSource="{Binding PlaylistCategories}" SelectedItemChanged="Playlists_SelectionChanged">
+                <TreeView.Resources>
+                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
+                        <Style.Triggers>
+                            <!-- expand PlaylistCategories -->
+                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistCategory">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <HierarchicalDataTemplate DataType="{x:Type viewmodels:PlaylistCategory}" ItemsSource="{Binding Playlists}">
+                        <TextBlock Text="{Binding Name}" Margin="3,2" />
+                    </HierarchicalDataTemplate>
+                    <DataTemplate DataType="{x:Type backend:Playlist}">
+                        <TextBlock Text="{Binding Name}" Margin="3 2" />
+                    </DataTemplate>
+                </TreeView.Resources>
+            </TreeView>
             
             <GridSplitter Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1" />
             

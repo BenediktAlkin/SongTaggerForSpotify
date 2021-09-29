@@ -27,47 +27,6 @@
             </Grid.ColumnDefinitions>
 
             <!-- node types -->
-            <!--<ScrollViewer Grid.Column="0">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
-                    --><!-- input nodes --><!--
-                    <TextBlock 
-                        Margin="8 0 0 12"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="Input Nodes"/>
-                    <Rectangle
-                        Height="1"
-                        Fill="{DynamicResource MaterialDesignDivider}"/>
-                    <ListBox
-                        ItemsSource="{Binding NodeTypes}" 
-                        SelectedItem="{Binding SelectedNodeType}" 
-                        HorizontalContentAlignment="Stretch"
-                        IsEnabled="{Binding GraphEditorVM, Converter={StaticResource IsNotNullToBooleanConverter}}"
-                        PreviewMouseDown="NewNode_MouseDown">
-                        --><!-- remove ScrollView (prevents scrolling in parent ScrollView) --><!--
-                        <ListBox.Template>
-                            <ControlTemplate>
-                                <ItemsPresenter></ItemsPresenter>
-                            </ControlTemplate>
-                        </ListBox.Template>
-                        --><!-- select on mouseover --><!--
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="IsSelected" Value="True"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-            </ScrollViewer>-->
-
             <TreeView
                 Grid.Row="0"
                 ItemsSource="{Binding NodeTypeCategories}">
@@ -94,12 +53,6 @@
                     </DataTemplate>
                 </TreeView.Resources>
             </TreeView>
-            <!--<TreeView Grid.Row="0">
-                <TreeViewItem Header="test" IsExpanded="True">
-                    <TreeViewItem Header="subtest"/>
-                </TreeViewItem>
-            </TreeView>-->
-
 
             <GridSplitter Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
 
@@ -115,6 +68,7 @@
                         Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                         Text="Generators"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <!-- add GraphGeneratorPage button -->
                         <Button
                             ToolTip="Add"
                             Style="{DynamicResource MaterialDesignToolButton}"
@@ -170,6 +124,7 @@
                                 </Grid>
                             </Button.CommandParameter>
                         </Button>
+                        <!-- run GraphGeneratorPage button -->
                         <Button
                             Name="RunAllButton"
                             ToolTip="Run all"
@@ -185,6 +140,7 @@
                                 Width="24"
                                 Kind="FastForward" />
                         </Button>
+                        <!-- run all GraphGeneratorPages spinner -->
                         <ProgressBar 
                             Margin="6"
                             Width="20"
@@ -209,17 +165,17 @@
                 </Grid.ColumnDefinitions>
                 <!-- GraphGeneratorPages -->
                 <ListBox Grid.Column="0" 
-                     ItemsSource="{Binding GraphGeneratorPageVMs}" 
-                     SelectedItem="{Binding SelectedGraphGeneratorPageVM}">
+                     ItemsSource="{Binding GraphGeneratorPages}" 
+                     SelectedItem="{Binding SelectedGraphGeneratorPage}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding GraphGeneratorPage.Name}" 
+                                <TextBlock Text="{Binding Name}" 
                                     VerticalAlignment="Center"/>
                                 <materialDesign:PackIcon 
                                     Kind="Alert" 
                                     Margin="8 0 0 0"
-                                    Visibility="{Binding GraphGeneratorPage.IsValid, Converter={StaticResource InverseBoolToVisConverter}}"
+                                    Visibility="{Binding IsValid, Converter={StaticResource InverseBoolToVisConverter}}"
                                     Foreground="Red"
                                     ToolTip="Contains invalid node"
                                     VerticalAlignment="Center"/>
@@ -229,7 +185,7 @@
                 </ListBox>
                 <!-- play icons -->
                 <ListBox Grid.Column="1" 
-                         ItemsSource="{Binding GraphGeneratorPageVMs}"
+                         ItemsSource="{Binding GraphGeneratorPages}"
                          SelectionChanged="PlayGraphGeneratorPage_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -252,7 +208,7 @@
                 </ListBox>
                 <!-- edit icons -->
                 <ListBox Grid.Column="2" 
-                         ItemsSource="{Binding GraphGeneratorPageVMs}"
+                         ItemsSource="{Binding GraphGeneratorPages}"
                          SelectionChanged="EditGraphGeneratorPage_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -294,7 +250,7 @@
                 </ListBox>
                 <!-- delete icons -->
                 <ListBox Grid.Column="3"
-                         ItemsSource="{Binding GraphGeneratorPageVMs}"
+                         ItemsSource="{Binding GraphGeneratorPages}"
                          SelectionChanged="DeleteGraphGeneratorPage_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>

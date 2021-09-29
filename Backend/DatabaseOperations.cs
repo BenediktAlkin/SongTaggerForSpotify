@@ -245,7 +245,7 @@ namespace Backend
             await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished updating playlists");
 
-            await DataContainer.Instance.LoadSourcePlaylists(forceReload: true);
+            await DataContainer.Instance.LoadSourcePlaylists();
         }
 
         public static async Task<List<Track>> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)

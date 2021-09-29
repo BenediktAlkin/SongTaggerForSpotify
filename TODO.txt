@@ -1,4 +1,5 @@
 improve UI lag
+settings for treeview expansions
 info for nodes
 
 errors during tagging probbly occour when connection is used too long and therefore times out
@@ -19,3 +20,4 @@ future
 - search function (search for track and tag it)
 - audio features viewer/filter
 - top tracks
+- check if everything that is cancelable has cancellationtokens

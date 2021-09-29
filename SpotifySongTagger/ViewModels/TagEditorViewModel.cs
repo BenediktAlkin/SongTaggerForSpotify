@@ -26,23 +26,25 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref selectedTrackVM, value, nameof(SelectedTrackVM));
         }
         public ObservableCollection<TrackViewModel> TrackVMs { get; } = new();
-        private async Task LoadTracks(string playlistId, ListBox sender, Func<string, Task<List<Track>>> getTracksFunc)
+        public async Task LoadTracks(Playlist playlist, TreeView sender)
         {
             IsLoadingTracks = true;
             TrackVMs.Clear();
-            var tracks = await getTracksFunc(playlistId);
+            List<Track> tracks;
+            if(DataContainer.GeneratedPlaylists.Contains(playlist))
+                tracks = await DatabaseOperations.GeneratedPlaylistTracks(playlist.Id);
+            else
+                tracks = await DatabaseOperations.PlaylistTracks(playlist.Id);
 
             // check if the playlist is still selected
             var selectedPlaylist = sender.SelectedItem as Playlist;
-            if (selectedPlaylist.Id == playlistId)
+            if (selectedPlaylist.Id == playlist.Id)
             {
                 foreach (var track in tracks)
                     TrackVMs.Add(new TrackViewModel(track));
                 IsLoadingTracks = false;
             }
         }
-        public async Task LoadPlaylistTracks(string playlistId, ListBox sender) => await LoadTracks(playlistId, sender, id => DatabaseOperations.PlaylistTracks(id));
-        public async Task LoadGeneratedTracks(string playlistId, ListBox sender) => await LoadTracks(playlistId, sender, id => DatabaseOperations.GeneratedPlaylistTracks(id));
         public void UpdatePlayingTrack(string newId)
         {
             foreach (var trackVM in TrackVMs)
@@ -63,7 +65,12 @@ namespace SpotifySongTagger.ViewModels
         }
         public Tag ClickedTag { get; set; }
 
-
+        public List<PlaylistCategory> PlaylistCategories { get; } = new()
+        {
+            new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
+            new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
+            new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
+        };
 
         public static void AssignTag(Track track, string tag) => DatabaseOperations.AssignTag(track, tag);
         public void RemoveAssignment(Tag tag) => DatabaseOperations.RemoveAssignment(SelectedTrackVM.Track, tag);
@@ -86,6 +93,7 @@ namespace SpotifySongTagger.ViewModels
             DatabaseOperations.DeleteTag(ClickedTag);
         }
 
+        #region edit/delete icons for tags
         private bool isTagEditMode;
         public bool IsTagEditMode
         {
@@ -114,7 +122,9 @@ namespace SpotifySongTagger.ViewModels
         public PackIconKind TagDeleteIcon => IsTagDeleteMode ? PackIconKind.Close : PackIconKind.Delete;
         public PackIconKind TagDeleteOrEditIcon => IsTagEditMode ? PackIconKind.Edit : PackIconKind.Delete;
         public bool IsTagEditOrDeleteMode => IsTagDeleteMode || IsTagEditMode;
+        #endregion
 
+        #region Player
         public bool DisableVolumeUpdates { get; set; }
         public bool DisableSpotifyProgressUpdates { get; set; }
         public enum ProgressUpdateSource
@@ -140,6 +150,7 @@ namespace SpotifySongTagger.ViewModels
             get => progress;
             set => SetProgress(value, ProgressUpdateSource.User);
         }
-
+        #endregion
     }
+    public record PlaylistCategory(string Name, bool IsExpanded, ObservableCollection<Playlist> Playlists);
 }

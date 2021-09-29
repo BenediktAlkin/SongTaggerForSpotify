@@ -26,6 +26,7 @@ namespace SpotifySongTagger.Views
             ViewModel = new TagEditorViewModel();
             DataContext = ViewModel;
         }
+        #region load/unload
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             BaseViewModel.PlayerManager.OnTrackChanged += ViewModel.UpdatePlayingTrack;
@@ -52,7 +53,10 @@ namespace SpotifySongTagger.Views
             BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
             BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
         }
+        #endregion
 
+
+        #region tag drag & drop
         private void Tag_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             var chip = sender as Chip;
@@ -67,7 +71,6 @@ namespace SpotifySongTagger.Views
                 DragDrop.DoDragDrop(chip, tag.Name, DragDropEffects.Link);
             }
         }
-
         private void Tracks_Drop(object sender, DragEventArgs e)
         {
             var dataGrid = sender as DataGrid;
@@ -82,6 +85,7 @@ namespace SpotifySongTagger.Views
             Log.Information($"Assigned {tag} to {trackVM.Track.Name}");
             e.Handled = true;
         }
+        #endregion
 
         private void AssignedTag_DeleteClick(object sender, RoutedEventArgs e)
         {
@@ -91,29 +95,21 @@ namespace SpotifySongTagger.Views
         }
 
 
-        private async void Playlists_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void Playlists_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            // clear selection of other listboxes
-            if (sender != MetaPlaylistsListBox && MetaPlaylistsListBox != null) MetaPlaylistsListBox.SelectedItem = null;
-            if (sender != LikedPlaylistsListBox && LikedPlaylistsListBox != null) LikedPlaylistsListBox.SelectedItem = null;
-            if (sender != GeneratedPlaylistsListBox && GeneratedPlaylistsListBox != null) GeneratedPlaylistsListBox.SelectedItem = null;
-
             // clear tracks
-            var listBox = sender as ListBox;
-            if (listBox.SelectedItem == null)
+            var treeView = sender as TreeView;
+            var playlist = treeView.SelectedItem as Playlist;
+            if (treeView.SelectedItem == null || playlist == null)
             {
                 ViewModel.TrackVMs.Clear();
                 return;
             }
 
             // load new tracks
-            var playlist = listBox.SelectedItem as Playlist;
             try
             {
-                if (sender == GeneratedPlaylistsListBox)
-                    await ViewModel.LoadGeneratedTracks(playlist.Id, listBox);
-                else
-                    await ViewModel.LoadPlaylistTracks(playlist.Id, listBox);
+                await ViewModel.LoadTracks(playlist, treeView);
                 Log.Information($"Selected playlist {playlist.Name} with {ViewModel.TrackVMs.Count} songs");
             }
             catch (TaskCanceledException)
@@ -122,6 +118,7 @@ namespace SpotifySongTagger.Views
             }
         }
 
+        #region add/edit/delete tag dialog
         public void AddTagDialog_Cancel(object sender, RoutedEventArgs e)
         {
             ViewModel.NewTagName = null;
@@ -147,7 +144,6 @@ namespace SpotifySongTagger.Views
             ViewModel.NewTagName = null;
             ViewModel.ClickedTag = null;
         }
-
         private void DeleteTagDialog_Delete(object sender, RoutedEventArgs e)
         {
             ViewModel.DeleteTag();
@@ -155,6 +151,16 @@ namespace SpotifySongTagger.Views
             ViewModel.ClickedTag = null;
         }
 
+
+        private void NewTagName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // if validation gives an error for NewTagName, it is not updated in the ViewModel
+            var textBox = sender as TextBox;
+            ViewModel.NewTagName = textBox.Text;
+        }
+        #endregion
+
+        #region tag edit/delete button behaviour
         private void ToggleDeleteMode(object sender, RoutedEventArgs e)
         {
 
@@ -169,7 +175,6 @@ namespace SpotifySongTagger.Views
 
         private bool TagEditOrDeleteIsHovered { get; set; }
         private void TagEditOrDelete_MouseEnter(object sender, MouseEventArgs e) => TagEditOrDeleteIsHovered = true;
-
         private void TagEditOrDelete_MouseLeave(object sender, MouseEventArgs e) => TagEditOrDeleteIsHovered = false;
 
         private void EditOrDeleteTagButton_Click(object sender, RoutedEventArgs e)
@@ -178,17 +183,11 @@ namespace SpotifySongTagger.Views
             ViewModel.ClickedTag = frameworkElement.DataContext as Tag;
             ViewModel.NewTagName = ViewModel.ClickedTag.Name;
         }
+        #endregion
 
-        private void NewTagName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // if validation gives an error for NewTagName, it is not updated in the ViewModel
-            var textBox = sender as TextBox;
-            ViewModel.NewTagName = textBox.Text;
-        }
-
+        #region player
         private async void Play_Click(object sender, RoutedEventArgs e) => await PlayerManager.Instance.Play();
         private async void Pause_Click(object sender, RoutedEventArgs e) => await PlayerManager.Instance.Pause();
-
 
         private async void PlayTrack(object sender, MouseButtonEventArgs e)
         {
@@ -233,6 +232,6 @@ namespace SpotifySongTagger.Views
             var newProgress = (int)slider.Value;
             await BaseViewModel.PlayerManager.SetProgress(newProgress);
         }
-
+        #endregion
     }
 }

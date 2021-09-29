@@ -142,7 +142,7 @@ namespace Backend
                 }
             }
 
-            // add all tracks
+            // sync with spotify
             const int BATCH_SIZE = 100;
             await playlistOutputNode.CalculateOutputResult();
             var tracks = playlistOutputNode.OutputResult;

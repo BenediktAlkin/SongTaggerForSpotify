@@ -53,22 +53,21 @@ namespace SpotifySongTagger.ViewModels
             get => isRunningAll;
             set => SetProperty(ref isRunningAll, value, nameof(IsRunningAll));
         }
-        public ObservableCollection<GraphGeneratorPageViewModel> GraphGeneratorPageVMs { get; } =
+        public ObservableCollection<GraphGeneratorPage> GraphGeneratorPages { get; } =
             new(ConnectionManager.Instance.Database.GraphGeneratorPages
-                .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs)
-                .Select(ggp => new GraphGeneratorPageViewModel(ggp)));
-        private GraphGeneratorPageViewModel selectedGraphGeneratorPageVM;
-        public GraphGeneratorPageViewModel SelectedGraphGeneratorPageVM
+                .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs));
+        private GraphGeneratorPage selectedGraphGeneratorPage;
+        public GraphGeneratorPage SelectedGraphGeneratorPage
         {
-            get => selectedGraphGeneratorPageVM;
+            get => selectedGraphGeneratorPage;
             set
             {
-                SetProperty(ref selectedGraphGeneratorPageVM, value, nameof(SelectedGraphGeneratorPageVM));
+                SetProperty(ref selectedGraphGeneratorPage, value, nameof(SelectedGraphGeneratorPage));
 
                 if (value == null)
                     GraphEditorVM = null;
                 else
-                    GraphEditorVM = new GraphEditorViewModel(value.GraphGeneratorPage);
+                    GraphEditorVM = new GraphEditorViewModel(value);
                 NotifyPropertyChanged(nameof(GraphEditorVM));
             }
         }
@@ -94,23 +93,23 @@ namespace SpotifySongTagger.ViewModels
             ConnectionManager.Instance.Database.SaveChanges();
 
             // update ui
-            GraphGeneratorPageVMs.Add(new GraphGeneratorPageViewModel(page));
+            GraphGeneratorPages.Add(page);
         }
-        public void RemoveGraphGeneratorPage(GraphGeneratorPageViewModel toDelete)
+        public void RemoveGraphGeneratorPage(GraphGeneratorPage toDelete)
         {
             if (toDelete == null) return;
 
             // remove in db
-            ConnectionManager.Instance.Database.GraphGeneratorPages.Remove(toDelete.GraphGeneratorPage);
+            ConnectionManager.Instance.Database.GraphGeneratorPages.Remove(toDelete);
             ConnectionManager.Instance.Database.SaveChanges();
 
             // update ui
-            GraphGeneratorPageVMs.Remove(toDelete);
+            GraphGeneratorPages.Remove(toDelete);
         }
 
         public void EditGraphGeneratorPageName()
         {
-            SelectedGraphGeneratorPageVM.GraphGeneratorPage.Name = NewGraphGeneratorPageName;
+            SelectedGraphGeneratorPage.Name = NewGraphGeneratorPageName;
             ConnectionManager.Instance.Database.SaveChanges();
         }
 
