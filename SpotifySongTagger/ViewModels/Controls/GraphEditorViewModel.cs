@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using static SpotifySongTagger.Utils.GeometryUtil;
 
 namespace SpotifySongTagger.ViewModels.Controls
 {
@@ -73,12 +74,17 @@ namespace SpotifySongTagger.ViewModels.Controls
 
 
         #region new arrow
-        public Point NewArrowStartPoint { get; set; }
+        public Rect NewArrowStartNodeRect { get; set; }
         private Geometry newArrow;
         public Geometry NewArrow
         {
             get => newArrow;
             set => SetProperty(ref newArrow, value, nameof(NewArrow));
+        }
+        public void UpdateNewArrow(Point curPos)
+        {
+            var nearestAnchor = GeometryUtil.GetNearestAnchor(curPos, NewArrowStartNodeRect);
+            NewArrow = GeometryUtil.GetArrow(nearestAnchor, new Anchor(GeometryUtil.OppositeLocation(nearestAnchor.Location), curPos));
         }
         public GraphNodeViewModel GetHoveredGraphNodeViewModel(Point pos)
         {

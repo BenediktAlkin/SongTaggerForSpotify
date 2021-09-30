@@ -184,7 +184,8 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <Border x:Name="NodeBorder"
+                        <Border 
+                            x:Name="NodeBorder"
                             MouseDown="FrameworkElement_MouseDown" MouseMove="FrameworkElement_MouseMove"
                             BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                             BorderThickness="2"
@@ -259,11 +260,11 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <Path Stroke="{DynamicResource PrimaryHueDarkBrush}" StrokeThickness="5" 
+                                    <Path Stroke="{DynamicResource PrimaryHueMidBrush}" StrokeThickness="13" 
                                           Data="{Binding Geometry}" 
                                           Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                     <Path Stroke="{DynamicResource PrimaryHueLightBrush}" Fill="{DynamicResource PrimaryHueLightBrush}" 
-                                          StrokeThickness="3" 
+                                          StrokeThickness="5" 
                                           Data="{Binding Geometry}"
                                           MouseDown="Selectable_MouseDown"/>
                                 </Grid>

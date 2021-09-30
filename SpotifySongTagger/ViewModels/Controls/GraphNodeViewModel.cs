@@ -104,10 +104,6 @@ namespace SpotifySongTagger.ViewModels.Controls
                 var fromRect = new Rect(X, Y, Width, Height);
                 var toRect = new Rect(nextNodeVM.X, nextNodeVM.Y, nextNodeVM.Width, nextNodeVM.Height);
                 var (start, end) = GeometryUtil.GetShortestPathBetweenRectangles(fromRect, toRect);
-
-                // simple
-                //var start = new Point(X + Width, Y + Height / 2);
-                //var end = new Point(nextNodeVM.X, nextNodeVM.Y + nextNodeVM.Height / 2);
                 var geometry = GeometryUtil.GetArrow(start, end);
 
                 OutgoingArrows[i].Geometry = geometry;

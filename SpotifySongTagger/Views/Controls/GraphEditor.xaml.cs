@@ -54,9 +54,8 @@ namespace SpotifySongTagger.Views.Controls
                 // initialize arrow
                 ViewModel.PressedMouseButton = MouseButton.Right;
                 var contentPresenter = UIHelper.FindVisualParent<ContentPresenter>(frameworkElement);
-                var startX = Canvas.GetLeft(contentPresenter) + contentPresenter.ActualWidth;
-                var startY = Canvas.GetTop(contentPresenter) + contentPresenter.ActualHeight / 2;
-                ViewModel.NewArrowStartPoint = new Point(startX, startY);
+                ViewModel.NewArrowStartNodeRect = new Rect(Canvas.GetLeft(contentPresenter), Canvas.GetTop(contentPresenter), contentPresenter.ActualWidth, contentPresenter.ActualHeight);
+                ViewModel.UpdateNewArrow(curPos);
             }
 
             e.Handled = true;
@@ -82,7 +81,7 @@ namespace SpotifySongTagger.Views.Controls
                 // add connection
                 var nodeVM = ViewModel.GetHoveredGraphNodeViewModel(e.GetPosition(Canvas));
                 await ViewModel.AddConnection(nodeVM);
-                ViewModel.NewArrowStartPoint = default;
+                ViewModel.NewArrowStartNodeRect = default;
                 ViewModel.NewArrow = null;
             }
             ViewModel.PressedMouseButton = null;
@@ -102,10 +101,7 @@ namespace SpotifySongTagger.Views.Controls
                 ViewModel.LastMousePos = curPos;
             }
             if (ViewModel.PressedMouseButton == MouseButton.Right)
-            {
-                // draw arrow
-                ViewModel.NewArrow = GeometryUtil.GetArrow(ViewModel.NewArrowStartPoint, curPos);
-            }
+                ViewModel.UpdateNewArrow(curPos);
 
             e.Handled = true;
             //Log.Information($"MouseMove {sender.GetType()} {curPos.X:N2}/{curPos.Y:N2}");
