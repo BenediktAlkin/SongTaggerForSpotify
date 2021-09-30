@@ -1,4 +1,6 @@
-check why playlists are unset
+sync does not update playlist treeview
+load playlists does not update playlist treeview
+branding https://developer.spotify.com/documentation/general/design-and-branding/
 improve UI lag
 
 errors during tagging probbly occour when connection is used too long and therefore times out

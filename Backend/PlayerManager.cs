@@ -24,6 +24,7 @@ namespace Backend
         {
             if (!HasAlbumUrl)
                 AlbumUrl = isDarkTheme ? SPOTIFY_ICON_DARK : SPOTIFY_ICON_LIGHT;
+            SpotifyLogoUrl = isDarkTheme? SPOTIFY_ICON_DARK : SPOTIFY_ICON_LIGHT;
         }
 
         public static bool IsPremiumUser => DataContainer.Instance.User != null && DataContainer.Instance.User.Product == "premium";
@@ -39,6 +40,12 @@ namespace Backend
         {
             get => albumUrl;
             set => SetProperty(ref albumUrl, value, nameof(AlbumUrl));
+        }
+        private string spotifyLogoUrl;
+        public string SpotifyLogoUrl
+        {
+            get => spotifyLogoUrl;
+            set => SetProperty(ref spotifyLogoUrl, value, nameof(SpotifyLogoUrl));
         }
         private string trackId;
         public string TrackId
@@ -125,7 +132,7 @@ namespace Backend
         private void UpdateTrackInfo(FullTrack track)
         {
             if (Spotify == null) return;
-            var bestImg = track.Album.Images.OrderBy(img => img.Height).FirstOrDefault(img => img.Height >= 72 && img.Width >= 72);
+            var bestImg = track.Album.Images.OrderBy(img => img.Height).FirstOrDefault(img => img.Height >= 80 && img.Width >= 80);
             if (bestImg == null)
                 bestImg = track.Album.Images.First();
             AlbumUrl = bestImg.Url;

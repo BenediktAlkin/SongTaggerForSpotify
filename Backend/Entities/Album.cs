@@ -8,6 +8,6 @@
         public string ReleaseDate { get; set; }
         public string ReleaseDatePrecision { get; set; }
 
-        public int? ReleaseYear => string.IsNullOrWhiteSpace(ReleaseDate[0..4]) ? int.Parse(ReleaseDate[0..4]) : null;
+        public int? ReleaseYear => string.IsNullOrWhiteSpace(ReleaseDate[0..4]) ? null : int.Parse(ReleaseDate[0..4]);
     }
 }

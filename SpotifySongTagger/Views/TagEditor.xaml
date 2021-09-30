@@ -127,6 +127,13 @@
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
+                    <DataGridTemplateColumn IsReadOnly="True" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Height="21" Width="21" Source="{Binding PlayerManager.SpotifyLogoUrl}" RenderOptions.BitmapScalingMode="Fant"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn 
                         Binding="{Binding Track.Name}" 
                         Header="Name"
@@ -138,7 +145,7 @@
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
                                         Width="*" />
-                    <DataGridTextColumn Binding="{Binding Track.Album.ReleaseDate}" 
+                    <DataGridTextColumn Binding="{Binding Track.Album.ReleaseYear}" 
                                         Header="Year"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
@@ -430,8 +437,10 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Image Height="72" Width="72" Source="{Binding PlayerManager.AlbumUrl}" RenderOptions.BitmapScalingMode="Fant"/>
-                    <StackPanel Grid.Column="1" Margin="6 0 0 0" VerticalAlignment="Center">
+                    <Image Height="80" Width="80" Source="{Binding PlayerManager.AlbumUrl}" RenderOptions.BitmapScalingMode="Fant"/>
+                    <StackPanel Grid.Column="1" Margin="10 3 0 0" VerticalAlignment="Center">
+                        <Image Height="21" Width="21" Margin="0 0 0 10" 
+                               Source="{Binding PlayerManager.SpotifyLogoUrl}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Left"/>
                         <TextBlock Text="{Binding PlayerManager.TrackName}" FontWeight="Bold" FontSize="18"/>
                         <TextBlock Text="{Binding PlayerManager.ArtistsString}" FontSize="14"/>
                     </StackPanel>

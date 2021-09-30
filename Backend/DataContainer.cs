@@ -19,9 +19,9 @@ namespace Backend
         {
             User = null;
             Tags = null;
-            MetaPlaylists.Clear();
-            LikedPlaylists.Clear();
-            GeneratedPlaylists.Clear();
+            MetaPlaylists = null;
+            LikedPlaylists = null;
+            GeneratedPlaylists = null;
         }
 
 

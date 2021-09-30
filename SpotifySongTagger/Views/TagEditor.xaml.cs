@@ -194,6 +194,7 @@ namespace SpotifySongTagger.Views
 
         private async void PlayTrack(object sender, MouseButtonEventArgs e)
         {
+            if (ViewModel.SelectedTrackVM == null) return;
             await BaseViewModel.PlayerManager.SetTrack(ViewModel.SelectedTrackVM.Track);
         }
 
