@@ -9,7 +9,7 @@
             set => SetProperty(ref rememberMe, value, nameof(RememberMe));
         }
 
-        public static string FullApplicationName => $"SpotifySongTagger v{VersionStr}";
+        public static string FullApplicationName => $"Song Tagger for Spotify v{VersionStr}";
         public static string VersionStr => typeof(HomeViewModel).Assembly.GetName().Version.ToString(3);
     }
 }

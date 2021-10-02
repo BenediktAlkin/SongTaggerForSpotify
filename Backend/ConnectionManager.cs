@@ -13,8 +13,8 @@ namespace Backend
     public class ConnectionManager
     {
         private const string TOKEN_FILE = "token.txt";
-        private const string CLIENT_ID = "fa16a9eadce34517a6d391cb524e3a30";
-        private const int PORT = 25000;
+        private const string CLIENT_ID = "c15508ab1a5f453396e3da29d16a506b";
+        private const int PORT = 63846;
         private static readonly string SERVER_URL = $"http://localhost:{PORT}/";
         private static readonly string CALLBACK_URL = $"{SERVER_URL}callback/";
 
@@ -199,7 +199,7 @@ namespace Backend
             // write response
             var response = ctx.Response;
             var successStr = tokenIsValid ? "" : "not ";
-            byte[] html = Encoding.UTF8.GetBytes($"<html><center><h1>Authentication was {successStr}successful</h1><br/><h3>SpotifySongTagger is now usable!</h3></center></html>");
+            byte[] html = Encoding.UTF8.GetBytes($"<html><center><h1>Authentication was {successStr}successful</h1><br/><h3>Song Tagger for Spotify is now usable!</h3></center></html>");
             response.ContentType = "text/html";
             response.ContentEncoding = Encoding.UTF8;
             response.ContentLength64 = html.LongLength;

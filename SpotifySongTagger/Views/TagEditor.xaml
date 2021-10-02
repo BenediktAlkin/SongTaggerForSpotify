@@ -103,6 +103,11 @@
                 CanUserReorderColumns="False"
                 MouseDoubleClick="PlayTrack"
                 RowHeaderWidth="0">
+                <DataGrid.Resources>
+                    <Style x:Key="VerticalCenteredTextColumn" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                </DataGrid.Resources>
                 <!-- remove outline of a selcted cell -->
                 <DataGrid.CellStyle>
                     <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
@@ -138,18 +143,20 @@
                         Binding="{Binding Track.Name}" 
                         Header="Name"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="2*"/>
-                    <DataGridTextColumn Binding="{Binding Track.ArtistsString}" 
-                                        Header="Artists"
-                                        IsReadOnly="True"
-                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
-                                        Width="*" />
-                    <DataGridTextColumn Binding="{Binding Track.Album.ReleaseYear}" 
-                                        Header="Year"
-                                        IsReadOnly="True"
-                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
-                                        Width="Auto" />
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.ArtistsString}" 
+                        Header="Artists"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="*" />
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.Album.ReleaseYear}" 
+                        Header="Year"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="Auto" />
 
                     <DataGridTemplateColumn IsReadOnly="True" Header="Tags" Width="2*">
                         <DataGridTemplateColumn.CellTemplate>

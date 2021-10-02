@@ -4,6 +4,7 @@ using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -115,5 +116,30 @@ namespace SpotifySongTagger
         }
 
         private void LoadSelectedView(object sender, System.Windows.Controls.SelectionChangedEventArgs e) => ViewModel.LoadSelectedView();
+
+        private void OpenGithub(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/BenediktAlkin/SpotifySongTagger",
+                UseShellExecute = true
+            });
+        }
+        private void OpenTwitter(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://twitter.com/BenediktAlkin",
+                UseShellExecute = true
+            });
+        }
+        private void OpenYoutube(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://www.youtube.com/playlist?list=PLrFmMNaJAkFA6dUw9Oc3AEkXfdoiELZFn",
+                UseShellExecute = true
+            });
+        }
     }
 }

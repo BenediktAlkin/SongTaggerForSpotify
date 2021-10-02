@@ -1,6 +1,3 @@
-branding https://developer.spotify.com/documentation/general/design-and-branding/
-improve UI lag
-
 errors during tagging probbly occour when connection is used too long and therefore times out
 notice somehow if token gets invalid
 check if all spotify operations return empty results that do not lead to crashes

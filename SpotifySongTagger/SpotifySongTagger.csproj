@@ -6,6 +6,8 @@
 		<UseWPF>true</UseWPF>
 		<Version>0.0.15</Version>
 		<ApplicationIcon>logo.ico</ApplicationIcon>
+		<Authors>Benedikt Alkin</Authors>
+		<Company />
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Res\Spotify_Icon_RGB_Black.png" />
