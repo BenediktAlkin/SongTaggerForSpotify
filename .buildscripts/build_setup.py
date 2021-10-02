@@ -7,4 +7,4 @@ parser.add_argument('--vdproj', help='.vdproj file of the setup project', requir
 parser.add_argument('--build-config', help='build config (Release, Debug)', required=True)
 args = parser.parse_args()
 
-os.sytem(f"devenv {args.sln} {args.vdproj} /Build ${{ env.build_config }}")
+os.system(f"devenv {args.sln} {args.vdproj} /Build ${{ env.build_config }}")
