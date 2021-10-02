@@ -54,7 +54,7 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.3
     - name: Bulid setup
-      run: python .buildscripts/build_setup.py
+      run: python .buildscripts/build_setup.py --sln ${{ env.application_name }}.sln --vdproj Setup/Setup.vdproj --build-config ${{ env.build_config }}
     - name: Print VS dir
       run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
     - name: Print VS dir2
