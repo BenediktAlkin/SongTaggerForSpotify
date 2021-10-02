@@ -9,6 +9,7 @@ env:
   application_name: SpotifySongTagger
   updater_name: Updater
   build_config: Release
+  MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
 
 jobs:
   build:
@@ -55,7 +56,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.3
     - name: build setup
       shell: cmd
-      run: devenv ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+      run: "%MSBUILD_PATH%" ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
     - name: Bulid setup
       run: python .buildscripts/build_setup.py --sln ${{ env.application_name }}.sln --vdproj Setup/Setup.vdproj --build-config ${{ env.build_config }}
     - name: Print VS dir
