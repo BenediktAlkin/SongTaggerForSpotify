@@ -58,7 +58,7 @@ jobs:
     - name: Print VS dir2
       run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE"
     - name: run devenv
-      run: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe"
+      run: \"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe\"
     - name: print path
       run: echo %PATH%
     
