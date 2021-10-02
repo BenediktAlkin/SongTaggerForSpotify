@@ -40,6 +40,7 @@ jobs:
           file-path: |
               ${{ env.application_name }}/${{ env.application_name }}.csproj
               ${{ env.updater_name }}/${{ env.updater_name }}.csproj
+              Setup/Setup.vdproj
           commit-msg: Update version number
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
