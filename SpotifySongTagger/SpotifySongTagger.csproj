@@ -4,7 +4,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
-		<Version>0.0.19</Version>
+		<Version>0.0.22</Version>
 		<ApplicationIcon>logo.ico</ApplicationIcon>
 		<Authors>Benedikt Alkin</Authors>
 		<Company/>
