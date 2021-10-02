@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+#if !DEBUG
+using Util;
+#endif
 
 namespace SpotifySongTagger
 {

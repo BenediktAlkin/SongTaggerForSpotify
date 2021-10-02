@@ -56,8 +56,12 @@ jobs:
     # publish updater to {application_name}/{build_config}
     - name: Publish updater
       run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
-    
-    
+    # publish setup project
+    - name: Publish setup
+      run: devenv ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+    # rename setup.exe
+    - name: Rename setup
+      run: cd Setup/${{ env.build_config }} && ren setup.exe ${{ env.application_name }}-Installer.exe 
     
     # zip {application_name}/{build_config} into a zip file where the root folder has name {application_name}
     - name: Zip portable build
@@ -70,4 +74,6 @@ jobs:
     - name: Release build
       uses: softprops/action-gh-release@v1
       with:
-        files: Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
+        files: |
+          Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
+          Setup/${{ env.build_config }}/${{ env.application_name }}-Installer.exe
