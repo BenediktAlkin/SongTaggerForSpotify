@@ -53,6 +53,12 @@ jobs:
     # setup msbuild
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.3
+    - name: Print VS dir
+      run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+    - name: Print VS dir2
+      run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE"
+    - name: run devenv
+      run: cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE" && devenv.exe
     
     # publish program to {application_name}/{build_config}
     - name: Publish program
