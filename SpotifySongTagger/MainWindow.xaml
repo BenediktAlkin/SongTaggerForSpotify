@@ -16,22 +16,14 @@
         d:DataContext="{d:DesignInstance viewmodels:MainWindowViewModel}"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Style="{StaticResource MaterialDesignWindow}" 
+        Style="{StaticResource MaterialDesignWindow}"
         Loaded="Window_Loaded"
         Closed="Window_Closed"
         Name="MainWindowWindow">
 
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml"/>
-                <ResourceDictionary>
-                    <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
-                </ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
+            <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
