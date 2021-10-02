@@ -56,7 +56,8 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.3
     - name: build setup
       shell: cmd
-      run: "%MSBUILD_PATH%" ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+      run: |
+        "%MSBUILD_PATH%" ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
     - name: Bulid setup
       run: python .buildscripts/build_setup.py --sln ${{ env.application_name }}.sln --vdproj Setup/Setup.vdproj --build-config ${{ env.build_config }}
     - name: Print VS dir
