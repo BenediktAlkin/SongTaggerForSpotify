@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Util", "Util\Util.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Util.Tests", "Util.Tests\Util.Tests.csproj", "{D8450175-AC96-4304-962C-B8575C55B436}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{6D256850-C25B-42FB-BBBB-25B98B211FA6}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{10BAAD64-A8EE-4836-9016-5F5A6D78E96E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,12 +73,10 @@ Global
 		{D8450175-AC96-4304-962C-B8575C55B436}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8450175-AC96-4304-962C-B8575C55B436}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8450175-AC96-4304-962C-B8575C55B436}.Release|x86.Build.0 = Release|Any CPU
-		{6D256850-C25B-42FB-BBBB-25B98B211FA6}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{6D256850-C25B-42FB-BBBB-25B98B211FA6}.Debug|x86.ActiveCfg = Debug|x86
-		{6D256850-C25B-42FB-BBBB-25B98B211FA6}.Debug|x86.Build.0 = Debug|x86
-		{6D256850-C25B-42FB-BBBB-25B98B211FA6}.Release|Any CPU.ActiveCfg = Release|x86
-		{6D256850-C25B-42FB-BBBB-25B98B211FA6}.Release|x86.ActiveCfg = Release|x86
-		{6D256850-C25B-42FB-BBBB-25B98B211FA6}.Release|x86.Build.0 = Release|x86
+		{10BAAD64-A8EE-4836-9016-5F5A6D78E96E}.Debug|Any CPU.ActiveCfg = Debug
+		{10BAAD64-A8EE-4836-9016-5F5A6D78E96E}.Debug|x86.ActiveCfg = Debug
+		{10BAAD64-A8EE-4836-9016-5F5A6D78E96E}.Release|Any CPU.ActiveCfg = Release
+		{10BAAD64-A8EE-4836-9016-5F5A6D78E96E}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

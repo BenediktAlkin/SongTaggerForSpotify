@@ -29,9 +29,11 @@ jobs:
         python-version: 3.8
     # update versions locally
     - name: Update application version
-      run: python .buildscripts/update_version.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.application_name }}/${{ env.application_name }}.csproj
+      run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.application_name }}/${{ env.application_name }}.csproj
     - name: Update updater version
-      run: python .buildscripts/update_version.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.updater_name }}/${{ env.updater_name }}.csproj
+      run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.updater_name }}/${{ env.updater_name }}.csproj
+    - name: Update installer version
+      run: python .buildscripts/update_version_vdproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file Setup/Setup.vdproj
     - name: Push updated version number
       uses: test-room-7/action-update-file@v1
       with:

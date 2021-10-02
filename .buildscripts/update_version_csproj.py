@@ -19,7 +19,7 @@ root = ET.parse(args.project_file).getroot()
 for node in root.iter():
     print(node.attrib)
 
-tagWasSet = False
+tag_was_set = False
 for node in root.iter():
     # remove whitespace for pretty printing
     node.tail = ""
@@ -28,9 +28,9 @@ for node in root.iter():
     # set version
     if node.tag == "Version":
         node.text = tagname
-        tagWasSet = True
+        tag_was_set = True
 # add version node
-if not tagWasSet:
+if not tag_was_set:
     propertyGroup = root.find("./PropertyGroup") # XPath expression (Project is root node)
     versionNode = ET.Element("Version")
     versionNode.text = tagname
