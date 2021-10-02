@@ -45,9 +45,6 @@ namespace SpotifySongTagger
 #endif
             await ConnectionManager.TryInitFromSavedToken();
             ViewModel.CheckedForUpdates = true;
-
-            if (ConnectionManager.Instance.Spotify != null)
-                ((MainWindowViewModel)DataContext).SelectedIndex = 0;
         }
 
         private void Window_Closed(object sender, EventArgs e)

@@ -440,7 +440,9 @@
                     <Image Height="80" Width="80" Source="{Binding PlayerManager.AlbumUrl}" RenderOptions.BitmapScalingMode="Fant"/>
                     <StackPanel Grid.Column="1" Margin="10 3 0 0" VerticalAlignment="Center">
                         <Image Height="21" Width="21" Margin="0 0 0 10" 
-                               Source="{Binding PlayerManager.SpotifyLogoUrl}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Left"/>
+                               Source="{Binding PlayerManager.SpotifyLogoUrl}" 
+                               Visibility="{Binding PlayerManager.AlbumUrl, Converter={StaticResource InverseNullableToVisibilityConverter}}"
+                               RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Left"/>
                         <TextBlock Text="{Binding PlayerManager.TrackName}" FontWeight="Bold" FontSize="18"/>
                         <TextBlock Text="{Binding PlayerManager.ArtistsString}" FontSize="14"/>
                     </StackPanel>

@@ -64,12 +64,21 @@ namespace SpotifySongTagger.ViewModels
         }
         public Tag ClickedTag { get; set; }
 
-        public List<PlaylistCategory> PlaylistCategories { get; } = new()
+        public void UpdatePlaylists()
         {
-            new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
-            new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
-            new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
-        };
+            PlaylistCategories = new()
+            {
+                new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
+                new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
+                new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
+            };
+        }
+        private List<PlaylistCategory> playlistCategories;
+        public List<PlaylistCategory> PlaylistCategories 
+        {
+            get => playlistCategories;
+            private set => SetProperty(ref playlistCategories, value, nameof(PlaylistCategories));
+        }
         private Playlist selectedPlaylist;
         public Playlist SelectedPlaylist 
         {

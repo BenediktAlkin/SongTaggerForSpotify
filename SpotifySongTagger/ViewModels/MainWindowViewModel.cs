@@ -32,12 +32,6 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref selectedItem, value, nameof(SelectedItem));
         }
 
-        private int selectedIndex;
-        public int SelectedIndex
-        {
-            get => selectedIndex;
-            set => SetProperty(ref selectedIndex, value, nameof(SelectedIndex));
-        }
         private bool isSyncingLibrary = true;
         public bool IsSyncingLibrary
         {

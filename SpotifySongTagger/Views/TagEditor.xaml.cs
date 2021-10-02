@@ -41,6 +41,7 @@ namespace SpotifySongTagger.Views
             }
             await BaseViewModel.DataContainer.LoadSourcePlaylists();
             BaseViewModel.DataContainer.LoadGeneratedPlaylists();
+            ViewModel.UpdatePlaylists();
             ViewModel.IsLoadingPlaylists = false;
             await BaseViewModel.DataContainer.LoadTags();
 
