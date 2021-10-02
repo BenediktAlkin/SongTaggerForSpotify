@@ -56,8 +56,8 @@
                         x:Name="MenuItemsListBox" 
                         Margin="0 16 0 16"
                         SelectedItem="{Binding SelectedItem}"
-                        SelectionChanged="MenuItemsListBox_SelectionChanged"
                         ItemsSource="{Binding MenuItems}"
+                        SelectionChanged="LoadSelectedView"
                         IsEnabled="{Binding DataContainer.User, Converter={StaticResource IsNotNullToBooleanConverter}}"
                         PreviewMouseLeftButtonUp="UIElement_OnPreviewMouseLeftButtonUp"
                         Style="{StaticResource MaterialDesignListBox}">
@@ -169,7 +169,7 @@
                     <!-- content -->
                     <ContentControl 
                         DataContext="{Binding SelectedItem}"
-                        Content="{Binding View, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
+                        Content="{Binding DataContext.View, ElementName=MainWindowWindow, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
                         Visibility="{Binding DataContext.CheckedForUpdates, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Margin="0 8 0 0"/>
                     

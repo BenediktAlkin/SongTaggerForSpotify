@@ -43,6 +43,7 @@ namespace SpotifySongTagger
             };
             await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SpotifySongTagger", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
 #endif
+
             await ConnectionManager.TryInitFromSavedToken();
             ViewModel.CheckedForUpdates = true;
         }
@@ -112,5 +113,7 @@ namespace SpotifySongTagger
 
             PlayerManager.Instance.SetTheme(isDarkTheme);
         }
+
+        private void LoadSelectedView(object sender, System.Windows.Controls.SelectionChangedEventArgs e) => ViewModel.LoadSelectedView();
     }
 }

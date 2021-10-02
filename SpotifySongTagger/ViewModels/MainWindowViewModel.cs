@@ -12,6 +12,13 @@ namespace SpotifySongTagger.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
+        public MainWindowViewModel(ISnackbarMessageQueue snackbarMessageQueue)
+        {
+            SelectedItem = MenuItems[0];
+        }
+
+
+
         private bool checkedForUpdates;
         public bool CheckedForUpdates
         {
@@ -21,9 +28,9 @@ namespace SpotifySongTagger.ViewModels
 
         public List<MenuItem> MenuItems { get; } = new()
         {
-            new MenuItem { Name = "Login", ViewType = typeof(HomeView) },
-            new MenuItem { Name = "Song Tagger", ViewType = typeof(TagEditor) },
-            new MenuItem { Name = "Playlist Generator", ViewType = typeof(PlaylistGenerator) },
+            new MenuItem("Login", typeof(HomeView)),
+            new MenuItem("Song Tagger", typeof(TagEditor)),
+            new MenuItem("Playlist Generator", typeof(PlaylistGenerator)),
         };
         private MenuItem selectedItem;
         public MenuItem SelectedItem
@@ -31,6 +38,14 @@ namespace SpotifySongTagger.ViewModels
             get => selectedItem;
             set => SetProperty(ref selectedItem, value, nameof(SelectedItem));
         }
+        private FrameworkElement view;
+        public FrameworkElement View
+        {
+            get => view;
+            set => SetProperty(ref view, value, nameof(View));
+        }
+        public void LoadSelectedView() => View = (FrameworkElement)Activator.CreateInstance(SelectedItem.ViewType);
+
 
         private bool isSyncingLibrary = true;
         public bool IsSyncingLibrary
@@ -38,9 +53,6 @@ namespace SpotifySongTagger.ViewModels
             get => isSyncingLibrary;
             set => SetProperty(ref isSyncingLibrary, value, nameof(IsSyncingLibrary));
         }
-
-        public MainWindowViewModel(ISnackbarMessageQueue snackbarMessageQueue) { }
-
 
         public CommandImpl SyncLibraryCommand { get; } = new(async sender =>
         {
@@ -55,12 +67,5 @@ namespace SpotifySongTagger.ViewModels
         }
     }
 
-    public class MenuItem : NotifyPropertyChangedBase
-    {
-        public string Name { get; set; }
-        public Type ViewType { get; set; }
-
-        public FrameworkElement View => (FrameworkElement)Activator.CreateInstance(ViewType);
-
-    }
+    public record MenuItem(string Name, Type ViewType);
 }

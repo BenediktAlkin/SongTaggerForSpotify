@@ -13,9 +13,11 @@ namespace SpotifySongTagger.ViewModels
 {
     public class PlaylistGeneratorViewModel : BaseViewModel
     {
-        public static async Task Init()
+        public async Task Init()
         {
             await DataContainer.LoadSourcePlaylists();
+            GraphGeneratorPages = new(ConnectionManager.Instance.Database.GraphGeneratorPages
+                .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs));
         }
 
 
@@ -53,9 +55,7 @@ namespace SpotifySongTagger.ViewModels
             get => isRunningAll;
             set => SetProperty(ref isRunningAll, value, nameof(IsRunningAll));
         }
-        public ObservableCollection<GraphGeneratorPage> GraphGeneratorPages { get; } =
-            new(ConnectionManager.Instance.Database.GraphGeneratorPages
-                .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs));
+        public ObservableCollection<GraphGeneratorPage> GraphGeneratorPages { get; private set; }
         private GraphGeneratorPage selectedGraphGeneratorPage;
         public GraphGeneratorPage SelectedGraphGeneratorPage
         {
