@@ -3,6 +3,6 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net5.0</TargetFramework>
-		<Version>0.0.16</Version>
+		<Version>0.0.17</Version>
 	</PropertyGroup>
 </Project>
