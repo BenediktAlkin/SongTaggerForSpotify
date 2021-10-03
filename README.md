@@ -1,6 +1,6 @@
 # Song Tagger for Spotify
 
-[![Release](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml/badge.svg)](https://github.com/BenediktAlkin/UpdaterTest/actions/workflows/release.yaml)
+[![Release](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml/badge.svg)](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml)
 
 
 ## What is song tagging?
@@ -8,7 +8,7 @@ Attaching a tag to a song allows you more flexibility when managing songs you li
 
 ## What is the benefit?
 Adding tags to songs allows you to organize your library better. You can easily create playlists based on assigned tags. 
-Song Tagger for Spotify allows you to create "Playlist Generators" where you create dynamic playlists with common filter/set operations.
+Song Tagger for Spotify allows you to create "Playlist Generators" which allow you to combine songs/playlists from your library and modify them based on tags or other metadata (e.g. release date, artist) as you like.
 
 Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are shown below. 
 

@@ -352,7 +352,16 @@ namespace Backend
         {
             // parse data from json
             var json = await File.ReadAllTextAsync(inPath);
-            var tracks = JsonConvert.DeserializeObject<List<Track>>(json);
+            List<Track> tracks;
+            try
+            {
+                tracks = JsonConvert.DeserializeObject<List<Track>>(json);
+            }catch(Exception e)
+            {
+                Log.Error($"Error deserializing tag dump {inPath}: {e.Message}");
+                return;
+            }
+            if (tracks == null) return;
 
             // merge with existing tags/tracks
             var dbTracks = await Db.Tracks.Include(t => t.Tags).ToListAsync();

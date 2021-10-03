@@ -60,6 +60,7 @@ namespace SpotifySongTagger.Views
             dialog.FileName = "";
             dialog.DefaultExt = "";
             dialog.Filter = $"SpotifySongTagger export (*.json)|*.json";
+            dialog.OverwritePrompt = false;
 
             var result = dialog.ShowDialog();
             if (result == true)
