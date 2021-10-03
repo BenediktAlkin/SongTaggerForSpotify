@@ -51,6 +51,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+    # setup msbuild
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.3
+    - name: test cmd with msbuild
+      shell: cmd
+      run: devenv
     
     # publish program to {application_name}/{build_config}
     - name: Publish program
