@@ -64,21 +64,12 @@ namespace SpotifySongTagger.ViewModels
         }
         public Tag ClickedTag { get; set; }
 
-        public void UpdatePlaylists()
+        public List<PlaylistCategory> PlaylistCategories { get; } = new()
         {
-            PlaylistCategories = new()
-            {
-                new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
-                new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
-                new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
-            };
-        }
-        private List<PlaylistCategory> playlistCategories;
-        public List<PlaylistCategory> PlaylistCategories 
-        {
-            get => playlistCategories;
-            private set => SetProperty(ref playlistCategories, value, nameof(PlaylistCategories));
-        }
+            new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
+            new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
+            new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
+        };
         private Playlist selectedPlaylist;
         public Playlist SelectedPlaylist 
         {
@@ -172,5 +163,5 @@ namespace SpotifySongTagger.ViewModels
         }
         #endregion
     }
-    public record PlaylistCategory(string Name, bool IsExpanded, List<Playlist> Playlists);
+    public record PlaylistCategory(string Name, bool IsExpanded, IEnumerable<Playlist> Playlists);
 }

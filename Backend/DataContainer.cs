@@ -4,6 +4,7 @@ using Serilog;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Util;
@@ -13,15 +14,54 @@ namespace Backend
     public class DataContainer : NotifyPropertyChangedBase
     {
         public static DataContainer Instance { get; } = new();
-        private DataContainer() { }
+        private DataContainer()
+        {
+            MetaPlaylists.CollectionChanged += UpdateSourcePlaylists;
+            LikedPlaylists.CollectionChanged += UpdateSourcePlaylists;
+        }
+
+        private void UpdateSourcePlaylists(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch(e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    var toAdd = e.NewItems[0] as Playlist;
+                    if (sender == LikedPlaylists)
+                        SourcePlaylists.Add(toAdd);
+                    else
+                        SourcePlaylists.Insert(MetaPlaylists.Count, toAdd);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    if(sender == MetaPlaylists)
+                    {
+                        for (var i = 0; i < MetaPlaylists.Count; i++)
+                            SourcePlaylists.RemoveAt(i);
+                    }
+                    else
+                    {
+                        for (var i = 0; i < LikedPlaylists.Count; i++)
+                            SourcePlaylists.RemoveAt(MetaPlaylists.Count + i);
+                    }
+                    break;
+                        
+                default:
+                    Log.Warning($"Error syncing meta/generated playlists with source playlists {e.Action}");
+                    break;
+            }
+        }
+        private static void ObservableCollectionAddRange<T>(ObservableCollection<T> list, IEnumerable<T> toAdd)
+        {
+            foreach (var item in toAdd)
+                list.Add(item);
+        }
 
         public void Clear()
         {
             User = null;
             Tags = null;
-            MetaPlaylists = null;
-            LikedPlaylists = null;
-            GeneratedPlaylists = null;
+            MetaPlaylists.Clear();
+            LikedPlaylists.Clear();
+            GeneratedPlaylists.Clear();
         }
 
 
@@ -34,45 +74,24 @@ namespace Backend
         }
 
         #region playlists
-        private List<Playlist> metaPlaylists;
-        public List<Playlist> MetaPlaylists
-        {
-            get => metaPlaylists;
-            set
-            {
-                SetProperty(ref metaPlaylists, value, nameof(MetaPlaylists));
-                NotifyPropertyChanged(nameof(SourcePlaylists));
-            }
-        }
-        private List<Playlist> likedPlaylists;
-        public List<Playlist> LikedPlaylists
-        {
-            get => likedPlaylists;
-            set
-            {
-                SetProperty(ref likedPlaylists, value, nameof(LikedPlaylists));
-                NotifyPropertyChanged(nameof(SourcePlaylists));
-            }
-        }
-        private List<Playlist> generatedPlaylists;
-        public List<Playlist> GeneratedPlaylists
-        {
-            get => generatedPlaylists;
-            set => SetProperty(ref generatedPlaylists, value, nameof(GeneratedPlaylists));
-        }
+        public ObservableCollection<Playlist> MetaPlaylists { get; } = new();
+        public ObservableCollection<Playlist> LikedPlaylists { get; } = new();
+        public ObservableCollection<Playlist> GeneratedPlaylists { get; } = new();
         // meta playlists + liked playlists
-        private static List<T> NullToEmptyList<T>(List<T> list) => list == null ? new() : list;
-        public List<Playlist> SourcePlaylists => NullToEmptyList(MetaPlaylists).Concat(NullToEmptyList(LikedPlaylists)).ToList();
+        public ObservableCollection<Playlist> SourcePlaylists { get; } = new();
         public async Task LoadSourcePlaylists()
         {
             Log.Information("Loading source playlists");
-            LikedPlaylists = await DatabaseOperations.PlaylistsLiked();
-            MetaPlaylists = DatabaseOperations.PlaylistsMeta();
+            LikedPlaylists.Clear();
+            MetaPlaylists.Clear();
+            ObservableCollectionAddRange(LikedPlaylists, await DatabaseOperations.PlaylistsLiked());
+            ObservableCollectionAddRange(MetaPlaylists, DatabaseOperations.PlaylistsMeta());
         }
         public void LoadGeneratedPlaylists()
         {
             Log.Information("Loading generated playlists");
-            GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated();
+            GeneratedPlaylists.Clear();
+            ObservableCollectionAddRange(GeneratedPlaylists, DatabaseOperations.PlaylistsGenerated());
         }
         #endregion
 
