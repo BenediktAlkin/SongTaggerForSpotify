@@ -51,23 +51,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    # setup msbuild
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.3
-    - name: build setup
-      shell: cmd
-      run: |
-        "%MSBUILD_PATH%" ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
-    - name: Bulid setup
-      run: python .buildscripts/build_setup.py --sln ${{ env.application_name }}.sln --vdproj Setup/Setup.vdproj --build-config ${{ env.build_config }}
-    - name: Print VS dir
-      run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
-    - name: Print VS dir2
-      run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE"
-    - name: print path
-      run: echo %PATH%
-    - name: run devenv
-      run: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe
     
     # publish program to {application_name}/{build_config}
     - name: Publish program
@@ -77,7 +60,8 @@ jobs:
       run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
     # publish setup project
     - name: Publish setup
-      run: devenv ${{ env.application_name }}.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+      run: |
+        "%MSBUILD_PATH%" ${{ env.application_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
     # rename setup.exe
     - name: Rename setup
       run: cd Setup/${{ env.build_config }} && ren setup.exe ${{ env.application_name }}-Installer.exe 
