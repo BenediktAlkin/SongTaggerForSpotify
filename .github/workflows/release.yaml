@@ -35,6 +35,7 @@ jobs:
       run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.updater_name }}/${{ env.updater_name }}.csproj
     - name: Update installer version
       run: python .buildscripts/update_version_vdproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file Setup/Setup.vdproj
+    # push updated version
     - name: Push updated version number
       uses: test-room-7/action-update-file@v1
       with:
@@ -51,27 +52,19 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    # setup msbuild
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.3
-    - name: test cmd with msbuild
-      shell: cmd
-      run: devenv
-    
+        
+
     # publish program to {application_name}/{build_config}
     - name: Publish program
       run: dotnet publish ${{ env.application_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
     # publish updater to {application_name}/{build_config}
     - name: Publish updater
       run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
-    # publish setup project
+    # publish setup project to Setup/{build_config}
     - name: Publish setup
       shell: cmd
       run: |
         "%MSBUILD_PATH%" ${{ env.application_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
-    # rename setup.exe
-    - name: Rename setup
-      run: cd Setup/${{ env.build_config }} && ren setup.exe ${{ env.application_name }}-Installer.exe 
     
     # zip {application_name}/{build_config} into a zip file where the root folder has name {application_name}
     - name: Zip portable build
@@ -80,7 +73,12 @@ jobs:
         files: ${{ env.application_name }}/${{ env.build_config }}
         dest: Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
         recursive: false
+    # rename setup.exe
+    - name: Rename setup
+      run: cd Setup/${{ env.build_config }} && ren setup.exe ${{ env.application_name }}-Installer.exe 
 
+
+    # make git release
     - name: Release build
       uses: softprops/action-gh-release@v1
       with:
