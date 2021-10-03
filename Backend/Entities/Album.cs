@@ -1,4 +1,6 @@
-﻿namespace Backend.Entities
+﻿using System.Collections.Generic;
+
+namespace Backend.Entities
 {
     public class Album
     {
@@ -9,5 +11,7 @@
         public string ReleaseDatePrecision { get; set; }
 
         public int? ReleaseYear => string.IsNullOrWhiteSpace(ReleaseDate[0..4]) ? null : int.Parse(ReleaseDate[0..4]);
+
+        public List<Track> Tracks { get; set; }
     }
 }

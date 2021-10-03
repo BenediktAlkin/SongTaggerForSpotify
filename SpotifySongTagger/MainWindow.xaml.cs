@@ -128,11 +128,11 @@ namespace SpotifySongTagger
                 UseShellExecute = true
             });
         }
-        private void OpenTwitter(object sender, RoutedEventArgs e)
+        private void OpenDiscord(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = "https://twitter.com/BenediktAlkin",
+                FileName = "https://discord.gg/g8xurBu3ST",
                 UseShellExecute = true
             });
         }

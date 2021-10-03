@@ -32,6 +32,8 @@ namespace Backend
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
             if (logTo != null)
                 optionsBuilder.LogTo(logTo, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
+            //optionsBuilder.LogTo(Log.Information, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
+            //optionsBuilder.EnableSensitiveDataLogging();
             try
             {
                 Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);

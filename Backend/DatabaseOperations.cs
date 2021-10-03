@@ -113,7 +113,7 @@ namespace Backend
                 }
                 else
                 {
-                    // add artist to the dbContext
+                    // add playlist to the dbContext
                     playlistDict[playlist.Id] = playlist;
                     Db.Playlists.Add(playlist);
                 }
@@ -194,15 +194,6 @@ namespace Backend
             var dbArtists = (await Db.Artists.ToListAsync(cancellationToken)).ToDictionary(a => a.Id, a => a);
             var dbAlbums = (await Db.Albums.ToListAsync(cancellationToken)).ToDictionary(a => a.Id, a => a);
 
-            // replace duplicate objects within data
-            Log.Information("Start removing duplicated objects within library");
-            foreach (var track in spotifyTracks.Values)
-            {
-                ReplaceAlbumWithDbAlbum(dbAlbums, track);
-                ReplaceArtistWithDbArtist(dbArtists, track);
-                ReplacePlaylistsWithDbPlaylists(dbPlaylists, track);
-            }
-            Log.Information("Finished removing duplicated objects within library");
 
             // remove tracks that are no longer in the library and are not tagged
             Log.Information("Start removing untracked tracks from db");
@@ -210,14 +201,20 @@ namespace Backend
             foreach (var nonTaggedTrack in nonTaggedTracks)
             {
                 if (!spotifyTracks.ContainsKey(nonTaggedTrack.Id))
+                {
                     Db.Tracks.Remove(nonTaggedTrack);
+                    Log.Information($"Removed {nonTaggedTrack.Name} - {nonTaggedTrack.ArtistsString} from db (no longer in library & untagged)");
+                }
             }
+            await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished removing untracked tracks from db");
 
             // push spotify library to db
             Log.Information("Start pushing library to database");
             foreach (var track in spotifyTracks.Values)
             {
+                // replace spotify playlist objects with db playlist objects
+                ReplacePlaylistsWithDbPlaylists(dbPlaylists, track);
                 if (dbTracks.TryGetValue(track.Id, out var dbTrack))
                 {
                     // update the playlist sources in case the song has been added/removed from a playlist
@@ -225,11 +222,14 @@ namespace Backend
                 }
                 else
                 {
+                    Log.Information($"Adding {track.Name} - {track.ArtistsString} to db");
+                    // replace spotify album/artist objects with db album/artist objects
+                    ReplaceAlbumWithDbAlbum(dbAlbums, track);
+                    ReplaceArtistWithDbArtist(dbArtists, track);
                     // add track to db
                     Db.Tracks.Add(track);
                 }
             }
-
             await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished pushing library to database");
 
@@ -241,6 +241,7 @@ namespace Backend
             // update playlist names
             foreach (var spotifyPlaylist in spotifyPlaylists)
                 allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
+
 
             await Db.SaveChangesAsync(cancellationToken);
             Log.Information("Finished updating playlists");
@@ -296,7 +297,10 @@ namespace Backend
         public static List<Playlist> PlaylistsGenerated()
         {
             var playlistOutputNodes = Db.PlaylistOutputNodes.ToList();
-            return playlistOutputNodes.Select(node => new Playlist { Id = node.GeneratedPlaylistId, Name = node.PlaylistName }).OrderBy(p => p.Name).ToList();
+            return playlistOutputNodes
+                .Where(node => node.IsValid)
+                .Select(node => new Playlist { Id = node.GeneratedPlaylistId, Name = node.PlaylistName })
+                .OrderBy(p => p.Name).ToList();
         }
         public static async Task<List<Track>> GeneratedPlaylistTracks(string id)
         {
@@ -304,6 +308,11 @@ namespace Backend
             if (playlistOutputNode == null)
             {
                 Log.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
+                return new();
+            }
+            if (!playlistOutputNode.IsValid)
+            {
+                Log.Error($"PlaylistOutputNode with GeneratedPlaylistId {playlistOutputNode.GeneratedPlaylistId} is invalid");
                 return new();
             }
             var graphGeneratorPage = Db.GraphGeneratorPages

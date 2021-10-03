@@ -13,6 +13,25 @@ namespace Backend
     {
         private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
+        private static Func<object, bool> TrackIsValid { get; } = t => t is FullTrack ft && !ft.IsLocal && ft.IsPlayable;
+        private static Track ToTrack(FullTrack track)
+        {
+            return new Track
+            {
+                Id = track.LinkedFrom == null ? track.Id : track.LinkedFrom.Id,
+                Name = track.Name,
+                DurationMs = track.DurationMs,
+                Album = new Album
+                {
+                    Id = track.Album.Id,
+                    Name = track.Album.Name,
+                    ReleaseDate = track.Album.ReleaseDate,
+                    ReleaseDatePrecision = track.Album.ReleaseDatePrecision,
+                },
+                Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
+            };
+        }
+        
         private static async Task<List<T>> GetAll<T>(Paging<T> page)
         {
             var all = new List<T>();
@@ -24,23 +43,11 @@ namespace Backend
         private static async Task<List<Track>> LikedTracks()
         {
             Log.Information("Start fetching liked tracks");
-            var page = await Spotify.Library.GetTracks(new LibraryTracksRequest { Limit = 50 });
+            var page = await Spotify.Library.GetTracks(new LibraryTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country });
             var allTracks = await GetAll(page);
             Log.Information("Finished fetching liked tracks");
-            return allTracks.Where(t => !t.Track.IsLocal).Select(t => new Track
-            {
-                Id = t.Track.Id,
-                Name = t.Track.Name,
-                DurationMs = t.Track.DurationMs,
-                Album = new Album
-                {
-                    Id = t.Track.Album.Id,
-                    Name = t.Track.Album.Name,
-                    ReleaseDate = t.Track.Album.ReleaseDate,
-                    ReleaseDatePrecision = t.Track.Album.ReleaseDatePrecision,
-                },
-                Artists = t.Track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
-            }).ToList();
+            var testTrack = allTracks.FirstOrDefault(t => t.Track.Name.Contains("OMG What's"));
+            return allTracks.Where(t => TrackIsValid(t.Track)).Select(t => ToTrack(t.Track)).ToList();
         }
 
         private static async Task<List<Playlist>> PlaylistCurrentUsers()
@@ -61,13 +68,14 @@ namespace Backend
             var request = new PlaylistGetItemsRequest { Limit = 100, Offset = 0, Market = DataContainer.Instance.User.Country };
             request.Fields.Add("items(" +
                     "type," +
-                    "is_local," +
                     "track(" +
                         "type," +
                         "id," +
                         "name," +
                         "duration_ms," +
+                        "is_local," +
                         "is_playable," +
+                        "linked_from," +
                         "album(id,name,release_date,release_date_precision)," +
                         "artists(id,name)))," +
                 "next");
@@ -77,24 +85,7 @@ namespace Backend
                 var page = await Spotify.Playlists.GetItems(playlistId, request);
                 var allTracks = await GetAll(page);
                 Log.Information($"Finished fetching playlist items playlistId={playlistId}");
-                return allTracks.Where(t => !t.IsLocal && t.Track is FullTrack fullTrack && fullTrack.IsPlayable).Select(playlistTrack =>
-                {
-                    var track = playlistTrack.Track as FullTrack;
-                    return new Track
-                    {
-                        Id = track.Id,
-                        Name = track.Name,
-                        DurationMs = track.DurationMs,
-                        Album = new Album
-                        {
-                            Id = track.Album.Id,
-                            Name = track.Album.Name,
-                            ReleaseDate = track.Album.ReleaseDate,
-                            ReleaseDatePrecision = track.Album.ReleaseDatePrecision,
-                        },
-                        Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
-                    };
-                }).ToList();
+                return allTracks.Where(t => TrackIsValid(t.Track)).Select(playlistTrack => ToTrack(playlistTrack.Track as FullTrack)).ToList();
             }
             catch (Exception e)
             {
@@ -217,21 +208,7 @@ namespace Backend
             try
             {
                 var allTracks = await Spotify.Tracks.GetSeveral(new TracksRequest(trackIds.ToList()) { Market = DataContainer.Instance.User.Country });
-                return allTracks.Tracks.Where(t => !t.IsLocal && t.IsPlayable).Select(track =>
-                new Track
-                {
-                    Id = track.Id,
-                    Name = track.Name,
-                    DurationMs = track.DurationMs,
-                    Album = new Album
-                    {
-                        Id = track.Album.Id,
-                        Name = track.Album.Name,
-                        ReleaseDate = track.Album.ReleaseDate,
-                        ReleaseDatePrecision = track.Album.ReleaseDatePrecision,
-                    },
-                    Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
-                }).ToList();
+                return allTracks.Tracks.Where(t => TrackIsValid(t)).Select(track => ToTrack(track)).ToList();
             }
             catch (Exception e)
             {

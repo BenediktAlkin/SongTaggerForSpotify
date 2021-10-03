@@ -20,41 +20,6 @@ namespace Backend
             LikedPlaylists.CollectionChanged += UpdateSourcePlaylists;
         }
 
-        private void UpdateSourcePlaylists(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch(e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    var toAdd = e.NewItems[0] as Playlist;
-                    if (sender == LikedPlaylists)
-                        SourcePlaylists.Add(toAdd);
-                    else
-                        SourcePlaylists.Insert(MetaPlaylists.Count, toAdd);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    if(sender == MetaPlaylists)
-                    {
-                        for (var i = 0; i < MetaPlaylists.Count; i++)
-                            SourcePlaylists.RemoveAt(i);
-                    }
-                    else
-                    {
-                        for (var i = 0; i < LikedPlaylists.Count; i++)
-                            SourcePlaylists.RemoveAt(MetaPlaylists.Count + i);
-                    }
-                    break;
-                        
-                default:
-                    Log.Warning($"Error syncing meta/generated playlists with source playlists {e.Action}");
-                    break;
-            }
-        }
-        private static void ObservableCollectionAddRange<T>(ObservableCollection<T> list, IEnumerable<T> toAdd)
-        {
-            foreach (var item in toAdd)
-                list.Add(item);
-        }
-
         public void Clear()
         {
             User = null;
@@ -92,6 +57,31 @@ namespace Backend
             Log.Information("Loading generated playlists");
             GeneratedPlaylists.Clear();
             ObservableCollectionAddRange(GeneratedPlaylists, DatabaseOperations.PlaylistsGenerated());
+        }
+        private void UpdateSourcePlaylists(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    var toAdd = e.NewItems[0] as Playlist;
+                    if (sender == LikedPlaylists)
+                        SourcePlaylists.Add(toAdd);
+                    else
+                        SourcePlaylists.Insert(MetaPlaylists.Count, toAdd);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    SourcePlaylists.Clear();
+                    break;
+
+                default:
+                    Log.Warning($"Error syncing meta/generated playlists with source playlists {e.Action}");
+                    break;
+            }
+        }
+        private static void ObservableCollectionAddRange<T>(ObservableCollection<T> list, IEnumerable<T> toAdd)
+        {
+            foreach (var item in toAdd)
+                list.Add(item);
         }
         #endregion
 
