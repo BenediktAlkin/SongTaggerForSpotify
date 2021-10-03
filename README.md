@@ -7,7 +7,10 @@
 Attaching a tag to a song allows you more flexibility when managing songs you like. A tag can be anything you'd like it to be: music genres, language of the lyrics, the event/movie where you discovered a song or how much you like a song. 
 
 ## What is the benefit?
-Adding tags to songs allows you to organize your library better. You can easily create playlists based on assigned tags. Some examples are shown below.
+Adding tags to songs allows you to organize your library better. You can easily create playlists based on assigned tags. 
+Song Tagger for Spotify allows you to create "Playlist Generators" where you create dynamic playlists with common filter/set operations.
+
+Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are shown below. 
 
 
 ## Examples
