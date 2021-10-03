@@ -71,7 +71,7 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
         files: ${{ env.application_name }}/${{ env.build_config }}
-        dest: Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
+        dest: Releases/${{ env.application_name }}-Portable.zip
         recursive: false
     # rename setup.exe
     - name: Rename setup
@@ -83,5 +83,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          Releases/${{ env.application_name }}-${{ steps.tagName.outputs.tag }}.zip
+          Releases/${{ env.application_name }}-Portable.zip
           Setup/${{ env.build_config }}/${{ env.application_name }}-Installer.exe
