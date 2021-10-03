@@ -60,6 +60,7 @@ jobs:
       run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
     # publish setup project
     - name: Publish setup
+      shell: cmd
       run: |
         "%MSBUILD_PATH%" ${{ env.application_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
     # rename setup.exe
