@@ -1,6 +1,31 @@
-Song tagger for Spotify
+Song Tagger for Spotify
 
 [![Release](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml/badge.svg)](https://github.com/BenediktAlkin/UpdaterTest/actions/workflows/release.yaml)
+
+
+What is song tagging?
+Attaching a tag to a song allows you more flexibility when managing songs you like. A tag can be anything you'd like it to be: music genres, language of the lyrics, the event/movie where you discovered a song or how much you like a song. 
+
+What is the benefit?
+Adding tags to songs allows you to organize your library better. You can easily create playlists based on assigned tags. Some examples are shown below.
+
+
+Examples
+* Import tags based on existing playlists 
+  * Gets you started with Song Tagger for Spotify without manually tagging your whole library.
+  * e.g. assign every song from the "Chill" playlist the "chill" tag   
+[https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/import%20tags%20from%20playlist.png]
+
+* Create dynamic playlists based on tags 
+  * Your library consists of a broad range of music? Create specific playlists from your library without manually updating them everytime you add a new song to your library.
+  * e.g. create a 90s, 90s rock, 90s pop and 90s dance playlist from your whole library
+[https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/90s.png]
+
+* Alter liked playlists
+  * You like a playlist but dislike some songs in it? Assign a tag to those songs and create your own version of the playlist. Added/removed songs from the original playlist will be synchronized to your cloned version (this is a major advantage over just copying the playlist and changing it).
+  * e.g. filter overplayed songs from a friend's playlist
+[https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/alter%20public%20playlist.png]
+
 
 Limitations
 * Playlist folders are [not supported](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)
