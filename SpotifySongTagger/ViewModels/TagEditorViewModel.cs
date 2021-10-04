@@ -4,6 +4,7 @@ using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -33,6 +34,8 @@ namespace SpotifySongTagger.ViewModels
             List<Track> tracks;
             if(DataContainer.GeneratedPlaylists.Contains(playlist))
                 tracks = await DatabaseOperations.GeneratedPlaylistTracks(playlist.Id);
+            else if(Backend.Constants.META_PLAYLIST_IDS.Contains(playlist.Id))
+                tracks = await DatabaseOperations.MetaPlaylistTracks(playlist.Id);
             else
                 tracks = await DatabaseOperations.PlaylistTracks(playlist.Id);
 
