@@ -8,7 +8,7 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override Task MapInputToOutput()
         {
-            OutputResult = InputResult.Distinct().ToList();
+            OutputResult = InputResult[0].Distinct().ToList();
             return Task.CompletedTask;
         }
     }

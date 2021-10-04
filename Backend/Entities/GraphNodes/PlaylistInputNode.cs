@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -41,6 +42,12 @@ namespace Backend.Entities.GraphNodes
         private bool IncludedArtists { get; set; }
         private bool IncludedTags { get; set; }
         private bool IncludedAlbums { get; set; }
+
+        protected override Task MapInputToOutput()
+        {
+            OutputResult = InputResult[0];
+            return Task.CompletedTask;
+        }
         public override async Task CalculateInputResult(bool includeAll = false)
         {
             if (InputResult != null || Playlist == null) return;
@@ -49,8 +56,9 @@ namespace Backend.Entities.GraphNodes
             IncludedTags = includeAll || AnyForward(gn => gn.RequiresTags);
             IncludedAlbums = includeAll || AnyForward(gn => gn.RequiresAlbums);
 
-            InputResult = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums, 
+            var tracks = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums, 
                 includeArtists: IncludedArtists, includeTags: IncludedTags);
+            InputResult = new List<List<Track>> { tracks };
             Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} " +
                 $"IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={IncludedAlbums})");
         }

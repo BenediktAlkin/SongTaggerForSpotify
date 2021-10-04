@@ -31,6 +31,7 @@ namespace Backend
             RegisterInheritedType<FilterArtistNode>();
             RegisterInheritedType<FilterTagNode>();
             RegisterInheritedType<FilterYearNode>();
+            RegisterInheritedType<IntersectNode>();
             RegisterInheritedType<PlaylistInputNode>();
             RegisterInheritedType<PlaylistOutputNode>();
             RegisterInheritedType<RemoveNode>();

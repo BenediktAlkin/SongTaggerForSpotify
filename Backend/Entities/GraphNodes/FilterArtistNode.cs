@@ -44,7 +44,7 @@ namespace Backend.Entities.GraphNodes
             if (InputResult == null)
                 ValidArtists = null;
             else
-                ValidArtists = InputResult.SelectMany(track => track.Artists).Distinct().OrderBy(tag => tag.Name).ToList();
+                ValidArtists = InputResult[0].SelectMany(track => track.Artists).Distinct().OrderBy(tag => tag.Name).ToList();
         }
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
@@ -52,7 +52,7 @@ namespace Backend.Entities.GraphNodes
         protected override Task MapInputToOutput()
         {
             if (Artist != null)
-                OutputResult = InputResult.Where(t => t.Artists.Contains(Artist)).ToList();
+                OutputResult = InputResult[0].Where(t => t.Artists.Contains(Artist)).ToList();
             return Task.CompletedTask;
         }
 

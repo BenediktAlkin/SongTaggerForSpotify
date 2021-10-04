@@ -37,11 +37,11 @@ namespace Backend.Entities.GraphNodes
         protected override Task MapInputToOutput()
         {
             if (YearFrom != null && YearTo != null)
-                OutputResult = InputResult.Where(t => YearFrom <= t.Album.ReleaseYear && t.Album.ReleaseYear <= YearTo).ToList();
+                OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear && t.Album.ReleaseYear <= YearTo).ToList();
             else if (YearFrom != null)
-                OutputResult = InputResult.Where(t => YearFrom <= t.Album.ReleaseYear).ToList();
+                OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear).ToList();
             else if (YearTo != null)
-                OutputResult = InputResult.Where(t => t.Album.ReleaseYear <= YearTo).ToList();
+                OutputResult = InputResult[0].Where(t => t.Album.ReleaseYear <= YearTo).ToList();
             return Task.CompletedTask;
         }
 

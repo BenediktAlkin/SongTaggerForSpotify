@@ -219,6 +219,9 @@
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterYearNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource FilterYearView}" />
                                                 </DataTrigger>
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="IntersectNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
+                                                </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistInputNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlaylistInputNodeView}" />
                                                 </DataTrigger>

@@ -35,6 +35,7 @@ namespace SpotifySongTagger.ViewModels
                 new NodeType("Concat", "concatenate all inputs", typeof(ConcatNode)),
                 new NodeType("Deduplicate", "remove duplicates", typeof(DeduplicateNode)),
                 new NodeType("Remove", "removes a set from another set", typeof(RemoveNode)),
+                new NodeType("Intersect", "intersection of all inputs", typeof(IntersectNode)),
             }),
             new NodeTypeCategory("Filters", "remove all songs that do not match a filter", true, new[]
             {

@@ -45,7 +45,7 @@ namespace Backend.Entities.GraphNodes
             if (InputResult == null)
                 ValidTags = null;
             else
-                ValidTags = InputResult.SelectMany(track => track.Tags).Distinct().OrderBy(tag => tag.Name).ToList();
+                ValidTags = InputResult[0].SelectMany(track => track.Tags).Distinct().OrderBy(tag => tag.Name).ToList();
             Log.Information($"OnInputResultChanged for {this} (validTagsCount={ValidTags?.Count})");
         }
 
@@ -53,7 +53,7 @@ namespace Backend.Entities.GraphNodes
         protected override Task MapInputToOutput()
         {
             if (Tag != null)
-                OutputResult = InputResult.Where(t => t.Tags.Contains(Tag)).ToList();
+                OutputResult = InputResult[0].Where(t => t.Tags.Contains(Tag)).ToList();
             return Task.CompletedTask;
         }
 

@@ -12,18 +12,20 @@ namespace SpotifySongTagger.Converters
             var name = "Unknown Node";
             if (!(value is GraphNode gn)) return name;
 
-            switch (value.GetType().Name)
+            name = value.GetType().Name switch
             {
-                case nameof(AssignTagNode): name = "Assign Tag"; break;
-                case nameof(ConcatNode): name = "Concatenate"; break;
-                case nameof(DeduplicateNode): name = "Deduplicate"; break;
-                case nameof(FilterArtistNode): name = "Filter Artist"; break;
-                case nameof(FilterTagNode): name = "Filter Tag"; break;
-                case nameof(FilterYearNode): name = "Filter Release Year"; break;
-                case nameof(PlaylistInputNode): name = "Playlist Input"; break;
-                case nameof(PlaylistOutputNode): name = "Playlist Output"; break;
-                case nameof(RemoveNode): name = "Remove"; break;
-            }
+                nameof(AssignTagNode) => name = "Assign Tag",
+                nameof(ConcatNode) => name = "Concatenate",
+                nameof(DeduplicateNode) => name = "Deduplicate",
+                nameof(FilterArtistNode) => name = "Filter Artist",
+                nameof(FilterTagNode) => name = "Filter Tag",
+                nameof(FilterYearNode) => name = "Filter Release Year",
+                nameof(IntersectNode) => name = "Intersect",
+                nameof(PlaylistInputNode) => name = "Playlist Input",
+                nameof(PlaylistOutputNode) => name = "Playlist Output",
+                nameof(RemoveNode) => name = "Remove",
+                _ => name = "Unknown Node",
+            };
 
             return $"{name} ({gn.Id})";
         }

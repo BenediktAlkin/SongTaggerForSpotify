@@ -34,7 +34,12 @@ namespace Backend
         public delegate void ProgressChangedEventHandler(int newProgress);
         public event ProgressChangedEventHandler OnProgressChanged;
 
-        private bool HasAlbumUrl { get; set; }
+        private bool hasAlbumUrl;
+        public bool HasAlbumUrl
+        {
+            get => hasAlbumUrl;
+            set => SetProperty(ref hasAlbumUrl, value, nameof(HasAlbumUrl));
+        }
         private string albumUrl;
         public string AlbumUrl
         {

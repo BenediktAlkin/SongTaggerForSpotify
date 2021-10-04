@@ -194,7 +194,7 @@
                      SelectedItem="{Binding SelectedGraphGeneratorPage}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Margin="0 0.5 0 0">
                                 <TextBlock Text="{Binding Name}" 
                                     VerticalAlignment="Center"/>
                                 <materialDesign:PackIcon 

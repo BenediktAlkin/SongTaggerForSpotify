@@ -149,9 +149,9 @@ namespace Backend.Entities.GraphNodes
         #endregion
 
 
-        private List<Track> inputResult;
+        private List<List<Track>> inputResult;
         [NotMapped]
-        public List<Track> InputResult
+        public List<List<Track>> InputResult
         {
             get => inputResult;
             set
@@ -179,33 +179,29 @@ namespace Backend.Entities.GraphNodes
             if (InputResult != null) return;
 
             if (Inputs == null || !Inputs.Any())
-                InputResult = new List<Track>();
+                InputResult = new();
             else
             {
-                var concated = new List<Track>();
+                var newInputResults = new List<List<Track>>();
                 var hasValidInput = false;
                 foreach (var input in Inputs)
                 {
                     await input.CalculateOutputResult(includeAll);
                     if (input.OutputResult != null)
                     {
-                        concated.AddRange(input.OutputResult);
+                        newInputResults.Add(input.OutputResult);
                         hasValidInput = true;
                     }
-
                 }
                 if (hasValidInput)
                 {
-                    Log.Information($"Calculated InputResult for {this} (count={concated.Count})");
-                    InputResult = concated;
+                    var inputResultCounts = string.Join(',', newInputResults.Select(ir => $"{ir.Count}"));
+                    Log.Information($"Calculated InputResult for {this} (counts={inputResultCounts})");
+                    InputResult = newInputResults;
                 }
             }
         }
-        protected virtual Task MapInputToOutput()
-        {
-            OutputResult = InputResult;
-            return Task.CompletedTask;
-        }
+        protected virtual Task MapInputToOutput() => Task.CompletedTask;
         public async Task CalculateOutputResult(bool includeAll = false)
         {
             if (OutputResult != null) return;

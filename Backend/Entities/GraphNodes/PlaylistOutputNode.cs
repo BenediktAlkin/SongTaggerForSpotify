@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
@@ -18,6 +19,12 @@ namespace Backend.Entities.GraphNodes
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override bool CanAddOutput(GraphNode output) => false;
+
+        protected override Task MapInputToOutput()
+        {
+            OutputResult = InputResult[0];
+            return Task.CompletedTask;
+        }
 
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistName);
     }
