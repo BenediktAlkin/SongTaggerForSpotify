@@ -65,7 +65,7 @@ jobs:
     - name: Publish setup
       shell: cmd
       run: |
-        "%MSBUILD_PATH%" ${{ env.application_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+        "%MSBUILD_PATH%" ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
     
     # zip {application_name}/{build_config} into a zip file where the root folder has name {application_name}
     - name: Zip portable build
