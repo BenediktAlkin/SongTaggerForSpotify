@@ -32,9 +32,14 @@ namespace Backend
             RegisterInheritedType<FilterTagNode>();
             RegisterInheritedType<FilterYearNode>();
             RegisterInheritedType<IntersectNode>();
-            RegisterInheritedType<PlaylistInputNode>();
+            RegisterInheritedType<LikedPlaylistInputNode>();
+            RegisterInheritedType<MetaPlaylistInputNode>();
             RegisterInheritedType<PlaylistOutputNode>();
             RegisterInheritedType<RemoveNode>();
+
+            // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
+            foreach(var metaPlaylistId in Constants.META_PLAYLIST_IDS)
+                builder.Entity<Playlist>().HasData(new Playlist { Id = metaPlaylistId, Name = metaPlaylistId });
         }
 
 
@@ -45,7 +50,6 @@ namespace Backend
         public DbSet<Track> Tracks { get; set; }
         public DbSet<GraphNode> GraphNodes { get; set; }
         public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
-        public DbSet<PlaylistInputNode> PlaylistInputNodes { get; set; }
         public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }
     }
 }

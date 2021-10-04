@@ -97,7 +97,7 @@
                                 Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 Margin="16,0,0,0"
                                 ToolTip="Sync Library"
-                                IsEnabled="{Binding DataContainer.User, Converter={StaticResource IsNotNullToBooleanConverter}}"
+                                Visibility="{Binding SelectedItem.CanSyncLibrary, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
                                 Content="{materialDesign:PackIcon Kind=Sync, Size=24}"
                                 Style="{DynamicResource MaterialDesignToolButton}"

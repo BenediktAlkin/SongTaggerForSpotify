@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class PlaylistInputNode : GraphNode
+    public abstract class PlaylistInputNode : GraphNode
     {
         private string playlistId;
         public string PlaylistId
@@ -48,13 +48,13 @@ namespace Backend.Entities.GraphNodes
             OutputResult = InputResult[0];
             return Task.CompletedTask;
         }
-        public override async Task CalculateInputResult(bool includeAll = false)
+        public override async Task CalculateInputResult()
         {
             if (InputResult != null || Playlist == null) return;
 
-            IncludedArtists = includeAll || AnyForward(gn => gn.RequiresArtists);
-            IncludedTags = includeAll || AnyForward(gn => gn.RequiresTags);
-            IncludedAlbums = includeAll || AnyForward(gn => gn.RequiresAlbums);
+            IncludedArtists = AnyForward(gn => gn.RequiresArtists);
+            IncludedTags = AnyForward(gn => gn.RequiresTags);
+            IncludedAlbums = AnyForward(gn => gn.RequiresAlbums);
 
             var tracks = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums, 
                 includeArtists: IncludedArtists, includeTags: IncludedTags);

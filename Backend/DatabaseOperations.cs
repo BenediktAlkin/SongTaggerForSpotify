@@ -268,32 +268,14 @@ namespace Backend
             };
         }
 
-        private static readonly string[] META_PLAYLIST_IDS = { Constants.ALL_SONGS_PLAYLIST_ID, Constants.LIKED_SONGS_PLAYLIST_ID, Constants.UNTAGGED_SONGS_PLAYLIST_ID };
         public static async Task<List<Playlist>> PlaylistsLiked()
         {
             var playlists = Db.Playlists;
             var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
-            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !META_PLAYLIST_IDS.Contains(p.Id))
+            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
                 .OrderBy(p => p.Name).ToListAsync();
         }
-        public static List<Playlist> PlaylistsMeta()
-        {
-            static Playlist GetOrCreate(string metaPlaylistId)
-            {
-                var playlist = Db.Playlists.FirstOrDefault(p => p.Id == metaPlaylistId);
-                if (playlist == null)
-                {
-                    playlist = new Playlist { Id = metaPlaylistId, Name = metaPlaylistId };
-                    Db.Playlists.Add(playlist);
-                }
-                return playlist;
-            }
-
-            // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
-            var metaPlaylists = META_PLAYLIST_IDS.Select(pid => GetOrCreate(pid)).ToList();
-            Db.SaveChanges();
-            return metaPlaylists;
-        }
+        public static List<Playlist> PlaylistsMeta() => Db.Playlists.Where(p => Constants.META_PLAYLIST_IDS.Contains(p.Id)).OrderBy(p => p.Name).ToList();
         public static List<Playlist> PlaylistsGenerated()
         {
             var playlistOutputNodes = Db.PlaylistOutputNodes.ToList();
@@ -310,21 +292,7 @@ namespace Backend
                 Log.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
                 return new();
             }
-            if (!playlistOutputNode.IsValid)
-            {
-                Log.Error($"PlaylistOutputNode with GeneratedPlaylistId {playlistOutputNode.GeneratedPlaylistId} is invalid");
-                return new();
-            }
-            var graphGeneratorPage = Db.GraphGeneratorPages
-                .Include(ggp => ggp.GraphNodes).ThenInclude(node => node.Inputs)
-                .FirstOrDefault(ggp => ggp.Id == playlistOutputNode.GraphGeneratorPageId);
-            if (graphGeneratorPage == null)
-            {
-                Log.Error($"Could not find GraphGeneratorPage {playlistOutputNode.GraphGeneratorPageId} of OutputNode with GeneratedPlaylistId {playlistOutputNode.GeneratedPlaylistId}");
-                return new();
-            }
-            await playlistOutputNode.CalculateOutputResult(includeAll: true);
-            return playlistOutputNode.OutputResult;
+            return await SpotifyOperations.PlaylistItems(playlistOutputNode.GeneratedPlaylistId);
         }
 
 

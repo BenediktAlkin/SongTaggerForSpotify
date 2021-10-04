@@ -28,9 +28,9 @@ namespace SpotifySongTagger.ViewModels
 
         public List<MenuItem> MenuItems { get; } = new()
         {
-            new MenuItem("Login", typeof(HomeView)),
-            new MenuItem("Song Tagger", typeof(TagEditor)),
-            new MenuItem("Playlist Generator", typeof(PlaylistGenerator)),
+            new MenuItem("Login", typeof(HomeView), false),
+            new MenuItem("Song Tagger", typeof(TagEditor), true),
+            new MenuItem("Playlist Generator", typeof(PlaylistGenerator), false),
         };
         private MenuItem selectedItem;
         public MenuItem SelectedItem
@@ -67,5 +67,5 @@ namespace SpotifySongTagger.ViewModels
         }
     }
 
-    public record MenuItem(string Name, Type ViewType);
+    public record MenuItem(string Name, Type ViewType, bool CanSyncLibrary);
 }

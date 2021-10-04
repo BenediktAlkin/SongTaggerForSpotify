@@ -1,3 +1,13 @@
+PlaylistSources are removed when the combobox source in the GraphEditor is cleared because it is refreshed
+- not sure why the binding is still active when it is not the active view
+- maybe sync lists without clearing the underlying list
+update examples
+
+tutorial
+- login
+- tag songs
+- generate 
+
 minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
 - playlists binding error in tageditor (not initially but after sync)

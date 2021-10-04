@@ -14,11 +14,7 @@ namespace Backend
     public class DataContainer : NotifyPropertyChangedBase
     {
         public static DataContainer Instance { get; } = new();
-        private DataContainer()
-        {
-            MetaPlaylists.CollectionChanged += UpdateSourcePlaylists;
-            LikedPlaylists.CollectionChanged += UpdateSourcePlaylists;
-        }
+        private DataContainer() { }
 
         public void Clear()
         {
@@ -42,8 +38,6 @@ namespace Backend
         public ObservableCollection<Playlist> MetaPlaylists { get; } = new();
         public ObservableCollection<Playlist> LikedPlaylists { get; } = new();
         public ObservableCollection<Playlist> GeneratedPlaylists { get; } = new();
-        // meta playlists + liked playlists
-        public ObservableCollection<Playlist> SourcePlaylists { get; } = new();
         public async Task LoadSourcePlaylists()
         {
             Log.Information("Loading source playlists");
@@ -57,26 +51,6 @@ namespace Backend
             Log.Information("Loading generated playlists");
             GeneratedPlaylists.Clear();
             ObservableCollectionAddRange(GeneratedPlaylists, DatabaseOperations.PlaylistsGenerated());
-        }
-        private void UpdateSourcePlaylists(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    var toAdd = e.NewItems[0] as Playlist;
-                    if (sender == LikedPlaylists)
-                        SourcePlaylists.Add(toAdd);
-                    else
-                        SourcePlaylists.Insert(MetaPlaylists.Count, toAdd);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    SourcePlaylists.Clear();
-                    break;
-
-                default:
-                    Log.Warning($"Error syncing meta/generated playlists with source playlists {e.Action}");
-                    break;
-            }
         }
         private static void ObservableCollectionAddRange<T>(ObservableCollection<T> list, IEnumerable<T> toAdd)
         {
