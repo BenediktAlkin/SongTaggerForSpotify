@@ -136,13 +136,5 @@ namespace SpotifySongTagger
                 UseShellExecute = true
             });
         }
-        private void OpenYoutube(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://www.youtube.com/playlist?list=PLrFmMNaJAkFA6dUw9Oc3AEkXfdoiELZFn",
-                UseShellExecute = true
-            });
-        }
     }
 }
