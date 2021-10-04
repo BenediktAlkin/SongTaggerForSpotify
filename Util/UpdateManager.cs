@@ -76,7 +76,13 @@ namespace Util
         }
         public async Task UpdateToRelease(string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
         {
-            var url = release.Assets[0].BrowserDownloadUrl;
+            var asset = release.Assets.FirstOrDefault(a => a.Name.ToLower().Contains("portable"));
+            if(asset == null)
+            {
+                Log.Error($"Failed to download update (no asset contains 'portable')");
+                return;
+            }
+            var url = asset.BrowserDownloadUrl;
             var (zipFileName, zipFilePath) = PrepareUpdate(url);
             await DownloadUpdate(url, zipFilePath);
             ExtractUpdate(zipFilePath, updaterName, applicationName);

@@ -6,7 +6,8 @@ on:
       - "v*.*.*"
 
 env:
-  application_name: SpotifySongTagger
+  main_project_name: SpotifySongTagger
+  application_name: Song Tagger for Spotify
   updater_name: Updater
   build_config: Release
   MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
@@ -56,10 +57,10 @@ jobs:
 
     # publish program to {application_name}/{build_config}
     - name: Publish program
-      run: dotnet publish ${{ env.application_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
+      run: dotnet publish ${{ env.application_name }} --configuration ${{ env.build_config }} -o ${{ env.main_project_name }}/${{ env.build_config }}
     # publish updater to {application_name}/{build_config}
     - name: Publish updater
-      run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o ${{ env.application_name }}/${{ env.build_config }}
+      run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o ${{ env.main_project_name }}/${{ env.build_config }}
     # publish setup project to Setup/{build_config}
     - name: Publish setup
       shell: cmd
@@ -70,12 +71,13 @@ jobs:
     - name: Zip portable build
       uses: papeloto/action-zip@v1
       with:
-        files: ${{ env.application_name }}/${{ env.build_config }}
-        dest: Releases/${{ env.application_name }}-Portable.zip
+        files: ${{ env.main_project_name }}/${{ env.build_config }}
+        dest: Releases/${{ env.main_project_name }} Portable.zip
         recursive: false
     # rename setup.exe
     - name: Rename setup
-      run: cd Setup/${{ env.build_config }} && ren setup.exe ${{ env.application_name }}-Installer.exe 
+      run: |
+        cd Setup/${{ env.build_config }} && ren setup.exe "${{ env.main_project_name }} Installer.exe"
 
 
     # make git release
@@ -83,5 +85,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          Releases/${{ env.application_name }}-Portable.zip
-          Setup/${{ env.build_config }}/${{ env.application_name }}-Installer.exe
+          "Releases/${{ env.main_project_name }} Portable.zip"
+          "Setup/${{ env.build_config }}/${{ env.main_project_name }} Installer.exe"
