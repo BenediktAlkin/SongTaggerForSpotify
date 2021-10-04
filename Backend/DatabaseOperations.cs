@@ -16,6 +16,8 @@ namespace Backend
     {
         private static DatabaseContext Db => ConnectionManager.Instance.Database;
 
+
+        #region add/edit/delete/assign tag
         public static bool TagExists(string tagName)
         {
             tagName = tagName.ToLower();
@@ -50,8 +52,6 @@ namespace Backend
                 return false;
             return true;
         }
-
-
         public static void EditTag(Tag tag, string newName)
         {
             if (!CanEditTag(tag, newName)) return;
@@ -59,7 +59,6 @@ namespace Backend
             tag.Name = newName;
             Db.SaveChanges();
         }
-
         public static void DeleteTag(Tag tag)
         {
             Db.Tags.Remove(tag);
@@ -100,7 +99,10 @@ namespace Backend
             Db.SaveChanges();
             return true;
         }
+        #endregion
 
+
+        #region sync library
         private static void ReplacePlaylistsWithDbPlaylists(Dictionary<string, Playlist> playlistDict, Track track)
         {
             for (var i = 0; i < track.Playlists.Count; i++)
@@ -169,7 +171,6 @@ namespace Backend
                 }
             }
         }
-
         public static async Task SyncLibrary(CancellationToken cancellationToken = default)
         {
             Log.Information("Syncing library");
@@ -248,7 +249,30 @@ namespace Backend
 
             await DataContainer.Instance.LoadSourcePlaylists();
         }
+        #endregion
 
+
+        #region get playlists
+        public static async Task<List<Playlist>> PlaylistsLiked()
+        {
+            var playlists = Db.Playlists;
+            var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
+            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
+                .OrderBy(p => p.Name).ToListAsync();
+        }
+        public static List<Playlist> PlaylistsMeta() => Db.Playlists.Where(p => Constants.META_PLAYLIST_IDS.Contains(p.Id)).OrderBy(p => p.Name).ToList();
+        public static List<Playlist> PlaylistsGenerated()
+        {
+            var playlistOutputNodes = Db.PlaylistOutputNodes.ToList();
+            return playlistOutputNodes
+                .Where(node => node.GeneratedPlaylistId != null)
+                .Select(node => new Playlist { Id = node.GeneratedPlaylistId, Name = node.PlaylistName })
+                .OrderBy(p => p.Name).ToList();
+        }
+        #endregion
+
+
+        #region get playlist tracks
         public static async Task<List<Track>> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
             var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
@@ -265,6 +289,21 @@ namespace Backend
             var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
             return await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync();
         }
+        public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        {
+            var playlistOutputNode = Db.PlaylistOutputNodes.FirstOrDefault(p => p.GeneratedPlaylistId == id);
+            if (playlistOutputNode == null)
+            {
+                Log.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
+                return new();
+            }
+            var spotifyTracks = await SpotifyOperations.PlaylistItems(playlistOutputNode.GeneratedPlaylistId);
+            var spotifyTrackIds = spotifyTracks.Select(t => t.Id);
+
+            // replace spotify track with db track
+            var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
+            return await query.Where(t => spotifyTrackIds.Contains(t.Id)).ToListAsync();
+        }
         private static IQueryable<Track> GetTrackIncludeQuery(bool includeAlbums, bool includeArtists, bool includeTags)
         {
             IQueryable<Track> query = Db.Tracks
@@ -277,38 +316,10 @@ namespace Backend
                 query = query.Include(t => t.Tags);
             return query;
         }
+        #endregion
 
 
-        public static async Task<List<Playlist>> PlaylistsLiked()
-        {
-            var playlists = Db.Playlists;
-            var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
-            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
-                .OrderBy(p => p.Name).ToListAsync();
-        }
-        public static List<Playlist> PlaylistsMeta() => Db.Playlists.Where(p => Constants.META_PLAYLIST_IDS.Contains(p.Id)).OrderBy(p => p.Name).ToList();
-        public static List<Playlist> PlaylistsGenerated()
-        {
-            var playlistOutputNodes = Db.PlaylistOutputNodes.ToList();
-            return playlistOutputNodes
-                .Where(node => node.IsValid)
-                .Select(node => new Playlist { Id = node.GeneratedPlaylistId, Name = node.PlaylistName })
-                .OrderBy(p => p.Name).ToList();
-        }
-        public static async Task<List<Track>> GeneratedPlaylistTracks(string id)
-        {
-            var playlistOutputNode = Db.PlaylistOutputNodes.FirstOrDefault(p => p.GeneratedPlaylistId == id);
-            if (playlistOutputNode == null)
-            {
-                Log.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
-                return new();
-            }
-            return await SpotifyOperations.PlaylistItems(playlistOutputNode.GeneratedPlaylistId);
-        }
-
-
-
-
+        #region import/export tag
         public static async Task ExportTags(string outPath)
         {
             var tracks = await Db.Tracks.Include(t => t.Tags).Include(t => t.Artists).Include(t => t.Album).ToListAsync();
@@ -364,5 +375,6 @@ namespace Backend
             await Db.SaveChangesAsync();
             Log.Information($"Imported {tracks.Count} tracks");
         }
+        #endregion
     }
 }

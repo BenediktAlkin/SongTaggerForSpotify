@@ -65,6 +65,8 @@ namespace Backend
 
         public static async Task<List<Track>> PlaylistItems(string playlistId)
         {
+            if (string.IsNullOrEmpty(playlistId)) return new();
+
             var request = new PlaylistGetItemsRequest { Limit = 100, Offset = 0, Market = DataContainer.Instance.User.Country };
             request.Fields.Add("items(" +
                     "type," +
