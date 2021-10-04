@@ -1,5 +1,3 @@
-update examples
-
 tutorial
 - login
 - tag songs
