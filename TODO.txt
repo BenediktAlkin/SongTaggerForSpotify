@@ -1,6 +1,3 @@
-PlaylistSources are removed when the combobox source in the GraphEditor is cleared because it is refreshed
-- not sure why the binding is still active when it is not the active view
-- maybe sync lists without clearing the underlying list
 update examples
 
 tutorial

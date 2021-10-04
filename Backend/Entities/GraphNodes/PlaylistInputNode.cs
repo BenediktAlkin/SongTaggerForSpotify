@@ -39,9 +39,9 @@ namespace Backend.Entities.GraphNodes
                 ClearResult();
         }
         protected override bool CanAddInput(GraphNode input) => false;
-        private bool IncludedArtists { get; set; }
-        private bool IncludedTags { get; set; }
-        private bool IncludedAlbums { get; set; }
+        protected bool IncludedArtists { get; set; }
+        protected bool IncludedTags { get; set; }
+        protected bool IncludedAlbums { get; set; }
 
         protected override Task MapInputToOutput()
         {
@@ -56,12 +56,12 @@ namespace Backend.Entities.GraphNodes
             IncludedTags = AnyForward(gn => gn.RequiresTags);
             IncludedAlbums = AnyForward(gn => gn.RequiresAlbums);
 
-            var tracks = await DatabaseOperations.PlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums, 
-                includeArtists: IncludedArtists, includeTags: IncludedTags);
+            var tracks = await GetTracks();
             InputResult = new List<List<Track>> { tracks };
             Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} " +
                 $"IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={IncludedAlbums})");
         }
+        protected abstract Task<List<Track>> GetTracks();
 
 
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistId) || Playlist != null;

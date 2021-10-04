@@ -61,7 +61,7 @@ namespace Backend.Tests
         [TestCaseSource(nameof(PlaylistIdxs))]
         public async Task Input_Output(int playlistIdx)
         {
-            var inputNode = new PlaylistInputNode { Playlist = Playlists[playlistIdx] };
+            var inputNode = new LikedPlaylistInputNode { Playlist = Playlists[playlistIdx] };
             var outputNode = new PlaylistOutputNode();
             outputNode.AddInput(inputNode);
 
@@ -81,7 +81,7 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
             await concatNode.CalculateOutputResult();
             Assert.AreEqual(N_TRACKS, concatNode.OutputResult.Count);
         }
@@ -91,9 +91,9 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
             var deduplicateNode = new DeduplicateNode();
             deduplicateNode.AddInput(concatNode);
             await concatNode.CalculateOutputResult();
@@ -108,7 +108,7 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
             var tagFilterNode = new FilterTagNode { Tag = Tags[tagIdx] };
             tagFilterNode.AddInput(concatNode);
             var outputNode = new PlaylistOutputNode();
@@ -130,7 +130,7 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
             var yearFilterNode = new FilterYearNode{ YearFrom = yearFrom, YearTo = yearTo };
             yearFilterNode.AddInput(concatNode);
             var outputNode = new PlaylistOutputNode();
@@ -155,7 +155,7 @@ namespace Backend.Tests
         [Test]
         public async Task RemoveNode_NoInputSet()
         {
-            var playlist = new PlaylistInputNode { Playlist = Playlists[0] };
+            var playlist = new LikedPlaylistInputNode { Playlist = Playlists[0] };
             var removeNode = new RemoveNode();
             removeNode.AddInput(playlist);
             removeNode.SwapSets();
@@ -165,7 +165,7 @@ namespace Backend.Tests
         [Test]
         public async Task RemoveNode_NoRemoveSet()
         {
-            var playlist = new PlaylistInputNode { Playlist = Playlists[0] };
+            var playlist = new LikedPlaylistInputNode { Playlist = Playlists[0] };
             var removeNode = new RemoveNode();
             removeNode.AddInput(playlist);
             await removeNode.CalculateOutputResult();
@@ -175,8 +175,8 @@ namespace Backend.Tests
         [Test]
         public async Task RemoveNode_RemoveSameNode()
         {
-            var playlist1 = new PlaylistInputNode { Playlist = Playlists[0] };
-            var playlist2 = new PlaylistInputNode { Playlist = Playlists[0] };
+            var playlist1 = new LikedPlaylistInputNode { Playlist = Playlists[0] };
+            var playlist2 = new LikedPlaylistInputNode { Playlist = Playlists[0] };
             var removeNode = new RemoveNode();
             removeNode.AddInput(playlist1);
             removeNode.AddInput(playlist2);
@@ -187,8 +187,8 @@ namespace Backend.Tests
         [Test]
         public async Task RemoveNode_UndoConcat()
         {
-            var playlist1 = new PlaylistInputNode { Playlist = Playlists[0] };
-            var playlist2 = new PlaylistInputNode { Playlist = Playlists[1] };
+            var playlist1 = new LikedPlaylistInputNode { Playlist = Playlists[0] };
+            var playlist2 = new LikedPlaylistInputNode { Playlist = Playlists[1] };
             var concatNode = new ConcatNode();
             concatNode.AddInput(playlist1);
             concatNode.AddInput(playlist2);
@@ -207,7 +207,7 @@ namespace Backend.Tests
         [Test]
         public async Task DetectCycles_SameSource_NoCycle()
         {
-            var input = new PlaylistInputNode { Playlist = Playlists[0] };
+            var input = new LikedPlaylistInputNode { Playlist = Playlists[0] };
             await input.CalculateOutputResult();
             var allArtists = input.OutputResult.SelectMany(t => t.Artists);
             var filter1 = new FilterArtistNode { Artist = allArtists.First() };

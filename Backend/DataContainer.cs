@@ -41,21 +41,15 @@ namespace Backend
         public async Task LoadSourcePlaylists()
         {
             Log.Information("Loading source playlists");
-            LikedPlaylists.Clear();
-            MetaPlaylists.Clear();
-            ObservableCollectionAddRange(LikedPlaylists, await DatabaseOperations.PlaylistsLiked());
-            ObservableCollectionAddRange(MetaPlaylists, DatabaseOperations.PlaylistsMeta());
+            var newLiked = await DatabaseOperations.PlaylistsLiked();
+            var newMeta = DatabaseOperations.PlaylistsMeta();
+            Utils.SyncLists(LikedPlaylists, newLiked);
+            Utils.SyncLists(MetaPlaylists, newMeta);
         }
         public void LoadGeneratedPlaylists()
         {
             Log.Information("Loading generated playlists");
-            GeneratedPlaylists.Clear();
-            ObservableCollectionAddRange(GeneratedPlaylists, DatabaseOperations.PlaylistsGenerated());
-        }
-        private static void ObservableCollectionAddRange<T>(ObservableCollection<T> list, IEnumerable<T> toAdd)
-        {
-            foreach (var item in toAdd)
-                list.Add(item);
+            Utils.SyncLists(GeneratedPlaylists, DatabaseOperations.PlaylistsGenerated());
         }
         #endregion
 

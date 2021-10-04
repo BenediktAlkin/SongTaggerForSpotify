@@ -249,7 +249,23 @@ namespace Backend
             await DataContainer.Instance.LoadSourcePlaylists();
         }
 
+        public static async Task<List<Track>> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        {
+            var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
+            return playlistId switch
+            {
+                Constants.ALL_SONGS_PLAYLIST_ID => await query.ToListAsync(),
+                Constants.UNTAGGED_SONGS_PLAYLIST_ID => await query.Where(t => t.Tags.Count == 0).ToListAsync(),
+                Constants.LIKED_SONGS_PLAYLIST_ID => await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync(),
+                _ => new()
+            };
+        }
         public static async Task<List<Track>> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        {
+            var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
+            return await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync();
+        }
+        private static IQueryable<Track> GetTrackIncludeQuery(bool includeAlbums, bool includeArtists, bool includeTags)
         {
             IQueryable<Track> query = Db.Tracks
                 .Include(t => t.Playlists);
@@ -259,14 +275,9 @@ namespace Backend
                 query = query.Include(t => t.Artists);
             if (includeTags)
                 query = query.Include(t => t.Tags);
-
-            return playlistId switch
-            {
-                Constants.ALL_SONGS_PLAYLIST_ID => await query.ToListAsync(),
-                Constants.UNTAGGED_SONGS_PLAYLIST_ID => await query.Where(t => t.Tags.Count == 0).ToListAsync(),
-                _ => await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync(),
-            };
+            return query;
         }
+
 
         public static async Task<List<Playlist>> PlaylistsLiked()
         {
