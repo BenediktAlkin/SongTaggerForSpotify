@@ -57,10 +57,10 @@ jobs:
 
     # publish program to {application_name}/{build_config}
     - name: Publish program
-      run: dotnet publish ${{ env.main_project_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}""
+      run: dotnet publish ${{ env.main_project_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
     # publish updater to {application_name}/{build_config}
     - name: Publish updater
-      run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}""
+      run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
     # publish setup project to Setup/{build_config}
     - name: Publish setup
       shell: cmd
