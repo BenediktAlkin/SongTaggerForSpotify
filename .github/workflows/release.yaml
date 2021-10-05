@@ -85,5 +85,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          "Releases/${{ env.application_name }} Portable.zip"
-          "Setup/${{ env.build_config }}/${{ env.application_name }} Installer.exe"
+          Releases/${{ env.application_name }} Portable.zip
+          Setup/${{ env.build_config }}/${{ env.application_name }} Installer.exe
