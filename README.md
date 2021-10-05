@@ -29,6 +29,11 @@ Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are
   * e.g. filter overplayed songs from a friend's playlist
 ![Alter liked playlists example](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/alter%20public%20playlist.png)
 
+* Simplify discovering new music
+  * You follow multiple playlists that regularly add new music? Combine them and filter out songs that you already know.
+  * e.g. combine "Release Radar" and "Discover Weekly" (playlists that are created by Spotify specifically for you and refresh every week with new music) together and filter out songs you already liked/tagged
+![Alter liked playlists example](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/alter%20public%20playlist.png)
+
 
 ## Limitations
 * Playlist folders are [not supported](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)

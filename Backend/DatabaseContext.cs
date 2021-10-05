@@ -30,6 +30,7 @@ namespace Backend
             RegisterInheritedType<DeduplicateNode>();
             RegisterInheritedType<FilterArtistNode>();
             RegisterInheritedType<FilterTagNode>();
+            RegisterInheritedType<FilterUntaggedNode>();
             RegisterInheritedType<FilterYearNode>();
             RegisterInheritedType<IntersectNode>();
             RegisterInheritedType<LikedPlaylistInputNode>();

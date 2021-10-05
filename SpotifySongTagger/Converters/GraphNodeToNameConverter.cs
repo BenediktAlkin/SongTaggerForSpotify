@@ -19,6 +19,7 @@ namespace SpotifySongTagger.Converters
                 nameof(DeduplicateNode) => name = "Deduplicate",
                 nameof(FilterArtistNode) => name = "Filter Artist",
                 nameof(FilterTagNode) => name = "Filter Tag",
+                nameof(FilterUntaggedNode) => name = "Filter Untagged",
                 nameof(FilterYearNode) => name = "Filter Release Year",
                 nameof(IntersectNode) => name = "Intersect",
                 nameof(MetaPlaylistInputNode) => name = "Meta Playlist Input",

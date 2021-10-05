@@ -143,7 +143,7 @@ namespace Backend
             {
                 var request = new PlaylistAddItemsRequest(
                     Enumerable.Range(0, Math.Min(tracks.Count - i, BATCH_SIZE))
-                        .Select(i => $"spotify:track:{tracks[i].Id}")
+                        .Select(j => $"spotify:track:{tracks[i+j].Id}")
                         .ToList());
                 await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
             }

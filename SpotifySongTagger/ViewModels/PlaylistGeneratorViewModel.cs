@@ -42,6 +42,7 @@ namespace SpotifySongTagger.ViewModels
             {
                 new NodeType("Artist", "filter by artist", typeof(FilterArtistNode)),
                 new NodeType("Tag", "filter by tag", typeof(FilterTagNode)),
+                new NodeType("Untagged", "filter for untagged songs", typeof(FilterUntaggedNode)),
                 new NodeType("Release Year", "filter by release year", typeof(FilterYearNode)),
             }),
             new NodeTypeCategory("Outputs", "generate an output", true, new[]
