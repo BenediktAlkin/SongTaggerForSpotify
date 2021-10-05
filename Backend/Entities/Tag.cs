@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Backend.Entities.GraphNodes;
+using System.Collections.Generic;
 using Util;
 
 namespace Backend.Entities
@@ -15,6 +16,8 @@ namespace Backend.Entities
         }
 
         public List<Track> Tracks { get; set; }
+        public List<AssignTagNode> AssignTagNodes { get; set; }
+        public List<FilterTagNode> FilterTagNodes { get; set; }
 
 
         public override string ToString() => Name;

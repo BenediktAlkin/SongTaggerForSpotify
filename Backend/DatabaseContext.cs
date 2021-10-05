@@ -40,6 +40,38 @@ namespace Backend
             // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
             foreach(var metaPlaylistId in Constants.META_PLAYLIST_IDS)
                 builder.Entity<Playlist>().HasData(new Playlist { Id = metaPlaylistId, Name = metaPlaylistId });
+
+            // requi
+            builder.Entity<GraphNode>()
+                .HasMany(gn => gn.Outputs)
+                .WithMany(gn => gn.Inputs);
+
+            // GraphNodes has ON DELETE RESTRICT constraints --> change to ON DELETE SET NULL
+            builder.Entity<PlaylistInputNode>()
+                .HasOne(gn => gn.Playlist)
+                .WithMany(p => p.PlaylistInputNodes)
+                .HasForeignKey(gn => gn.PlaylistId)
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.Entity<RemoveNode>()
+                .HasOne(gn => gn.BaseSet)
+                .WithMany(gn => gn.RemoveNodeBaseSets)
+                .HasForeignKey(gn => gn.BaseSetId)
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.Entity<RemoveNode>()
+                .HasOne(gn => gn.RemoveSet)
+                .WithMany(gn => gn.RemoveNodeRemoveSets)
+                .HasForeignKey(gn => gn.RemoveSetId)
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.Entity<AssignTagNode>()
+                .HasOne(gn => gn.Tag)
+                .WithMany(t => t.AssignTagNodes)
+                .HasForeignKey(gn => gn.TagId)
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.Entity<FilterTagNode>()
+                .HasOne(gn => gn.Tag)
+                .WithMany(t => t.FilterTagNodes)
+                .HasForeignKey(gn => gn.TagId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
 
 

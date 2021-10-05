@@ -158,7 +158,7 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
 
-                    <DataGridTemplateColumn IsReadOnly="True" Header="Tags" Width="2*">
+                    <DataGridTemplateColumn IsReadOnly="True" Header="Tags" Width="2*" SortMemberPath="Track.TagsString">
                         <DataGridTemplateColumn.CellTemplate>
                             <ItemContainerTemplate DataType="{x:Type backend:Tag}">
                                 <ItemsControl ItemsSource="{Binding Track.Tags}" >

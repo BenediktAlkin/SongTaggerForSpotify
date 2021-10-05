@@ -10,6 +10,13 @@ namespace Backend.Entities.GraphNodes
 {
     public abstract class GraphNode : NotifyPropertyChangedBase
     {
+        #region navigation properties
+        // only needed to change on delete behaviour
+        public List<RemoveNode> RemoveNodeBaseSets { get; set; }
+        // only needed to change on delete behaviour
+        public List<RemoveNode> RemoveNodeRemoveSets { get; set; }
+        #endregion
+
         public static DatabaseContext Db => ConnectionManager.Instance.Database;
 
         public int Id { get; set; }

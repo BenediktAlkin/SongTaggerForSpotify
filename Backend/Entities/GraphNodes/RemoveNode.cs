@@ -5,12 +5,14 @@ namespace Backend.Entities.GraphNodes
 {
     public class RemoveNode : GraphNode
     {
+        public int? BaseSetId{ get; set; }
         private GraphNode baseSet;
         public GraphNode BaseSet
         {
             get => baseSet;
             set => SetProperty(ref baseSet, value, nameof(BaseSet));
         }
+        public int? RemoveSetId { get; set; }
         private GraphNode removeSet;
         public GraphNode RemoveSet
         {

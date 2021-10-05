@@ -235,17 +235,25 @@ namespace Backend
             Log.Information("Finished pushing library to database");
 
             // remove unlikedplaylists
-            Log.Information("Update playlists in database (remove unliked ones, rename)");
-            var allPlaylists = await Db.Playlists.ToListAsync(cancellationToken);
-            var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
-            Db.Playlists.RemoveRange(allPlaylists.Where(p => p.Tracks == null || p.Tracks.Count == 0));
+            Log.Information("Update remove unliked playlists");
+            var allPlaylists = await Db.Playlists.Include(p => p.Tracks).ToListAsync(cancellationToken);
+            var spotifyPlaylistIds = spotifyPlaylists.Select(p => p.Id);
+            var playlistsToRemove = allPlaylists.Where(p => !spotifyPlaylistIds.Contains(p.Id) && !Constants.META_PLAYLIST_IDS.Contains(p.Id));
+            foreach(var playlist in playlistsToRemove)
+            {
+                Log.Information($"Removing playlist {playlist.Name} (unliked)");
+                Db.Playlists.Remove(playlist);
+            }
+            await Db.SaveChangesAsync(cancellationToken);
+            Log.Information("Finished removing unliked playlists");
+            Log.Information("Update liked playlist names");
+
             // update playlist names
+            var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
             foreach (var spotifyPlaylist in spotifyPlaylists)
                 allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
-
-
             await Db.SaveChangesAsync(cancellationToken);
-            Log.Information("Finished updating playlists");
+            Log.Information("Finished updating liked playlist names");
 
             await DataContainer.Instance.LoadSourcePlaylists();
         }

@@ -15,6 +15,13 @@ namespace Backend.Tests
                 .CreateLogger();
             ConnectionManager.InitDb("TestDb", dropDb: true, logTo: DatabaseQueryLogger.Instance.Information);
         }
+
+        protected void RefreshDbConnection()
+        {
+            Db.Dispose();
+            ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
+        }
+
         [TearDown]
         public virtual void TearDown()
         {

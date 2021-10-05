@@ -24,6 +24,7 @@ namespace Backend.Entities
 
 
         public string ArtistsString => Artists == null ? string.Empty : string.Join(", ", Artists.Select(a => a.Name));
+        public string TagsString => Tags == null ? string.Empty : string.Join(", ", Tags.Select(t => t.Name));
 
 
         public override bool Equals(object obj) => obj is Track other ? Equals(other) : false;

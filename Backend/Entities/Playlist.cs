@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Backend.Entities.GraphNodes;
+using System.Collections.Generic;
 
 namespace Backend.Entities
 {
@@ -8,6 +9,7 @@ namespace Backend.Entities
         public string Name { get; set; }
 
         public List<Track> Tracks { get; set; }
+        public List<PlaylistInputNode> PlaylistInputNodes { get; set; }
 
         public override string ToString() => Name;
     }
