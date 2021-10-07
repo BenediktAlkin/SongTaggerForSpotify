@@ -4,14 +4,57 @@ using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Navigation;
 
 namespace SpotifySongTagger.ViewModels
 {
     public class TagEditorViewModel : BaseViewModel
     {
+        private ISnackbarMessageQueue MessageQueue{ get; set; }
+        public TagEditorViewModel(ISnackbarMessageQueue messageQueue)
+        {
+            MessageQueue = messageQueue;
+        }
+
+        public async Task OnLoaded()
+        {
+            // register PlayerManager error handling
+            BaseViewModel.PlayerManager.OnPlayerError += OnPlayerError;
+
+            BaseViewModel.PlayerManager.OnTrackChanged += UpdatePlayingTrack;
+            BaseViewModel.PlayerManager.OnProgressChanged += SetProgressSpotify;
+
+            // start updates for player
+            BaseViewModel.PlayerManager.StartUpdateTrackInfoTimer();
+            BaseViewModel.PlayerManager.StartUpdatePlaybackInfoTimer();
+            var updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
+
+            IsLoadingPlaylists = true;
+            await BaseViewModel.DataContainer.LoadSourcePlaylists();
+            BaseViewModel.DataContainer.LoadGeneratedPlaylists();
+            IsLoadingPlaylists = false;
+            await BaseViewModel.DataContainer.LoadTags();
+
+            if (updatePlaybackInfoTask != null)
+                await updatePlaybackInfoTask;
+
+        }
+
+        public void OnUnloaded()
+        {
+            BaseViewModel.PlayerManager.OnPlayerError -= OnPlayerError;
+            BaseViewModel.PlayerManager.OnTrackChanged -= UpdatePlayingTrack;
+            BaseViewModel.PlayerManager.OnProgressChanged -= SetProgressSpotify;
+            BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
+            BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
+        }
+
+
         #region track
         private bool isLoadingTracks;
         public bool IsLoadingTracks
@@ -47,7 +90,7 @@ namespace SpotifySongTagger.ViewModels
                 IsLoadingTracks = false;
             }
         }
-        public void UpdatePlayingTrack(string newId)
+        private void UpdatePlayingTrack(string newId)
         {
             foreach (var trackVM in TrackVMs)
                 trackVM.IsPlaying = trackVM.Track.Id == newId;
@@ -79,7 +122,7 @@ namespace SpotifySongTagger.ViewModels
             get => selectedPlaylist;
             set => SetProperty(ref selectedPlaylist, value, nameof(SelectedPlaylist));
         }
-        private bool isLoadingPlaylists = true;
+        private bool isLoadingPlaylists;
         public bool IsLoadingPlaylists
         {
             get => isLoadingPlaylists;
@@ -146,7 +189,7 @@ namespace SpotifySongTagger.ViewModels
             Spotify,
             User,
         }
-        public void SetProgressSpotify(int newProgress) => SetProgress(newProgress, ProgressUpdateSource.Spotify);
+        private void SetProgressSpotify(int newProgress) => SetProgress(newProgress, ProgressUpdateSource.Spotify);
 
         public void SetProgress(int newProgress, ProgressUpdateSource source)
         {
@@ -163,6 +206,30 @@ namespace SpotifySongTagger.ViewModels
         {
             get => progress;
             set => SetProgress(value, ProgressUpdateSource.User);
+        }
+
+        private void OnPlayerError(PlayerManager.PlayerError error)
+        {
+            object msg;
+            switch (error)
+            {
+                case PlayerManager.PlayerError.RequiresSpotifyPremium:
+                    var textBlock = new TextBlock { Text = "Requires " };
+                    var link = new Hyperlink() { NavigateUri = new Uri("https://www.spotify.com/us/premium/") };
+                    link.RequestNavigate += (sender, e) => Process.Start(new ProcessStartInfo
+                    {
+                        FileName = e.Uri.ToString(),
+                        UseShellExecute = true
+                    });
+                    link.Inlines.Add(new Run("Spotify Premium"));
+                    textBlock.Inlines.Add(link);
+                    msg = textBlock;
+                    break;
+                default:
+                    msg = "Unknown Error from Spotify Player";
+                    break;
+            }
+            MessageQueue.Enqueue(msg);
         }
         #endregion
     }

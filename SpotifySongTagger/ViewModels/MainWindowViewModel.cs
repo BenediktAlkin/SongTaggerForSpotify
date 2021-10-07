@@ -12,9 +12,11 @@ namespace SpotifySongTagger.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        public MainWindowViewModel(ISnackbarMessageQueue snackbarMessageQueue)
+        private ISnackbarMessageQueue MessageQueue{ get; set; }
+        public MainWindowViewModel(ISnackbarMessageQueue messageQueue)
         {
             SelectedItem = MenuItems[0];
+            MessageQueue = messageQueue;
         }
 
 
@@ -44,7 +46,19 @@ namespace SpotifySongTagger.ViewModels
             get => view;
             set => SetProperty(ref view, value, nameof(View));
         }
-        public void LoadSelectedView() => View = (FrameworkElement)Activator.CreateInstance(SelectedItem.ViewType);
+        public void LoadSelectedView()
+        {
+            if (SelectedItem.ViewType.GetConstructor(Type.EmptyTypes) != null)
+            {
+                // view has parameterless constructor
+                View = (FrameworkElement)Activator.CreateInstance(SelectedItem.ViewType);
+            }
+            else
+            {
+                // view requires messageQueue
+                View = (FrameworkElement)Activator.CreateInstance(SelectedItem.ViewType, new[] { MessageQueue });
+            }
+        }
 
 
         private bool isSyncingLibrary = true;

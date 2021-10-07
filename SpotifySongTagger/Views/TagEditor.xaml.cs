@@ -20,40 +20,15 @@ namespace SpotifySongTagger.Views
     {
         private TagEditorViewModel ViewModel { get; }
 
-        public TagEditor()
+        public TagEditor(ISnackbarMessageQueue messageQueue)
         {
             InitializeComponent();
-            ViewModel = new TagEditorViewModel();
+            ViewModel = new TagEditorViewModel(messageQueue);
             DataContext = ViewModel;
         }
         #region load/unload
-        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            BaseViewModel.PlayerManager.OnTrackChanged += ViewModel.UpdatePlayingTrack;
-            BaseViewModel.PlayerManager.OnProgressChanged += ViewModel.SetProgressSpotify;
-
-            Task updatePlaybackInfoTask = null;
-            if (!Settings.Instance.HidePlayer)
-            {
-                BaseViewModel.PlayerManager.StartUpdateTrackInfoTimer();
-                BaseViewModel.PlayerManager.StartUpdatePlaybackInfoTimer();
-                updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
-            }
-            await BaseViewModel.DataContainer.LoadSourcePlaylists();
-            BaseViewModel.DataContainer.LoadGeneratedPlaylists();
-            ViewModel.IsLoadingPlaylists = false;
-            await BaseViewModel.DataContainer.LoadTags();
-
-            if (updatePlaybackInfoTask != null)
-                await updatePlaybackInfoTask;
-        }
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            BaseViewModel.PlayerManager.OnTrackChanged -= ViewModel.UpdatePlayingTrack;
-            BaseViewModel.PlayerManager.OnProgressChanged -= ViewModel.SetProgressSpotify;
-            BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
-            BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
-        }
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e) => await ViewModel.OnLoaded();
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e) => ViewModel.OnUnloaded();
         #endregion
 
 

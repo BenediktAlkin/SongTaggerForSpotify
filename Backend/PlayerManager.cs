@@ -20,6 +20,14 @@ namespace Backend
 
         private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
+        public enum PlayerError
+        {
+            RequiresSpotifyPremium
+        }
+
+        public delegate void PlayerErrorEventHandler(PlayerError error);
+        public event PlayerErrorEventHandler OnPlayerError;
+
         public void SetTheme(bool isDarkTheme)
         {
             if (!HasAlbumUrl)
@@ -182,7 +190,11 @@ namespace Backend
         }
         public async Task Play()
         {
-            if (!IsPremiumUser) return;
+            if (!IsPremiumUser)
+            {
+                OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
+                return;
+            }
             if (Spotify == null) return;
             if (IsPlaying) return;
             try
@@ -199,7 +211,11 @@ namespace Backend
         }
         public async Task Pause()
         {
-            if (!IsPremiumUser) return;
+            if (!IsPremiumUser)
+            {
+                OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
+                return;
+            }
             if (Spotify == null) return;
             if (!IsPlaying) return;
             try
@@ -215,7 +231,11 @@ namespace Backend
         }
         public async Task SetVolume(int newVolume)
         {
-            if (!IsPremiumUser) return;
+            if (!IsPremiumUser)
+            {
+                OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
+                return;
+            }
             if (Spotify == null) return;
             try
             {
@@ -230,7 +250,11 @@ namespace Backend
         }
         public async Task SetProgress(int newProgress)
         {
-            if (!IsPremiumUser) return;
+            if (!IsPremiumUser)
+            {
+                OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
+                return;
+            }
             if (Spotify == null) return;
             try
             {
@@ -245,7 +269,11 @@ namespace Backend
         }
         public async Task SetTrack(Track t)
         {
-            if (!IsPremiumUser) return;
+            if (!IsPremiumUser)
+            {
+                OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
+                return;
+            }
             if (Spotify == null) return;
             try
             {
