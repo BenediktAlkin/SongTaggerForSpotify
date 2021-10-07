@@ -74,10 +74,10 @@ jobs:
         files: "${{ env.application_name }}/${{ env.build_config }}"
         dest: "Releases/${{ env.application_name }} Portable.zip"
         recursive: false
-    # rename setup.exe
+    # rename Setup.msi
     - name: Rename setup
       run: |
-        cd Setup/${{ env.build_config }} && ren setup.exe "${{ env.application_name }} Installer.exe"
+        cd Setup/${{ env.build_config }} && ren Setup.msi "${{ env.application_name }}-Installer.msi"
 
 
     # make git release
@@ -86,4 +86,4 @@ jobs:
       with:
         files: |
           Releases/${{ env.application_name }} Portable.zip
-          Setup/${{ env.build_config }}/${{ env.application_name }} Installer.exe
+          Setup/${{ env.build_config }}/${{ env.application_name }}-Installer.msi
