@@ -34,7 +34,7 @@ namespace Backend.Entities.GraphNodes
         
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
 
-        protected override Task MapInputToOutput()
+        protected override void MapInputToOutput()
         {
             if (YearFrom != null && YearTo != null)
                 OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear && t.Album.ReleaseYear <= YearTo).ToList();
@@ -42,7 +42,6 @@ namespace Backend.Entities.GraphNodes
                 OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear).ToList();
             else if (YearTo != null)
                 OutputResult = InputResult[0].Where(t => t.Album.ReleaseYear <= YearTo).ToList();
-            return Task.CompletedTask;
         }
 
         public override bool IsValid => true;

@@ -17,8 +17,6 @@ namespace Backend.Entities.GraphNodes
         public List<RemoveNode> RemoveNodeRemoveSets { get; set; }
         #endregion
 
-        public static DatabaseContext Db => ConnectionManager.Instance.Database;
-
         public int Id { get; set; }
 
         public int GraphGeneratorPageId { get; set; }
@@ -181,7 +179,7 @@ namespace Backend.Entities.GraphNodes
             inputResult = null;
             outputResult = null;
         }
-        public virtual async Task CalculateInputResult()
+        public virtual void CalculateInputResult()
         {
             if (InputResult != null) return;
 
@@ -193,7 +191,7 @@ namespace Backend.Entities.GraphNodes
                 var hasValidInput = false;
                 foreach (var input in Inputs)
                 {
-                    await input.CalculateOutputResult();
+                    input.CalculateOutputResult();
                     if (input.OutputResult != null)
                     {
                         newInputResults.Add(input.OutputResult);
@@ -208,16 +206,16 @@ namespace Backend.Entities.GraphNodes
                 }
             }
         }
-        protected virtual Task MapInputToOutput() => Task.CompletedTask;
-        public async Task CalculateOutputResult()
+        protected virtual void MapInputToOutput() { }
+        public void CalculateOutputResult()
         {
             if (OutputResult != null) return;
 
             if (InputResult == null)
-                await CalculateInputResult();
+                CalculateInputResult();
             // input node is invalid --> InputResult stays null
             if (InputResult != null)
-                await MapInputToOutput();
+                MapInputToOutput();
             if (OutputResult != null)
                 Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
         }

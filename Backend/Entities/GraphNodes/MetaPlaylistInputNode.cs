@@ -6,7 +6,7 @@ namespace Backend.Entities.GraphNodes
 {
     public class MetaPlaylistInputNode : PlaylistInputNode
     {
-        protected override Task<List<Track>> GetTracks()
+        protected override List<Track> GetTracks()
         {
             return DatabaseOperations.MetaPlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums,
                 includeArtists: IncludedArtists, includeTags: IncludedTags);

@@ -1,12 +1,14 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +19,11 @@ namespace Backend
         private static DatabaseContext Db => ConnectionManager.Instance.Database;
 
 
-        #region add/edit/delete/assign tag
+        #region tag
+        public static List<Tag> GetTags()
+        {
+            return Db.Tags.ToList();
+        }
         public static bool TagExists(string tagName)
         {
             tagName = tagName.ToLower();
@@ -84,7 +90,7 @@ namespace Backend
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid)) return;
 
-            await assignTagNode.CalculateOutputResult();
+            assignTagNode.CalculateOutputResult();
             var tracks = assignTagNode.OutputResult;
             foreach (var track in tracks)
                 track.Tags.Add(assignTagNode.Tag);
@@ -261,12 +267,12 @@ namespace Backend
 
 
         #region get playlists
-        public static async Task<List<Playlist>> PlaylistsLiked()
+        public static List<Playlist> PlaylistsLiked()
         {
             var playlists = Db.Playlists;
             var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
-            return await playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
-                .OrderBy(p => p.Name).ToListAsync();
+            return playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
+                .OrderBy(p => p.Name).ToList();
         }
         public static List<Playlist> PlaylistsMeta() => Db.Playlists.Where(p => Constants.META_PLAYLIST_IDS.Contains(p.Id)).OrderBy(p => p.Name).ToList();
         public static List<Playlist> PlaylistsGenerated()
@@ -281,21 +287,21 @@ namespace Backend
 
 
         #region get playlist tracks
-        public static async Task<List<Track>> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        public static List<Track> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
             var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
             return playlistId switch
             {
-                Constants.ALL_SONGS_PLAYLIST_ID => await query.ToListAsync(),
-                Constants.UNTAGGED_SONGS_PLAYLIST_ID => await query.Where(t => t.Tags.Count == 0).ToListAsync(),
-                Constants.LIKED_SONGS_PLAYLIST_ID => await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync(),
+                Constants.ALL_SONGS_PLAYLIST_ID => query.ToList(),
+                Constants.UNTAGGED_SONGS_PLAYLIST_ID => query.Where(t => t.Tags.Count == 0).ToList(),
+                Constants.LIKED_SONGS_PLAYLIST_ID => query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToList(),
                 _ => new()
             };
         }
-        public static async Task<List<Track>> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        public static List<Track> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
             var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
-            return await query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToListAsync();
+            return query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToList();
         }
         public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
@@ -310,7 +316,7 @@ namespace Backend
 
             // replace spotify track with db track
             var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
-            return await query.Where(t => spotifyTrackIds.Contains(t.Id)).ToListAsync();
+            return query.Where(t => spotifyTrackIds.Contains(t.Id)).ToList();
         }
         private static IQueryable<Track> GetTrackIncludeQuery(bool includeAlbums, bool includeArtists, bool includeTags)
         {
@@ -330,7 +336,7 @@ namespace Backend
         #region import/export tag
         public static async Task ExportTags(string outPath)
         {
-            var tracks = await Db.Tracks.Include(t => t.Tags).Include(t => t.Artists).Include(t => t.Album).ToListAsync();
+            var tracks = Db.Tracks.Include(t => t.Tags).Include(t => t.Artists).Include(t => t.Album).ToList();
             // remove circular dependencies
             foreach (var t in tracks)
             {
@@ -362,17 +368,17 @@ namespace Backend
             if (tracks == null) return;
 
             // merge with existing tags/tracks
-            var dbTracks = await Db.Tracks.Include(t => t.Tags).ToListAsync();
-            var dbTags = await Db.Tags.ToDictionaryAsync(t => t.Id, t => t);
-            var dbArtists = await Db.Artists.ToDictionaryAsync(a => a.Id, a => a);
-            var dbAlbums = await Db.Albums.ToDictionaryAsync(a => a.Id, a => a);
+            var dbTracks = Db.Tracks.Include(t => t.Tags).ToList();
+            var dbTags = Db.Tags.ToDictionary(t => t.Id, t => t);
+            var dbArtists = Db.Artists.ToDictionary(a => a.Id, a => a);
+            var dbAlbums = Db.Albums.ToDictionary(a => a.Id, a => a);
             foreach (var track in tracks)
             {
                 ReplaceTagWithDbTag(dbTags, track);
                 ReplaceArtistWithDbArtist(dbArtists, track);
                 ReplaceAlbumWithDbAlbum(dbAlbums, track);
 
-                // get dbTrack or add track to db
+                // get dbTrack or add track to Db
                 var dbTrack = dbTracks.FirstOrDefault(t => t.Id == track.Id);
                 if (dbTrack == null)
                 {
@@ -380,7 +386,7 @@ namespace Backend
                     dbTrack = track;
                 }
             }
-            await Db.SaveChangesAsync();
+            Db.SaveChanges();
             Log.Information($"Imported {tracks.Count} tracks");
         }
         #endregion

@@ -59,26 +59,6 @@ namespace SpotifySongTagger.ViewModels
                 View = (FrameworkElement)Activator.CreateInstance(SelectedItem.ViewType, new[] { MessageQueue });
             }
         }
-
-
-        private bool isSyncingLibrary = true;
-        public bool IsSyncingLibrary
-        {
-            get => isSyncingLibrary;
-            set => SetProperty(ref isSyncingLibrary, value, nameof(IsSyncingLibrary));
-        }
-
-        public CommandImpl SyncLibraryCommand { get; } = new(async sender =>
-        {
-            var viewModel = sender as MainWindowViewModel;
-            await viewModel.SyncLibrary();
-        });
-        public async Task SyncLibrary()
-        {
-            IsSyncingLibrary = true;
-            await DatabaseOperations.SyncLibrary();
-            IsSyncingLibrary = false;
-        }
     }
 
     public record MenuItem(string Name, Type ViewType, bool CanSyncLibrary);

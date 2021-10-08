@@ -50,22 +50,20 @@ namespace Backend.Entities.GraphNodes
                 RemoveSet = null;
         }
 
-        protected override Task MapInputToOutput()
+        protected override void MapInputToOutput()
         {
             if (BaseSet == null)
             {
                 OutputResult = new();
-                return Task.CompletedTask;
+                return;
             }
             if (RemoveSet == null)
             {
                 OutputResult = BaseSet.OutputResult;
-                return Task.CompletedTask;
+                return;
             }
                 
-
             OutputResult = BaseSet.OutputResult.Except(RemoveSet.OutputResult).ToList();
-            return Task.CompletedTask;
         }
     }
 }

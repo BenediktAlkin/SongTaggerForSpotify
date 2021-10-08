@@ -137,7 +137,7 @@ namespace Backend
 
             // sync with spotify
             const int BATCH_SIZE = 100;
-            await playlistOutputNode.CalculateOutputResult();
+            playlistOutputNode.CalculateOutputResult();
             var tracks = playlistOutputNode.OutputResult;
             for (var i = 0; i < tracks.Count; i += BATCH_SIZE)
             {
