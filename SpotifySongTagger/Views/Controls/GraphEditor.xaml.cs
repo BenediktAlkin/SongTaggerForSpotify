@@ -154,16 +154,6 @@ namespace SpotifySongTagger.Views.Controls
                 await ViewModel.DeleteSelected();
         }
 
-        private void PlaylistOutputNodeName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // if validation gives an error for NewTagName, it is not updated in the ViewModel
-            var textBox = sender as TextBox;
-            var frameworkElement = sender as FrameworkElement;
-            var outputNode = frameworkElement.DataContext as PlaylistOutputNode;
-
-            outputNode.PlaylistName = textBox.Text;
-            ConnectionManager.Instance.Database.SaveChanges();
-        }
 
         #region UpdateCanvasSize
         private void UpdateCanvasSize_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateCanvasSize();
@@ -174,6 +164,17 @@ namespace SpotifySongTagger.Views.Controls
         }
         #endregion
 
+        #region update GraphNode properties
+        private void PlaylistOutputNodeName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // if validation gives an error for NewTagName, it is not updated in the ViewModel
+            var textBox = sender as TextBox;
+            var frameworkElement = sender as FrameworkElement;
+            var outputNode = frameworkElement.DataContext as PlaylistOutputNode;
+
+            outputNode.PlaylistName = textBox.Text;
+            ConnectionManager.Instance.Database.SaveChanges();
+        }
         private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
         {
             if (ViewModel == null) return;
@@ -184,20 +185,23 @@ namespace SpotifySongTagger.Views.Controls
             Log.Information($"{frameworkElement.DataContext} changed from {from} to {to}");
             await ViewModel.RefreshInputResults();
         }
-
-        private void SwapRemoveNodeInputs(object sender, RoutedEventArgs e)
+        private async void SwapRemoveNodeInputs(object sender, RoutedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
             var removeNode = frameworkElement.DataContext as RemoveNode;
             removeNode.SwapSets();
             ConnectionManager.Instance.Database.SaveChanges();
+            await ViewModel.RefreshInputResults();
         }
-
-        private void YearFilterNode_YearChanged(object sender, TextChangedEventArgs e)
+        private async void YearFilterNode_YearChanged(object sender, TextChangedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
             if(Validation.GetErrors(frameworkElement).Count == 0)
+            {
                 ConnectionManager.Instance.Database.SaveChanges();
+                await ViewModel.RefreshInputResults();
+            }
         }
+        #endregion
     }
 }

@@ -26,6 +26,7 @@ namespace Backend.Entities.GraphNodes
             BaseSet = RemoveSet;
             RemoveSet = temp;
             OutputResult = null;
+            PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
         }
 
         protected override bool CanAddInput(GraphNode input) => Inputs.Count() < 2;

@@ -312,7 +312,18 @@
         <!-- new arrow -->
         <Path Stroke="{DynamicResource PrimaryHueMidBrush}" Fill="{DynamicResource PrimaryHueMidBrush}" StrokeThickness="3" Data="{Binding NewArrow}"/>
 
-
+        
+        <!-- IsUpdatingInputResults indicator -->
+        <ProgressBar 
+            Margin="6"
+            Width="20"
+            Height="20"
+            Visibility="{Binding IsUpdatingInputResults, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Style="{DynamicResource MaterialDesignCircularProgressBar}"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            IsIndeterminate="True"
+            Value="0"
+            ToolTip="Updating intermediate results for nodes"/>
 
     </Canvas>
 </UserControl>

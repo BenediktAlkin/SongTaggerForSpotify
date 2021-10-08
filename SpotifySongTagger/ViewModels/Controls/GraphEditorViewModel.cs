@@ -23,6 +23,13 @@ namespace SpotifySongTagger.ViewModels.Controls
                 GraphNodeVMs.Add(nodeViewModel);
         }
 
+        private bool isUpdatingInputResults;
+        public bool IsUpdatingInputResults
+        {
+            get => isUpdatingInputResults;
+            set => SetProperty(ref isUpdatingInputResults, value, nameof(IsUpdatingInputResults));
+        }
+
         public void ClearAllInputResults()
         {
             foreach (var nodeVM in GraphNodeVMs)
@@ -32,8 +39,10 @@ namespace SpotifySongTagger.ViewModels.Controls
         {
             await Task.Run(() =>
             {
+                IsUpdatingInputResults = true;
                 foreach (var nodeVM in GraphNodeVMs)
                     nodeVM.GraphNode.CalculateInputResult();
+                IsUpdatingInputResults = false;
             });
         }
 
