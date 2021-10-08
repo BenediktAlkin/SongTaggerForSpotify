@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Backend.Entities;
 using MaterialDesignThemes.Wpf;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,23 +27,27 @@ namespace SpotifySongTagger.ViewModels
             // register PlayerManager error handling
             BaseViewModel.PlayerManager.OnPlayerError += OnPlayerError;
 
+            // register player updates
             BaseViewModel.PlayerManager.OnTrackChanged += UpdatePlayingTrack;
             BaseViewModel.PlayerManager.OnProgressChanged += SetProgressSpotify;
 
             // start updates for player
             BaseViewModel.PlayerManager.StartUpdateTrackInfoTimer();
             BaseViewModel.PlayerManager.StartUpdatePlaybackInfoTimer();
+            // update playback info to display it at once (otherwise it would wait for first UpdatePlaybackInfoTimer tick)
             var updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
 
-            IsLoadingPlaylists = true;
+            // load playlists
             await BaseViewModel.DataContainer.LoadSourcePlaylists();
-            BaseViewModel.DataContainer.LoadGeneratedPlaylists();
-            IsLoadingPlaylists = false;
+            await BaseViewModel.DataContainer.LoadGeneratedPlaylists();
+            NotifyPropertyChanged(nameof(PlaylistCategories));
+            LoadedPlaylists = true;
+
+            // load tags
             await BaseViewModel.DataContainer.LoadTags();
 
-            if (updatePlaybackInfoTask != null)
-                await updatePlaybackInfoTask;
-
+            // update treeview on playlists refresh (e.g. when sync library updates sourceplaylists)
+            BaseViewModel.DataContainer.OnPlaylistsUpdated += () => NotifyPropertyChanged(nameof(PlaylistCategories));
         }
 
         public void OnUnloaded()
@@ -69,29 +74,37 @@ namespace SpotifySongTagger.ViewModels
             get => selectedTrackVM;
             set => SetProperty(ref selectedTrackVM, value, nameof(SelectedTrackVM));
         }
-        public ObservableCollection<TrackViewModel> TrackVMs { get; } = new();
+        private List<TrackViewModel> trackVMs;
+        public List<TrackViewModel> TrackVMs
+        {
+            get => trackVMs;
+            set => SetProperty(ref trackVMs, value, nameof(TrackVMs));
+        }
         public async Task LoadTracks(Playlist playlist)
         {
             IsLoadingTracks = true;
-            TrackVMs.Clear();
+            TrackVMs = null;
             List<Track> tracks;
-            if(DataContainer.GeneratedPlaylists.Contains(playlist))
-                tracks = await DatabaseOperations.GeneratedPlaylistTracks(playlist.Id);
-            else if(Backend.Constants.META_PLAYLIST_IDS.Contains(playlist.Id))
-                tracks = await DatabaseOperations.MetaPlaylistTracks(playlist.Id);
+            if (DataContainer.GeneratedPlaylists.Contains(playlist))
+                tracks = await Task.Run(async () => await DatabaseOperations.GeneratedPlaylistTracks(playlist.Id));
+            else if (Backend.Constants.META_PLAYLIST_IDS.Contains(playlist.Id))
+                tracks = await Task.Run(() => DatabaseOperations.MetaPlaylistTracks(playlist.Id));
             else
-                tracks = await DatabaseOperations.PlaylistTracks(playlist.Id);
+                tracks = await Task.Run(() => DatabaseOperations.PlaylistTracks(playlist.Id));
 
+            var newTrackVMs = tracks.Select(t => new TrackViewModel(t)).ToList();
             // check if the playlist is still selected
             if (SelectedPlaylist.Id == playlist.Id)
             {
-                foreach (var track in tracks)
-                    TrackVMs.Add(new TrackViewModel(track));
+                TrackVMs = newTrackVMs;
                 IsLoadingTracks = false;
+                Log.Information($"Selected playlist {playlist.Name} with {TrackVMs.Count} songs");
             }
+            
         }
         private void UpdatePlayingTrack(string newId)
         {
+            if (TrackVMs == null) return;
             foreach (var trackVM in TrackVMs)
                 trackVM.IsPlaying = trackVM.Track.Id == newId;
         }
@@ -110,7 +123,10 @@ namespace SpotifySongTagger.ViewModels
         }
         public Tag ClickedTag { get; set; }
 
-        public List<PlaylistCategory> PlaylistCategories { get; } = new()
+        // for some reason this does not work when it is static
+#pragma warning disable CA1822 // Mark members as static
+        public List<PlaylistCategory> PlaylistCategories => new()
+#pragma warning restore CA1822 // Mark members as static
         {
             new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
             new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
@@ -122,11 +138,11 @@ namespace SpotifySongTagger.ViewModels
             get => selectedPlaylist;
             set => SetProperty(ref selectedPlaylist, value, nameof(SelectedPlaylist));
         }
-        private bool isLoadingPlaylists;
-        public bool IsLoadingPlaylists
+        private bool loadedPlaylists;
+        public bool LoadedPlaylists
         {
-            get => isLoadingPlaylists;
-            set => SetProperty(ref isLoadingPlaylists, value, nameof(IsLoadingPlaylists));
+            get => loadedPlaylists;
+            set => SetProperty(ref loadedPlaylists, value, nameof(LoadedPlaylists));
         }
 
         public static void AssignTag(Track track, string tag) => DatabaseOperations.AssignTag(track, tag);

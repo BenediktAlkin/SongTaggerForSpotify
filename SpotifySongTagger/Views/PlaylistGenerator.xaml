@@ -18,6 +18,7 @@
         <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
         <converters:ObjectToTypeNameConverter x:Key="ObjectToTypeNameConverter"/>
         <materialDesign:NullableToVisibilityConverter x:Key="InverseNullableToVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed"/>
+        <materialDesign:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
     </UserControl.Resources>
     
     <materialDesign:DialogHost Name="PlaylistGeneratorDialogHost" DialogTheme="Inherit">
@@ -87,70 +88,76 @@
             <GridSplitter Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
             
             <!-- graph generator pages -->
-            <StackPanel Grid.Column="2">
-                <Grid Margin="8 0 0 9">
-                    <TextBlock 
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!-- ggp header -->
+                <StackPanel>
+                    <Grid Margin="8 0 0 9">
+                        <TextBlock 
                         Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                         Text="Generators"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!-- add GraphGeneratorPage button -->
-                        <Button
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <!-- add GraphGeneratorPage button -->
+                            <Button
                             ToolTip="Add"
                             Style="{DynamicResource MaterialDesignToolButton}"
                             Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
                             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                             materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"
                             materialDesign:RippleAssist.ClipToBounds="True">
-                            <materialDesign:PackIcon
+                                <materialDesign:PackIcon
                                 Height="24"
                                 Width="24"
                                 Kind="Plus" />
-                            <Button.CommandParameter>
-                                <!-- add generator dialog -->
-                                <Grid Margin="16">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock>New generator:</TextBlock>
-                                    <TextBox 
+                                <Button.CommandParameter>
+                                    <!-- add generator dialog -->
+                                    <Grid Margin="16">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock>New generator:</TextBlock>
+                                        <TextBox 
                                         materialDesign:HintAssist.Hint="Name" 
                                         Style="{DynamicResource DialogTextBox}"
                                         materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"
                                         Margin="0 6 0 0"
                                         FontSize="18" Grid.Row="1">
-                                        <TextBox.Text>
-                                            <Binding Path="NewGraphGeneratorPageName" UpdateSourceTrigger="PropertyChanged">
-                                                <Binding.ValidationRules>
-                                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="False" />
-                                                </Binding.ValidationRules>
-                                            </Binding>
-                                        </TextBox.Text>
-                                    </TextBox>
-                                    <Grid Grid.Row="2" Margin="0 16 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Button 
+                                            <TextBox.Text>
+                                                <Binding Path="NewGraphGeneratorPageName" UpdateSourceTrigger="PropertyChanged">
+                                                    <Binding.ValidationRules>
+                                                        <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="False" />
+                                                    </Binding.ValidationRules>
+                                                </Binding>
+                                            </TextBox.Text>
+                                        </TextBox>
+                                        <Grid Grid.Row="2" Margin="0 16 0 0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button 
                                             Grid.Column="0"
                                             IsCancel="True" Margin="8 0 0 0" Style="{DynamicResource DialogButton}"
                                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                             Content="CANCEL"
                                             Click="AddGraphGeneratorPageDialog_Cancel"/>
-                                        <Button 
+                                            <Button 
                                             Grid.Column="1"
                                             IsDefault="True" Style="{DynamicResource DialogButton}"
                                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                             Content="ADD"
                                             Click="AddGraphGeneratorPageDialog_Add"/>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Button.CommandParameter>
-                        </Button>
-                        <!-- run GraphGeneratorPage button -->
-                        <Button
+                                </Button.CommandParameter>
+                            </Button>
+                            <!-- run GraphGeneratorPage button -->
+                            <Button
                             Name="RunAllButton"
                             ToolTip="Run all"
                             Style="{DynamicResource MaterialDesignToolButton}"
@@ -159,14 +166,14 @@
                             materialDesign:RippleAssist.ClipToBounds="True"
                             Click="RunAll"
                             Visibility="{Binding IsRunningAll, Converter={StaticResource InverseBoolToVisConverter}}">
-                            <materialDesign:PackIcon
+                                <materialDesign:PackIcon
                                 Margin="0"
                                 Height="24"
                                 Width="24"
                                 Kind="FastForward" />
-                        </Button>
-                        <!-- run all GraphGeneratorPages spinner -->
-                        <ProgressBar 
+                            </Button>
+                            <!-- run all GraphGeneratorPages spinner -->
+                            <ProgressBar 
                             Margin="6"
                             Width="20"
                             Height="20"
@@ -175,107 +182,108 @@
                             HorizontalAlignment="Center" VerticalAlignment="Center"
                             IsIndeterminate="True"
                             Value="0" />
-                    </StackPanel>
-                </Grid>
-                <Rectangle
+                        </StackPanel>
+                    </Grid>
+                    <Rectangle
                     Height="1"
                     Fill="{DynamicResource MaterialDesignDivider}"/>
-                <!-- items -->
-                <Grid Grid.Column="2" Grid.Row="1">
-                <Grid.ColumnDefinitions>
+                </StackPanel>
+                <!-- ggp items -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <!-- GraphGeneratorPages -->
-                <ListBox Grid.Column="0" 
-                     ItemsSource="{Binding GraphGeneratorPages}" 
-                     SelectedItem="{Binding SelectedGraphGeneratorPage}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="0 0.5 0 0">
-                                <TextBlock Text="{Binding Name}" 
-                                    VerticalAlignment="Center"/>
-                                <materialDesign:PackIcon 
-                                    Kind="Alert" 
-                                    Margin="8 0 0 0"
-                                    Visibility="{Binding IsValid, Converter={StaticResource InverseBoolToVisConverter}}"
-                                    Foreground="Red"
-                                    ToolTip="Contains invalid node"
-                                    VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <!-- play icons -->
-                <ListBox Grid.Column="1" 
-                         ItemsSource="{Binding GraphGeneratorPages}"
-                         SelectionChanged="PlayGraphGeneratorPage_SelectionChanged">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <materialDesign:PackIcon 
-                                    Kind="Play" 
-                                    Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisConverter}}"
-                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <ProgressBar 
-                                    Height="16"
-                                    Width="16"
-                                    Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Style="{DynamicResource MaterialDesignCircularProgressBar}"
-                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    IsIndeterminate="True"
-                                    Value="0" />
+                    <!-- GraphGeneratorPages -->
+                    <ListBox Grid.Column="0" 
+                         ItemsSource="{Binding DataContainer.GraphGeneratorPages}" 
+                         SelectedItem="{Binding SelectedGraphGeneratorPage}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0 0.5 0 0">
+                                    <TextBlock Text="{Binding Name}" 
+                                        VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon 
+                                        Kind="Alert" 
+                                        Margin="8 0 0 0"
+                                        Visibility="{Binding IsValid, Converter={StaticResource InverseBoolToVisConverter}}"
+                                        Foreground="Red"
+                                        ToolTip="Contains invalid node"
+                                        VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <!-- play icons -->
+                    <ListBox Grid.Column="1" 
+                             ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
+                             SelectionChanged="PlayGraphGeneratorPage_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <materialDesign:PackIcon 
+                                        Kind="Play" 
+                                        Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisConverter}}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <ProgressBar 
+                                        Height="16"
+                                        Width="16"
+                                        Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        IsIndeterminate="True"
+                                        Value="0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <!-- edit icons -->
+                    <ListBox Grid.Column="2" 
+                             ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
+                             SelectionChanged="EditGraphGeneratorPage_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <materialDesign:PackIcon Kind="Edit" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.Resources>
+                            <!-- EditDialog -->
+                            <Grid Margin="16" x:Key="EditDialog">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">Edit generator:</TextBlock>
+                                <TextBox 
+                                    materialDesign:HintAssist.Hint="Name" 
+                                    Style="{DynamicResource DialogTextBox}"
+                                    materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"
+                                    Margin="0 6 0 0"
+                                    FontSize="18" Grid.Row="1"
+                                    Text="{Binding NewGraphGeneratorPageName}"/>
+                                <Grid Grid.Row="2" Margin="0 16 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" IsCancel="True" Style="{DynamicResource DialogButton}"
+                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                Content="CANCEL"
+                                                Click="EditPageDialog_Cancel"/>
+                                    <Button Grid.Column="1" IsDefault="True" Style="{DynamicResource DialogButton}"
+                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                Content="SAVE"
+                                                Click="EditPageDialog_Save"/>
+                                </Grid>
                             </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <!-- edit icons -->
-                <ListBox Grid.Column="2" 
-                         ItemsSource="{Binding GraphGeneratorPages}"
-                         SelectionChanged="EditGraphGeneratorPage_SelectionChanged">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <materialDesign:PackIcon Kind="Edit" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    <ListBox.Resources>
-                        <!-- EditDialog -->
-                        <Grid Margin="16" x:Key="EditDialog">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">Edit generator:</TextBlock>
-                            <TextBox 
-                                materialDesign:HintAssist.Hint="Name" 
-                                Style="{DynamicResource DialogTextBox}"
-                                materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"
-                                Margin="0 6 0 0"
-                                FontSize="18" Grid.Row="1"
-                                Text="{Binding NewGraphGeneratorPageName}"/>
-                            <Grid Grid.Row="2" Margin="0 16 0 0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" IsCancel="True" Style="{DynamicResource DialogButton}"
-                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                            Content="CANCEL"
-                                            Click="EditPageDialog_Cancel"/>
-                                <Button Grid.Column="1" IsDefault="True" Style="{DynamicResource DialogButton}"
-                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                            Content="SAVE"
-                                            Click="EditPageDialog_Save"/>
-                            </Grid>
-                        </Grid>
-                    </ListBox.Resources>
-                </ListBox>
-                <!-- delete icons -->
-                <ListBox Grid.Column="3"
-                         ItemsSource="{Binding GraphGeneratorPages}"
+                        </ListBox.Resources>
+                    </ListBox>
+                    <!-- delete icons -->
+                    <ListBox Grid.Column="3"
+                         ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
                          SelectionChanged="DeleteGraphGeneratorPage_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -313,8 +321,15 @@
                         </Grid>
                     </ListBox.Resources>
                 </ListBox>
+                    <!-- loading pages progress -->
+                    <ProgressBar 
+                        Grid.ColumnSpan="4" 
+                        Visibility="{Binding IsReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                        Style="{StaticResource MaterialDesignCircularProgressBar}"
+                        Value="0"
+                        IsIndeterminate="True" />
                 </Grid>
-            </StackPanel>
+            </Grid>
         </Grid>
     </materialDesign:DialogHost>
 </UserControl>

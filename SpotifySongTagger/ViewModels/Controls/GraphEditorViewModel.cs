@@ -30,8 +30,11 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public async Task RefreshInputResults()
         {
-            foreach (var nodeVM in GraphNodeVMs)
-                await nodeVM.GraphNode.CalculateInputResult();
+            await Task.Run(() =>
+            {
+                foreach (var nodeVM in GraphNodeVMs)
+                    nodeVM.GraphNode.CalculateInputResult();
+            });
         }
 
         private GraphGeneratorPage graphGeneratorPage;

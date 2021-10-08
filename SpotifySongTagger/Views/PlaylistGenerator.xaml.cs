@@ -50,32 +50,12 @@ namespace SpotifySongTagger.Views
 
         #region GraphGeneratorPages dialogues
         private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
-        private void AddGraphGeneratorPageDialog_Add(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(ViewModel.NewGraphGeneratorPageName))
-            {
-                ViewModel.NewGraphGeneratorPageName = null;
-                return;
-            }
-            ViewModel.AddGraphGeneratorPage(ViewModel.NewGraphGeneratorPageName);
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
+        private void AddGraphGeneratorPageDialog_Add(object sender, RoutedEventArgs e) => ViewModel.AddGraphGeneratorPage();
         
-        private void EditPageDialog_Cancel(object sender, RoutedEventArgs e)
-        {
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
-        private void EditPageDialog_Save(object sender, RoutedEventArgs e)
-        {
-            ViewModel.EditGraphGeneratorPageName();
-            ViewModel.NewGraphGeneratorPageName = null;
-        }
+        private void EditPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
+        private void EditPageDialog_Save(object sender, RoutedEventArgs e) =>ViewModel.EditGraphGeneratorPageName();
 
-        private void DeletePageDialog_Delete(object sender, RoutedEventArgs e)
-        {
-            ViewModel.RemoveGraphGeneratorPage(ViewModel.SelectedGraphGeneratorPage);
-            ViewModel.SelectedGraphGeneratorPage = null;
-        }
+        private void DeletePageDialog_Delete(object sender, RoutedEventArgs e) => ViewModel.RemoveGraphGeneratorPage();
         #endregion
 
         #region GraphGeneratorPages actions
@@ -122,18 +102,7 @@ namespace SpotifySongTagger.Views
             listBox.SelectedItem = null;
         }
 
-        private async void RunAll(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.IsRunningAll) return;
-            Log.Information("RunAll GraphGeneratorPages");
-            ViewModel.IsRunningAll = true;
-            foreach (var ggpVM in ViewModel.GraphGeneratorPages)
-                ggpVM.IsRunning = true;
-            foreach (var ggpVM in ViewModel.GraphGeneratorPages)
-                await ggpVM.Run();
-            ViewModel.IsRunningAll = false;
-            Log.Information("Finished RunAll GraphGeneratorPages");
-        }
+        private async void RunAll(object sender, RoutedEventArgs e) => await ViewModel.RunAll();
         #endregion
 
     }

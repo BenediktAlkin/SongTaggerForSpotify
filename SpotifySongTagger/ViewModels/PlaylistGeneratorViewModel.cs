@@ -2,6 +2,7 @@
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,16 @@ namespace SpotifySongTagger.ViewModels
         public async Task Init()
         {
             await DataContainer.LoadSourcePlaylists();
-            var ggps = ConnectionManager.Instance.Database.GraphGeneratorPages
-                .Include(ggp => ggp.GraphNodes).ThenInclude(gn => gn.Outputs);
-            foreach (var ggp in ggps)
-                GraphGeneratorPages.Add(ggp);
+            await DataContainer.LoadGraphGeneratorPages();
+            IsReady = true;
+        }
+
+        // PlaylistGenerator is ready when GraphGeneratorPages and SourcePlaylists are loaded
+        private bool isReady;
+        public bool IsReady
+        {
+            get => isReady;
+            set => SetProperty(ref isReady, value, nameof(IsReady));
         }
 
 
@@ -60,7 +67,6 @@ namespace SpotifySongTagger.ViewModels
             get => isRunningAll;
             set => SetProperty(ref isRunningAll, value, nameof(IsRunningAll));
         }
-        public ObservableCollection<GraphGeneratorPage> GraphGeneratorPages { get; } = new();
         private GraphGeneratorPage selectedGraphGeneratorPage;
         public GraphGeneratorPage SelectedGraphGeneratorPage
         {
@@ -88,34 +94,53 @@ namespace SpotifySongTagger.ViewModels
             get => newGraphGeneratorPageName;
             set => SetProperty(ref newGraphGeneratorPageName, value, nameof(NewGraphGeneratorPageName));
         }
-        public void AddGraphGeneratorPage(string name)
+        public void AddGraphGeneratorPage()
         {
+            if (string.IsNullOrEmpty(NewGraphGeneratorPageName))
+            {
+                NewGraphGeneratorPageName = null;
+                return;
+            }
+
             // add to db
-            var page = new GraphGeneratorPage { Name = name };
-            var node = new PlaylistOutputNode { PlaylistName = name };
+            var page = new GraphGeneratorPage { Name = NewGraphGeneratorPageName };
+            var node = new PlaylistOutputNode { PlaylistName = NewGraphGeneratorPageName };
             page.GraphNodes.Add(node);
-            ConnectionManager.Instance.Database.GraphGeneratorPages.Add(page);
-            ConnectionManager.Instance.Database.SaveChanges();
+            DatabaseOperations.AddGraphGeneratorPage(page);
 
             // update ui
-            GraphGeneratorPages.Add(page);
+            BaseViewModel.DataContainer.GraphGeneratorPages.Add(page);
+            NewGraphGeneratorPageName = null;
         }
-        public void RemoveGraphGeneratorPage(GraphGeneratorPage toDelete)
+        public void RemoveGraphGeneratorPage()
         {
-            if (toDelete == null) return;
+            if (SelectedGraphGeneratorPage == null) return;
 
             // remove in db
-            ConnectionManager.Instance.Database.GraphGeneratorPages.Remove(toDelete);
-            ConnectionManager.Instance.Database.SaveChanges();
+            DatabaseOperations.DeleteGraphGeneratorPage(SelectedGraphGeneratorPage);
 
             // update ui
-            GraphGeneratorPages.Remove(toDelete);
+            BaseViewModel.DataContainer.GraphGeneratorPages.Remove(SelectedGraphGeneratorPage);
+            SelectedGraphGeneratorPage = null;
+        }
+
+        public async Task RunAll()
+        {
+            if (IsRunningAll) return;
+            Log.Information("RunAll GraphGeneratorPages");
+            IsRunningAll = true;
+            foreach (var ggpVM in BaseViewModel.DataContainer.GraphGeneratorPages)
+                ggpVM.IsRunning = true;
+            foreach (var ggpVM in BaseViewModel.DataContainer.GraphGeneratorPages)
+                await ggpVM.Run();
+            IsRunningAll = false;
+            Log.Information("Finished RunAll GraphGeneratorPages");
         }
 
         public void EditGraphGeneratorPageName()
         {
-            SelectedGraphGeneratorPage.Name = NewGraphGeneratorPageName;
-            ConnectionManager.Instance.Database.SaveChanges();
+            DatabaseOperations.EditGraphGeneratorPage(SelectedGraphGeneratorPage, NewGraphGeneratorPageName);
+            NewGraphGeneratorPageName = null;
         }
 
         #endregion

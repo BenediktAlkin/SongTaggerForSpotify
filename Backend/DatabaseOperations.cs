@@ -26,6 +26,7 @@ namespace Backend
         }
         public static bool TagExists(string tagName)
         {
+            if (string.IsNullOrEmpty(tagName)) return false;
             tagName = tagName.ToLower();
             return Db.Tags.FirstOrDefault(t => t.Name == tagName) != null;
         }
@@ -104,6 +105,31 @@ namespace Backend
             track.Tags.Remove(tag);
             Db.SaveChanges();
             return true;
+        }
+        #endregion
+
+        #region graphNodePages
+        public static List<GraphGeneratorPage> GetGraphGeneratorPages()
+        {
+            return Db.GraphGeneratorPages
+                .Include(ggp => ggp.GraphNodes)
+                .ThenInclude(gn => gn.Outputs)
+                .ToList();
+        }
+        public static void AddGraphGeneratorPage(GraphGeneratorPage page)
+        {
+            Db.GraphGeneratorPages.Add(page);
+            Db.SaveChanges();
+        }
+        public static void DeleteGraphGeneratorPage(GraphGeneratorPage page)
+        {
+            Db.GraphGeneratorPages.Remove(page);
+            Db.SaveChanges();
+        }
+        public static void EditGraphGeneratorPage(GraphGeneratorPage page, string newName)
+        {
+            page.Name = newName;
+            Db.SaveChanges();
         }
         #endregion
 

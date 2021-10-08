@@ -45,7 +45,7 @@
                 Grid.Row="0" 
                 ItemsSource="{Binding PlaylistCategories}"
                 SelectedItemChanged="Playlists_SelectionChanged" 
-                Visibility="{Binding IsLoadingPlaylists, Converter={StaticResource InverseBoolToVisConverter}}">
+                Visibility="{Binding LoadedPlaylists, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TreeView.Resources>
                     <Style TargetType="TreeViewItem" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
                         <Style.Triggers>
@@ -65,7 +65,7 @@
             </TreeView>
             <ProgressBar 
                 Grid.Column="0" 
-                Visibility="{Binding IsLoadingPlaylists, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding LoadedPlaylists, Converter={StaticResource InverseBoolToVisConverter}}"
                 Style="{StaticResource MaterialDesignCircularProgressBar}"
                 Value="0"
                 IsIndeterminate="True" />
@@ -192,9 +192,13 @@
             <GridSplitter Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1"/>
             
             <!-- tags -->
-            <StackPanel Grid.Row="0" Grid.Column="2">
+            <Grid Grid.Row="0" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 <!-- tag headers -->
-                <StackPanel>
+                <StackPanel Grid.Row="0">
                     <Grid Margin="8 0 0 4">
                         <TextBlock
                         Name="TagsHeader"
@@ -284,9 +288,7 @@
                     Fill="{DynamicResource MaterialDesignDivider}"/>
                 </StackPanel>
                 <!-- tag chips -->
-                <ItemsControl 
-                Grid.Column="2" Grid.Row="1" 
-                ItemsSource="{Binding DataContainer.Tags}">
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding DataContainer.Tags}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"/>
@@ -295,26 +297,26 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <materialDesign:Chip
-                            PreviewMouseDown="Tag_PreviewMouseDown"
-                            VerticalAlignment="Center">
+                                PreviewMouseDown="Tag_PreviewMouseDown"
+                                VerticalAlignment="Center">
                                 <!-- tag content -->
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Name}"/>
                                     <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                                        Visibility="{Binding DataContext.IsTagEditOrDeleteMode, ElementName=TagEditorUserControl, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Click="EditOrDeleteTagButton_Click">
+                                    Visibility="{Binding DataContext.IsTagEditOrDeleteMode, ElementName=TagEditorUserControl, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Click="EditOrDeleteTagButton_Click">
                                         <!-- display button if edit/delete mode is selected -->
                                         <Button.Template>
                                             <ControlTemplate>
                                                 <Grid Width="16" Height="16" Margin="6 0 -2 0">
                                                     <Ellipse x:Name="Bg" Fill="#FFA6A6A6" Stroke="#FF009587" StrokeThickness="0" MouseEnter="TagEditOrDelete_MouseEnter" MouseLeave="TagEditOrDelete_MouseLeave"/>
                                                     <materialDesign:PackIcon 
-                                                    Kind="{Binding DataContext.TagDeleteOrEditIcon, ElementName=TagEditorUserControl}"  
-                                                    Width="12" Height="12"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    MouseEnter="TagEditOrDelete_MouseEnter"
-                                                    MouseLeave="TagEditOrDelete_MouseLeave"/>
+                                                Kind="{Binding DataContext.TagDeleteOrEditIcon, ElementName=TagEditorUserControl}"  
+                                                Width="12" Height="12"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                MouseEnter="TagEditOrDelete_MouseEnter"
+                                                MouseLeave="TagEditOrDelete_MouseLeave"/>
                                                 </Grid>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
@@ -338,10 +340,10 @@
                                                             <StackPanel Grid.Row="0">
                                                                 <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">Really delete tag?</TextBlock>
                                                                 <TextBlock Style="{DynamicResource MaterialDesignTextBlock}"
-                                                                 Margin="0 6 0 0"
-                                                                 FontSize="18" 
-                                                                 FontWeight="Bold"
-                                                                 Text="{Binding DataContext.ClickedTag.Name, ElementName=TagEditorUserControl}"/>
+                                                                Margin="0 6 0 0"
+                                                                FontSize="18" 
+                                                                FontWeight="Bold"
+                                                                Text="{Binding DataContext.ClickedTag.Name, ElementName=TagEditorUserControl}"/>
                                                             </StackPanel>
                                                             <Grid Grid.Row="1" Margin="0 16 0 0">
                                                                 <Grid.ColumnDefinitions>
@@ -349,13 +351,13 @@
                                                                     <ColumnDefinition Width="*"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <Button Grid.Column="0" IsCancel="True" Style="{DynamicResource DialogButton}"
-                                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                                                Content="CANCEL"
-                                                                Click="DeleteTagDialog_Cancel"/>
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                            Content="CANCEL"
+                                                            Click="DeleteTagDialog_Cancel"/>
                                                                 <Button Grid.Column="1" IsDefault="True" Style="{DynamicResource DialogButton}"
-                                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                                                Content="DELETE"
-                                                                Click="DeleteTagDialog_Delete"/>
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                            Content="DELETE"
+                                                            Click="DeleteTagDialog_Delete"/>
                                                             </Grid>
                                                         </Grid>
                                                     </DataTemplate>
@@ -369,12 +371,12 @@
                                                             </Grid.RowDefinitions>
                                                             <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">Edit tag:</TextBlock>
                                                             <TextBox 
-                                                            materialDesign:HintAssist.Hint="Name" 
-                                                            Style="{DynamicResource DialogTextBox}"
-                                                            materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"
-                                                            Margin="0 6 0 0"
-                                                            FontSize="18" Grid.Row="1"
-                                                            TextChanged="NewTagName_TextChanged">
+                                                        materialDesign:HintAssist.Hint="Name" 
+                                                        Style="{DynamicResource DialogTextBox}"
+                                                        materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"
+                                                        Margin="0 6 0 0"
+                                                        FontSize="18" Grid.Row="1"
+                                                        TextChanged="NewTagName_TextChanged">
                                                                 <TextBox.Text>
                                                                     <Binding Path="DataContext.NewTagName" ElementName="TagEditorUserControl" UpdateSourceTrigger="PropertyChanged">
                                                                         <Binding.ValidationRules>
@@ -389,14 +391,14 @@
                                                                     <ColumnDefinition Width="*"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <Button Grid.Column="0" IsCancel="True" Style="{DynamicResource DialogButton}"
-                                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                                                Content="CANCEL"
-                                                                Click="EditTagDialog_Cancel"/>
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                            Content="CANCEL"
+                                                            Click="EditTagDialog_Cancel"/>
                                                                 <Button Grid.Column="1" IsDefault="True" Style="{DynamicResource DialogButton}"
-                                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                                                                IsEnabled="{Binding DataContext.CanEditTag, ElementName=TagEditorUserControl}"
-                                                                Content="SAVE"
-                                                                Click="EditTagDialog_Save"/>
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                            IsEnabled="{Binding DataContext.CanEditTag, ElementName=TagEditorUserControl}"
+                                                            Content="SAVE"
+                                                            Click="EditTagDialog_Save"/>
                                                             </Grid>
                                                         </Grid>
                                                     </DataTemplate>
@@ -422,7 +424,14 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </StackPanel>
+                <!-- load tags progress -->
+                <ProgressBar 
+                    Grid.Row="1"
+                    Visibility="{Binding DataContainer.Tags, Converter={StaticResource InverseNullableToVisibilityConverter}}"
+                    Style="{StaticResource MaterialDesignCircularProgressBar}"
+                    Value="0"
+                    IsIndeterminate="True" />
+            </Grid>
 
 
             <Rectangle

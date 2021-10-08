@@ -79,21 +79,13 @@ namespace SpotifySongTagger.Views
             if (treeView.SelectedItem == null || playlist == null)
             {
                 ViewModel.SelectedPlaylist = null;
-                ViewModel.TrackVMs.Clear();
+                ViewModel.TrackVMs = null;
                 return;
             }
 
             // load new tracks
             ViewModel.SelectedPlaylist = playlist;
-            try
-            {
-                await ViewModel.LoadTracks(playlist);
-                Log.Information($"Selected playlist {playlist.Name} with {ViewModel.TrackVMs.Count} songs");
-            }
-            catch (TaskCanceledException)
-            {
-                Log.Information($"Aborted GetTracks {playlist.Id}");
-            }
+            await ViewModel.LoadTracks(playlist);
         }
 
         #region add/edit/delete tag dialog

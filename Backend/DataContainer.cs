@@ -74,11 +74,12 @@ namespace Backend
             var newLikedTask = MetaPlaylists == null || forceReload 
                 ? Task.Run(() => LikedPlaylists = DatabaseOperations.PlaylistsLiked())
                 : Task.CompletedTask;
+            await newLikedTask;
             // meta does not change --> only require loading once
             var newMetaTask = MetaPlaylists == null
                 ? Task.Run(() => MetaPlaylists = DatabaseOperations.PlaylistsMeta())
                 : Task.CompletedTask;
-            await Task.WhenAll(newLikedTask, newMetaTask);
+            await newMetaTask;
         }
         public async Task LoadGeneratedPlaylists()
         {
@@ -88,12 +89,6 @@ namespace Backend
 
 
         #region tags
-        private bool isLoadingTags;
-        public bool IsLoadingTags
-        {
-            get => isLoadingTags;
-            set => SetProperty(ref isLoadingTags, value, nameof(IsLoadingTags));
-        }
         private ObservableCollection<Tag> tags;
         public ObservableCollection<Tag> Tags
         {
@@ -105,13 +100,12 @@ namespace Backend
             if (Tags != null) return;
 
             Log.Information("Loading tags");
-            IsLoadingTags = true;
+            Tags = null;
             await Task.Run(() =>
             {
                 var dbTags = DatabaseOperations.GetTags();
                 Tags = new ObservableCollection<Tag>(dbTags);
             });
-            IsLoadingTags = false;
         }
         #endregion
 
@@ -129,9 +123,8 @@ namespace Backend
             Log.Information("Loading pages");
             await Task.Run(() =>
             {
-                // TODO
-                //var dbPages = DatabaseOperations.GetGraphGeneratorPages();
-                //GraphGeneratorPages = new ObservableCollection<GraphGeneratorPage>(dbPages);
+                var dbPages = DatabaseOperations.GetGraphGeneratorPages();
+                GraphGeneratorPages = new ObservableCollection<GraphGeneratorPage>(dbPages);
             });
         }
         #endregion
