@@ -7,8 +7,8 @@ namespace Backend.Entities.GraphNodes
 {
     public class FilterArtistNode : GraphNode
     {
-        private int? artistId;
-        public int? ArtistId
+        private string artistId;
+        public string ArtistId
         {
             get => artistId;
             set
