@@ -80,9 +80,9 @@ namespace SpotifySongTagger.Views.Controls
             {
                 // add connection
                 var nodeVM = ViewModel.GetHoveredGraphNodeViewModel(e.GetPosition(Canvas));
-                await ViewModel.AddConnection(nodeVM);
-                ViewModel.NewArrowStartNodeRect = default;
+                ViewModel.NewArrowStartNodeRect = null;
                 ViewModel.NewArrow = null;
+                await ViewModel.AddConnection(nodeVM);
             }
             ViewModel.PressedMouseButton = null;
             e.Handled = true;
@@ -190,6 +190,7 @@ namespace SpotifySongTagger.Views.Controls
             var frameworkElement = sender as FrameworkElement;
             var removeNode = frameworkElement.DataContext as RemoveNode;
             removeNode.SwapSets();
+            ConnectionManager.Instance.Database.SaveChanges();
         }
 
         private void YearFilterNode_YearChanged(object sender, TextChangedEventArgs e)

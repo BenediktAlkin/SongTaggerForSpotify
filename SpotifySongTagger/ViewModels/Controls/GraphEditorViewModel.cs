@@ -77,7 +77,7 @@ namespace SpotifySongTagger.ViewModels.Controls
 
 
         #region new arrow
-        public Rect NewArrowStartNodeRect { get; set; }
+        public Rect? NewArrowStartNodeRect { get; set; }
         private Geometry newArrow;
         public Geometry NewArrow
         {
@@ -86,7 +86,8 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public void UpdateNewArrow(Point curPos)
         {
-            var nearestAnchor = GeometryUtil.GetNearestAnchor(curPos, NewArrowStartNodeRect);
+            if (NewArrowStartNodeRect == null) return;
+            var nearestAnchor = GeometryUtil.GetNearestAnchor(curPos, NewArrowStartNodeRect.Value);
             NewArrow = GeometryUtil.GetArrow(nearestAnchor, new Anchor(GeometryUtil.OppositeLocation(nearestAnchor.Location), curPos));
         }
         public GraphNodeViewModel GetHoveredGraphNodeViewModel(Point pos)

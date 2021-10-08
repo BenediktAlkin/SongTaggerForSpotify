@@ -8,5 +8,7 @@ namespace Backend.Entities
         public string Name { get; set; }
 
         public List<Track> Tracks { get; set; }
+
+        public override string ToString() => Name;
     }
 }

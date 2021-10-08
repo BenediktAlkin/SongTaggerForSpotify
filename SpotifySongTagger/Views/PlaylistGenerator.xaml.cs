@@ -51,11 +51,23 @@ namespace SpotifySongTagger.Views
         #region GraphGeneratorPages dialogues
         private void AddGraphGeneratorPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
         private void AddGraphGeneratorPageDialog_Add(object sender, RoutedEventArgs e) => ViewModel.AddGraphGeneratorPage();
-        
-        private void EditPageDialog_Cancel(object sender, RoutedEventArgs e) => ViewModel.NewGraphGeneratorPageName = null;
-        private void EditPageDialog_Save(object sender, RoutedEventArgs e) =>ViewModel.EditGraphGeneratorPageName();
 
-        private void DeletePageDialog_Delete(object sender, RoutedEventArgs e) => ViewModel.RemoveGraphGeneratorPage();
+        private void EditPageDialog_Cancel(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NewGraphGeneratorPageName = null;
+            EditIcons.SelectedItem = null;
+        }
+        private void EditPageDialog_Save(object sender, RoutedEventArgs e)
+        {
+            var ggp = EditIcons.SelectedItem as GraphGeneratorPage;
+            ViewModel.EditGraphGeneratorPageName(ggp);
+        }
+
+        private void DeletePageDialog_Delete(object sender, RoutedEventArgs e)
+        {
+            var ggp = DeleteIcons.SelectedItem as GraphGeneratorPage;
+            ViewModel.RemoveGraphGeneratorPage(ggp);
+        }
         #endregion
 
         #region GraphGeneratorPages actions
@@ -67,12 +79,7 @@ namespace SpotifySongTagger.Views
             var enumerator = listBox.Resources.Values.GetEnumerator();
             enumerator.MoveNext();
             var dialog = enumerator.Current;
-
-            ViewModel.SelectedGraphGeneratorPage = listBox.SelectedItem as GraphGeneratorPage;
-
             DialogHost.OpenDialogCommand.Execute(dialog, listBox);
-
-            listBox.SelectedItem = null;
         }
 
         private void EditGraphGeneratorPage_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -84,12 +91,9 @@ namespace SpotifySongTagger.Views
             enumerator.MoveNext();
             var dialog = enumerator.Current;
 
-            ViewModel.SelectedGraphGeneratorPage = listBox.SelectedItem as GraphGeneratorPage;
-            ViewModel.NewGraphGeneratorPageName = ViewModel.SelectedGraphGeneratorPage.Name;
-
+            var ggp = listBox.SelectedItem as GraphGeneratorPage;
+            ViewModel.NewGraphGeneratorPageName = ggp.Name;
             DialogHost.OpenDialogCommand.Execute(dialog, listBox);
-
-            listBox.SelectedItem = null;
         }
 
         private async void PlayGraphGeneratorPage_SelectionChanged(object sender, SelectionChangedEventArgs e)

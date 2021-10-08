@@ -112,16 +112,15 @@ namespace SpotifySongTagger.ViewModels
             BaseViewModel.DataContainer.GraphGeneratorPages.Add(page);
             NewGraphGeneratorPageName = null;
         }
-        public void RemoveGraphGeneratorPage()
+        public void RemoveGraphGeneratorPage(GraphGeneratorPage page)
         {
             if (SelectedGraphGeneratorPage == null) return;
 
             // remove in db
-            DatabaseOperations.DeleteGraphGeneratorPage(SelectedGraphGeneratorPage);
+            DatabaseOperations.DeleteGraphGeneratorPage(page);
 
             // update ui
-            BaseViewModel.DataContainer.GraphGeneratorPages.Remove(SelectedGraphGeneratorPage);
-            SelectedGraphGeneratorPage = null;
+            BaseViewModel.DataContainer.GraphGeneratorPages.Remove(page);
         }
 
         public async Task RunAll()
@@ -137,9 +136,9 @@ namespace SpotifySongTagger.ViewModels
             Log.Information("Finished RunAll GraphGeneratorPages");
         }
 
-        public void EditGraphGeneratorPageName()
+        public void EditGraphGeneratorPageName(GraphGeneratorPage page)
         {
-            DatabaseOperations.EditGraphGeneratorPage(SelectedGraphGeneratorPage, NewGraphGeneratorPageName);
+            DatabaseOperations.EditGraphGeneratorPage(page, NewGraphGeneratorPageName);
             NewGraphGeneratorPageName = null;
         }
 

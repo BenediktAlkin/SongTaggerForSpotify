@@ -148,7 +148,13 @@
                 </DataTemplate>
                 <!-- PlaylistOutputNodeView -->
                 <DataTemplate x:Key="PlaylistOutputNodeView">
-                    <TextBox materialDesign:HintAssist.Hint="Playlist" Style="{DynamicResource MaterialDesignTextBox}" Margin="0 0 0 20" TextChanged="PlaylistOutputNodeName_TextChanged">
+                    <TextBox 
+                        materialDesign:HintAssist.Hint="Playlist" 
+                        Style="{DynamicResource MaterialDesignTextBox}"
+                        Margin="0 0 0 20" 
+                        TextChanged="PlaylistOutputNodeName_TextChanged"
+                        ContextMenuService.IsEnabled="False"> 
+                        <!-- if a new connection is made and the right click is released on the textbox, sometimes a ContextMenu pops up -->
                         <TextBox.Text>
                             <Binding Path="PlaylistName" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>

@@ -240,7 +240,8 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <!-- edit icons -->
-                    <ListBox Grid.Column="2" 
+                    <ListBox Name="EditIcons"
+                        Grid.Column="2" 
                              ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
                              SelectionChanged="EditGraphGeneratorPage_SelectionChanged">
                         <ListBox.ItemTemplate>
@@ -282,7 +283,9 @@
                         </ListBox.Resources>
                     </ListBox>
                     <!-- delete icons -->
-                    <ListBox Grid.Column="3"
+                    <ListBox 
+                        Name="DeleteIcons"
+                        Grid.Column="3"
                          ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
                          SelectionChanged="DeleteGraphGeneratorPage_SelectionChanged">
                     <ListBox.ItemTemplate>

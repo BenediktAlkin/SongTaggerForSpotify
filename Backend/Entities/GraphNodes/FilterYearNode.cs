@@ -36,6 +36,8 @@ namespace Backend.Entities.GraphNodes
 
         protected override void MapInputToOutput()
         {
+            if (InputResult == null || InputResult.Count == 0) return;
+
             if (YearFrom != null && YearTo != null)
                 OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear && t.Album.ReleaseYear <= YearTo).ToList();
             else if (YearFrom != null)

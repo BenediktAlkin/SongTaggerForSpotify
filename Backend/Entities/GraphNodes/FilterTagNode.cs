@@ -42,7 +42,7 @@ namespace Backend.Entities.GraphNodes
         }
         protected override void OnInputResultChanged()
         {
-            if (InputResult == null)
+            if (InputResult == null || InputResult.Count == 0)
                 ValidTags = null;
             else
                 ValidTags = InputResult[0].SelectMany(track => track.Tags).Distinct().OrderBy(tag => tag.Name).ToList();
@@ -52,7 +52,7 @@ namespace Backend.Entities.GraphNodes
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override void MapInputToOutput()
         {
-            if (Tag != null)
+            if (Tag != null && InputResult != null && InputResult.Count > 0)
                 OutputResult = InputResult[0].Where(t => t.Tags.Contains(Tag)).ToList();
         }
 
