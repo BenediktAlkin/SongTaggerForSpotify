@@ -91,11 +91,14 @@ namespace Backend
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid)) return;
 
-            assignTagNode.CalculateOutputResult();
-            var tracks = assignTagNode.OutputResult;
-            foreach (var track in tracks)
-                track.Tags.Add(assignTagNode.Tag);
-            await Db.SaveChangesAsync();
+            await Task.Run(() =>
+            {
+                assignTagNode.CalculateOutputResult();
+                var tracks = assignTagNode.OutputResult;
+                foreach (var track in tracks)
+                    track.Tags.Add(assignTagNode.Tag);
+                Db.SaveChanges();
+            });
         }
         public static bool RemoveAssignment(Track track, Tag tag)
         {
@@ -203,91 +206,120 @@ namespace Backend
                 }
             }
         }
+
+        private static Task SyncLibraryTask { get; set; }
         public static async Task SyncLibrary(CancellationToken cancellationToken = default)
         {
-            Log.Information("Syncing library");
-            // exclude generated playlists from library
-            var playlistOutputNodes = await ConnectionManager.Instance.Database.PlaylistOutputNodes.ToListAsync(cancellationToken);
-            var generatedPlaylistIds = playlistOutputNodes.Select(pl => pl.GeneratedPlaylistId).ToList();
-
-            // start retrieving all tracks from db
-            var dbTracksTask = Db.Tracks.Include(t => t.Tags).Include(t => t.Playlists).ToListAsync(cancellationToken);
-
-            // get full library from spotify
-            var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(generatedPlaylistIds);
-            if (spotifyPlaylists == null && spotifyTracks == null)
+            // wait for old task to finish (if it is cancelled)
+            if(SyncLibraryTask != null && !SyncLibraryTask.IsCompleted)
             {
-                Log.Error($"Error syncing library: could not retrieve Spotify library");
-                return;
-            }
-
-            // get db data
-            var dbTracks = (await dbTracksTask).ToDictionary(t => t.Id, t => t);
-            var dbPlaylists = (await Db.Playlists.ToListAsync(cancellationToken)).ToDictionary(pl => pl.Id, pl => pl);
-            var dbArtists = (await Db.Artists.ToListAsync(cancellationToken)).ToDictionary(a => a.Id, a => a);
-            var dbAlbums = (await Db.Albums.ToListAsync(cancellationToken)).ToDictionary(a => a.Id, a => a);
-
-
-            // remove tracks that are no longer in the library and are not tagged
-            Log.Information("Start removing untracked tracks from db");
-            var nonTaggedTracks = dbTracks.Values.Where(t => t.Tags.Count == 0);
-            foreach (var nonTaggedTrack in nonTaggedTracks)
-            {
-                if (!spotifyTracks.ContainsKey(nonTaggedTrack.Id))
+                Log.Information($"Waiting for currently running SyncLibrary to finish");
+                try
                 {
-                    Db.Tracks.Remove(nonTaggedTrack);
-                    Log.Information($"Removed {nonTaggedTrack.Name} - {nonTaggedTrack.ArtistsString} from db (no longer in library & untagged)");
+                    await SyncLibraryTask;
                 }
-            }
-            await Db.SaveChangesAsync(cancellationToken);
-            Log.Information("Finished removing untracked tracks from db");
-
-            // push spotify library to db
-            Log.Information("Start pushing library to database");
-            foreach (var track in spotifyTracks.Values)
-            {
-                // replace spotify playlist objects with db playlist objects
-                ReplacePlaylistsWithDbPlaylists(dbPlaylists, track);
-                if (dbTracks.TryGetValue(track.Id, out var dbTrack))
+                catch (OperationCanceledException e) 
                 {
-                    // update the playlist sources in case the song has been added/removed from a playlist
-                    dbTrack.Playlists = track.Playlists;
+                    Log.Information($"Error waiting for currently running SyncLibrary to finish {e.Message}");
                 }
-                else
-                {
-                    Log.Information($"Adding {track.Name} - {track.ArtistsString} to db");
-                    // replace spotify album/artist objects with db album/artist objects
-                    ReplaceAlbumWithDbAlbum(dbAlbums, track);
-                    ReplaceArtistWithDbArtist(dbArtists, track);
-                    // add track to db
-                    Db.Tracks.Add(track);
-                }
+                
+                Log.Information($"Finished waiting for currently running SyncLibrary to finish");
             }
-            await Db.SaveChangesAsync(cancellationToken);
-            Log.Information("Finished pushing library to database");
+                
 
-            // remove unlikedplaylists
-            Log.Information("Update remove unliked playlists");
-            var allPlaylists = await Db.Playlists.Include(p => p.Tracks).ToListAsync(cancellationToken);
-            var spotifyPlaylistIds = spotifyPlaylists.Select(p => p.Id);
-            var playlistsToRemove = allPlaylists.Where(p => !spotifyPlaylistIds.Contains(p.Id) && !Constants.META_PLAYLIST_IDS.Contains(p.Id));
-            foreach(var playlist in playlistsToRemove)
+            SyncLibraryTask = Task.Run(async () =>
             {
-                Log.Information($"Removing playlist {playlist.Name} (unliked)");
-                Db.Playlists.Remove(playlist);
-            }
-            await Db.SaveChangesAsync(cancellationToken);
-            Log.Information("Finished removing unliked playlists");
-            Log.Information("Update liked playlist names");
+                Log.Information("Syncing library");
+                // exclude generated playlists from library
+                var playlistOutputNodes = ConnectionManager.Instance.Database.PlaylistOutputNodes.ToList();
+                var generatedPlaylistIds = playlistOutputNodes.Select(pl => pl.GeneratedPlaylistId).ToList();
+                cancellationToken.ThrowIfCancellationRequested();
 
-            // update playlist names
-            var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
-            foreach (var spotifyPlaylist in spotifyPlaylists)
-                allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
-            await Db.SaveChangesAsync(cancellationToken);
-            Log.Information("Finished updating liked playlist names");
+                // start fetching spotify library
+                var getSpotifyLibraryTask = SpotifyOperations.GetFullLibrary(generatedPlaylistIds);
 
-            await DataContainer.Instance.LoadSourcePlaylists();
+                // get db data
+                var dbTracks = Db.Tracks.Include(t => t.Tags).Include(t => t.Playlists).ToDictionary(t => t.Id, t => t);
+                var dbPlaylists = Db.Playlists.ToDictionary(pl => pl.Id, pl => pl);
+                var dbArtists = Db.Artists.ToDictionary(a => a.Id, a => a);
+                var dbAlbums = Db.Albums.ToDictionary(a => a.Id, a => a);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // await fetching spotify library
+                var (spotifyPlaylists, spotifyTracks) = await getSpotifyLibraryTask;
+                if (spotifyPlaylists == null && spotifyTracks == null)
+                {
+                    Log.Error($"Error syncing library: could not retrieve Spotify library");
+                    return;
+                }
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // remove tracks that are no longer in the library and are not tagged
+                Log.Information("Start removing untracked tracks from db");
+                var nonTaggedTracks = dbTracks.Values.Where(t => t.Tags.Count == 0);
+                foreach (var nonTaggedTrack in nonTaggedTracks)
+                {
+                    if (!spotifyTracks.ContainsKey(nonTaggedTrack.Id))
+                    {
+                        Db.Tracks.Remove(nonTaggedTrack);
+                        Log.Information($"Removed {nonTaggedTrack.Name} - {nonTaggedTrack.ArtistsString} from db (no longer in library & untagged)");
+                    }
+                }
+                Db.SaveChanges();
+                Log.Information("Finished removing untracked tracks from db");
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // push spotify library to db
+                Log.Information("Start pushing library to database");
+                foreach (var track in spotifyTracks.Values)
+                {
+                    // replace spotify playlist objects with db playlist objects
+                    ReplacePlaylistsWithDbPlaylists(dbPlaylists, track);
+                    if (dbTracks.TryGetValue(track.Id, out var dbTrack))
+                    {
+                        // update the playlist sources in case the song has been added/removed from a playlist
+                        dbTrack.Playlists = track.Playlists;
+                    }
+                    else
+                    {
+                        Log.Information($"Adding {track.Name} - {track.ArtistsString} to db");
+                        // replace spotify album/artist objects with db album/artist objects
+                        ReplaceAlbumWithDbAlbum(dbAlbums, track);
+                        ReplaceArtistWithDbArtist(dbArtists, track);
+                        // add track to db
+                        Db.Tracks.Add(track);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+                Db.SaveChanges();
+                Log.Information("Finished pushing library to database");
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // remove unlikedplaylists
+                Log.Information("Update remove unliked playlists");
+                var allPlaylists = Db.Playlists.Include(p => p.Tracks).ToList();
+                var spotifyPlaylistIds = spotifyPlaylists.Select(p => p.Id);
+                var playlistsToRemove = allPlaylists.Where(p => !spotifyPlaylistIds.Contains(p.Id) && !Constants.META_PLAYLIST_IDS.Contains(p.Id));
+                foreach (var playlist in playlistsToRemove)
+                {
+                    Log.Information($"Removing playlist {playlist.Name} (unliked)");
+                    Db.Playlists.Remove(playlist);
+                }
+                Db.SaveChanges();
+                Log.Information("Finished removing unliked playlists");
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // update playlist names
+                Log.Information("Update liked playlist names");
+                var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
+                foreach (var spotifyPlaylist in spotifyPlaylists)
+                    allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
+                Db.SaveChanges();
+                Log.Information("Finished updating liked playlist names");
+            }, cancellationToken);
+            await SyncLibraryTask;
+
+            await DataContainer.Instance.LoadSourcePlaylists(forceReload: true);
         }
         #endregion
 

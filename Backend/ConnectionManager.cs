@@ -133,9 +133,19 @@ namespace Backend
         }
         public async Task Login(bool rememberMe)
         {
-            // start server
+            // stop server if it is running
             if (Server != null)
-                Server.Stop();
+            {
+                try
+                {
+                    Server.Stop();
+                }catch(Exception e)
+                {
+                    Log.Information($"Failed to stop server {e.Message}");
+                }
+            }
+
+            // start server
             Server = new HttpListener();
             Server.Prefixes.Add(SERVER_URL);
             Server.Start();

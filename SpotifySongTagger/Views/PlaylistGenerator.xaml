@@ -286,8 +286,8 @@
                     <ListBox 
                         Name="DeleteIcons"
                         Grid.Column="3"
-                         ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
-                         SelectionChanged="DeleteGraphGeneratorPage_SelectionChanged">
+                        ItemsSource="{Binding DataContainer.GraphGeneratorPages}"
+                        SelectionChanged="DeleteGraphGeneratorPage_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <materialDesign:PackIcon Kind="Trash" HorizontalAlignment="Center" VerticalAlignment="Center"/>

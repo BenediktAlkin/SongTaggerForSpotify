@@ -109,7 +109,7 @@
                                                      HorizontalAlignment="Center" Margin="16"
                                                      IsIndeterminate="True"
                                                      Value="0" />
-                                        <Label Style="{StaticResource MaterialDesignLabel}" Content="Syncing library"/>
+                                        <Label Style="{StaticResource MaterialDesignLabel}" Content="Syncing library...this might take some time"/>
                                         <Button 
                                             Style="{StaticResource DialogButton}"
                                             IsCancel="True" 

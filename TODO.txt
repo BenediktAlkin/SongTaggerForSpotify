@@ -1,5 +1,3 @@
-adapt changes from the responsiveness-branch but use only a single context
-
 tutorial
 - login
 - tag songs

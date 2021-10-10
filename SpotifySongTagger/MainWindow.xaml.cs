@@ -74,30 +74,42 @@ namespace SpotifySongTagger
         private CancellationTokenSource SyncCancellationTokenSource { get; set; }
         private async void DialogHost_OnDialogOpened(object sender, DialogOpenedEventArgs eventArgs)
         {
-            SyncCancellationTokenSource = new CancellationTokenSource();
+            if (SyncCancellationTokenSource != null)
+                SyncCancellationTokenSource.Cancel();
+
+            var tokenSource = new CancellationTokenSource();
+            SyncCancellationTokenSource = tokenSource;
             try
             {
-                await DatabaseOperations.SyncLibrary(SyncCancellationTokenSource.Token);
+                await DatabaseOperations.SyncLibrary(tokenSource.Token);
             }
             catch (TaskCanceledException)
             {
                 Log.Information("Cancelled sync library");
-                SyncCancellationTokenSource.Dispose();
-                SyncCancellationTokenSource = null;
+                tokenSource.Dispose();
             }
             catch (Exception e)
             {
                 Log.Error($"Error syncing library {e.Message}");
             }
-
-
-            var dialogHost = sender as DialogHost;
-            dialogHost.IsOpen = false;
+            finally
+            {
+                if(tokenSource != null)
+                    tokenSource.Dispose();
+            }
+            
+            if(SyncCancellationTokenSource == tokenSource)
+            {
+                var dialogHost = sender as DialogHost;
+                dialogHost.IsOpen = false;
+                SyncCancellationTokenSource = null;
+            }
         }
 
         private void Cancel_Sync(object sender, RoutedEventArgs e)
         {
-            SyncCancellationTokenSource.Cancel();
+            if(SyncCancellationTokenSource != null)
+                SyncCancellationTokenSource.Cancel();
         }
 
         private void MenuDarkModeButton_Click(object sender, RoutedEventArgs e)

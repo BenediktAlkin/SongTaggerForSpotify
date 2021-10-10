@@ -61,12 +61,14 @@ namespace SpotifySongTagger.Views
         {
             var ggp = EditIcons.SelectedItem as GraphGeneratorPage;
             ViewModel.EditGraphGeneratorPageName(ggp);
+            EditIcons.SelectedItem = null;
         }
 
         private void DeletePageDialog_Delete(object sender, RoutedEventArgs e)
         {
             var ggp = DeleteIcons.SelectedItem as GraphGeneratorPage;
             ViewModel.RemoveGraphGeneratorPage(ggp);
+            DeleteIcons.SelectedItem = null;
         }
         #endregion
 

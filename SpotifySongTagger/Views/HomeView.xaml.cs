@@ -28,7 +28,7 @@ namespace SpotifySongTagger.Views
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                Log.Error($"Error logging in {e.Message}");
             }
 
             var dialogHost = sender as DialogHost;
