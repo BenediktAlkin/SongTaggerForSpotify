@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using Serilog;
 using SpotifySongTagger.Utils;
 using System;
 using System.Collections.ObjectModel;
@@ -35,15 +36,27 @@ namespace SpotifySongTagger.ViewModels.Controls
             foreach (var nodeVM in GraphNodeVMs)
                 nodeVM.GraphNode.ClearResult();
         }
+        private Task RefreshInputResultsTask { get; set; }
         public async Task RefreshInputResults()
         {
-            await Task.Run(() =>
+            if (RefreshInputResultsTask != null && !RefreshInputResultsTask.IsCompleted)
+                await RefreshInputResultsTask;
+
+            RefreshInputResultsTask = Task.Run(() =>
             {
                 IsUpdatingInputResults = true;
-                foreach (var nodeVM in GraphNodeVMs)
-                    nodeVM.GraphNode.CalculateInputResult();
+                try
+                {
+                    foreach (var nodeVM in GraphNodeVMs)
+                        nodeVM.GraphNode.CalculateInputResult();
+                }catch(Exception e)
+                {
+                    Log.Error($"Error calculating InputResult {e.Message}");
+                }
+                Log.Information("Updated InputResults");
                 IsUpdatingInputResults = false;
             });
+            await RefreshInputResultsTask;
         }
 
         private GraphGeneratorPage graphGeneratorPage;

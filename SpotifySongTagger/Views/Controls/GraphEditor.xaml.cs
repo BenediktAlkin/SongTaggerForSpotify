@@ -198,7 +198,14 @@ namespace SpotifySongTagger.Views.Controls
             var frameworkElement = sender as FrameworkElement;
             if(Validation.GetErrors(frameworkElement).Count == 0)
             {
-                ConnectionManager.Instance.Database.SaveChanges();
+                try
+                {
+                    ConnectionManager.Instance.Database.SaveChanges();
+                }catch(Exception ex)
+                {
+                    Log.Error($"Error Updating YearFilterNode {ex.Message}");
+                }
+                
                 await ViewModel.RefreshInputResults();
             }
         }
