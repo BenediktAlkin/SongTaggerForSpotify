@@ -306,7 +306,7 @@
                                         Margin="0 6 0 0"
                                         FontSize="18" 
                                         FontWeight="Bold"
-                                        Text="{Binding SelectedGraphGeneratorPageVM.GraphGeneratorPage.Name}"/>
+                                        Text="{Binding NewGraphGeneratorPageName}"/>
                             </StackPanel>
                             <Grid Grid.Row="1" Margin="0 16 0 0">
                                 <Grid.ColumnDefinitions>

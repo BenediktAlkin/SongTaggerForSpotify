@@ -69,6 +69,7 @@ namespace SpotifySongTagger.Views
             var ggp = DeleteIcons.SelectedItem as GraphGeneratorPage;
             ViewModel.RemoveGraphGeneratorPage(ggp);
             DeleteIcons.SelectedItem = null;
+            ViewModel.NewGraphGeneratorPageName = null;
         }
         #endregion
 
@@ -77,6 +78,7 @@ namespace SpotifySongTagger.Views
         {
             var listBox = sender as ListBox;
             if (listBox.SelectedItem == null) return;
+            ViewModel.NewGraphGeneratorPageName = (listBox.SelectedItem as GraphGeneratorPage).Name;
 
             var enumerator = listBox.Resources.Values.GetEnumerator();
             enumerator.MoveNext();

@@ -96,7 +96,11 @@ namespace Backend
                 assignTagNode.CalculateOutputResult();
                 var tracks = assignTagNode.OutputResult;
                 foreach (var track in tracks)
-                    track.Tags.Add(assignTagNode.Tag);
+                {
+                    if (!track.Tags.Contains(assignTagNode.Tag))
+                        track.Tags.Add(assignTagNode.Tag);
+                }
+                    
                 Db.SaveChanges();
             });
         }
