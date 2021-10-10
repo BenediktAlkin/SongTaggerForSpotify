@@ -34,16 +34,16 @@
                        FontWeight="Bold"
                        Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
                 </StackPanel>
-                <!-- import button -->
+                <!-- import button --><!--
                 <Button Click="ImportButton_Click" Margin="8"
                     Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
                     Width="128"
                     Content="Import Tags"/>
-                <!-- export button -->
+                --><!-- export button --><!--
                 <Button Click="ExportButton_Click" Margin="8"
                     Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
                     Width="128"
-                    Content="Export Tags"/>
+                    Content="Export Tags"/>-->
 
 
                 <!-- logout button -->

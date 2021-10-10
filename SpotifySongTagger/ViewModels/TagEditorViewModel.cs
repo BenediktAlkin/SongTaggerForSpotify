@@ -100,7 +100,6 @@ namespace SpotifySongTagger.ViewModels
                 IsLoadingTracks = false;
                 Log.Information($"Selected playlist {playlist.Name} with {TrackVMs.Count} songs");
             }
-            
         }
         private void UpdatePlayingTrack(string newId)
         {
