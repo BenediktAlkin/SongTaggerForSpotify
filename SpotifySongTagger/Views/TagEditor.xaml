@@ -227,6 +227,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock>New tag:</TextBlock>
                                         <TextBox 
+                                            Name="NewTagNameTextBox"
                                             materialDesign:HintAssist.Hint="Name" 
                                             Style="{DynamicResource DialogTextBox}"
                                             materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"

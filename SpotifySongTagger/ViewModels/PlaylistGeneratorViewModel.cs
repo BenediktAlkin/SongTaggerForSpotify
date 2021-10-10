@@ -18,6 +18,7 @@ namespace SpotifySongTagger.ViewModels
         {
             await DataContainer.LoadSourcePlaylists();
             await DataContainer.LoadGraphGeneratorPages();
+            await DataContainer.LoadTags();
             IsReady = true;
         }
 

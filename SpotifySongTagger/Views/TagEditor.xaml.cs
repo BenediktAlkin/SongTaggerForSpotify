@@ -3,6 +3,7 @@ using Backend.Entities;
 using MaterialDesignThemes.Wpf;
 using Serilog;
 using SpotifySongTagger.Utils;
+using SpotifySongTagger.ValidationRules;
 using SpotifySongTagger.ViewModels;
 using System.Threading.Tasks;
 using System.Windows;
@@ -92,11 +93,13 @@ namespace SpotifySongTagger.Views
         public void AddTagDialog_Cancel(object sender, RoutedEventArgs e)
         {
             ViewModel.NewTagName = null;
+            NewTagNameTextBox.Text = null; // this bugs sometimes and does not adapt the value of ViewModel.NewTagName even though it is set to null
         }
         private void AddTagDialog_Add(object sender, RoutedEventArgs e)
         {
             ViewModel.AddTag();
             ViewModel.NewTagName = null;
+            NewTagNameTextBox.Text = null; // this bugs sometimes and does not adapt the value of ViewModel.NewTagName even though it is set to null
         }
         public void EditTagDialog_Cancel(object sender, RoutedEventArgs e)
         {
@@ -127,6 +130,19 @@ namespace SpotifySongTagger.Views
             // if validation gives an error for NewTagName, it is not updated in the ViewModel
             var textBox = sender as TextBox;
             ViewModel.NewTagName = textBox.Text;
+            Log.Information("TextChanged");
+            // binding would sometimes bug and not bind properly
+            var textBinding = NewTagNameTextBox.GetBindingExpression(TextBox.TextProperty);
+            var validationRule = textBinding.ParentBinding.ValidationRules[0];
+            var validationError = new ValidationError(validationRule, textBox.GetBindingExpression(TextBox.TextProperty));
+            var validationResult = validationRule.Validate(ViewModel.NewTagName, null);
+            if (!validationResult.IsValid)
+            {
+                validationError.ErrorContent = validationResult.ErrorContent;
+                Validation.MarkInvalid(textBinding, validationError);
+            }
+            else
+                Validation.ClearInvalid(textBinding);
         }
         #endregion
 

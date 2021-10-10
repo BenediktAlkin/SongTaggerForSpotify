@@ -330,7 +330,7 @@ namespace Backend
             var playlists = Db.Playlists;
             var generatedPlaylists = Db.PlaylistOutputNodes.Select(p => p.PlaylistName);
             return playlists.Where(p => !generatedPlaylists.Contains(p.Name) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
-                .OrderBy(p => p.Name).ToList();
+                .OrderBy(p => p.Name.ToLower()).ToList();
         }
         public static List<Playlist> PlaylistsMeta() => Db.Playlists.Where(p => Constants.META_PLAYLIST_IDS.Contains(p.Id)).OrderBy(p => p.Name).ToList();
         public static List<Playlist> PlaylistsGenerated()

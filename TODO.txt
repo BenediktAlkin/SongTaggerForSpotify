@@ -1,3 +1,5 @@
+
+
 tutorial
 - login
 - tag songs
@@ -6,6 +8,7 @@ tutorial
 minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
 - playlists binding error in tageditor (not initially but after sync)
+- newtag datacontext bugs sometimes (validator not working; NewTagText set null but not updated in ui) --> ugly workaround was implemented
 
 
 future
