@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class LikedPlaylistInputNode : PlaylistInputNode
+    public class PlaylistInputLikedNode : PlaylistInputNode
     {
         protected override List<Track> GetTracks()
         {
