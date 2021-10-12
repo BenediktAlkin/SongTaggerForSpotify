@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
-    public class DatabaseTests : BaseTests
+    public class DatabaseConstraintTests : BaseTests
     {
 
         [Test]
@@ -116,7 +116,5 @@ namespace Backend.Tests
             Db.SaveChanges();
             Assert.IsNull(Db.Tags.FirstOrDefault(t => t.Id == tag.Id));
         }
-
-
     }
 }
