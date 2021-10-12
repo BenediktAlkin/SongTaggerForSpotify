@@ -1,10 +1,11 @@
 ﻿using Backend.Entities.GraphNodes;
+using System;
 using System.Collections.Generic;
 using Util;
 
 namespace Backend.Entities
 {
-    public class Tag : NotifyPropertyChangedBase
+    public class Tag : NotifyPropertyChangedBase, IEquatable<Tag>
     {
         public int Id { get; set; }
 
@@ -21,5 +22,9 @@ namespace Backend.Entities
 
 
         public override string ToString() => Name;
+
+        public override bool Equals(object obj) => obj is Tag other ? Equals(other) : false;
+        public bool Equals(Tag other) => Id == other.Id;
+        public override int GetHashCode() => Id.GetHashCode();
     }
 }

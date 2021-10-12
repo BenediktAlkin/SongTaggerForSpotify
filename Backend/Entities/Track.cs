@@ -20,7 +20,7 @@ namespace Backend.Entities
         public List<Playlist> Playlists { get; set; }
 
 
-        public ObservableCollection<Tag> Tags { get; set; } = new();
+        public IList<Tag> Tags { get; set; } = new ObservableCollection<Tag>();
 
 
         public string ArtistsString => Artists == null ? string.Empty : string.Join(", ", Artists.Select(a => a.Name));

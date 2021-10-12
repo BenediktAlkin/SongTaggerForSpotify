@@ -37,6 +37,7 @@ namespace Backend
             try
             {
                 Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);
+                Options = optionsBuilder.Options;
             }
             catch (Exception e)
             {
@@ -44,6 +45,12 @@ namespace Backend
                 throw;
             }
         }
+        private static DbContextOptions<DatabaseContext> Options { get; set; }
+        public static DatabaseContext NewContext()
+        {
+            return new DatabaseContext(Options);
+        }
+
         public static async Task TryInitFromSavedToken()
         {
             var tokenData = GetSavedToken();
@@ -84,6 +91,7 @@ namespace Backend
             if (tokenData == null) return null;
 
             var authenticator = new PKCEAuthenticator(CLIENT_ID, tokenData);
+            authenticator.TokenRefreshed += (_, token) => SaveToken(token);
             var config = SpotifyClientConfig
                 .CreateDefault()
                 .WithAuthenticator(authenticator)

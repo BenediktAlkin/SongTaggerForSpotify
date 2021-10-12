@@ -17,100 +17,216 @@ namespace Backend
     public static class DatabaseOperations
     {
         private static DatabaseContext Db => ConnectionManager.Instance.Database;
-
+        private static ILogger Logger = Log.ForContext("SourceContext", "DB");
 
         #region tag
         public static List<Tag> GetTags()
         {
-            return Db.Tags.ToList();
+            using var db = ConnectionManager.NewContext();
+            var tags = db.Tags.ToList();
+            Logger.Information($"fetched {tags.Count} tags");
+            return tags;
         }
-        public static bool TagExists(string tagName)
+        public static bool TagExists(string tagName, DatabaseContext db = null)
         {
             if (string.IsNullOrEmpty(tagName)) return false;
             tagName = tagName.ToLower();
-            return Db.Tags.FirstOrDefault(t => t.Name == tagName) != null;
+
+            var needsDispose = false;
+            if(db == null)
+            {
+                db = ConnectionManager.NewContext();
+                needsDispose = true;
+            }
+                
+            var tagExists = db.Tags.FirstOrDefault(t => t.Name == tagName) != null;
+            //Logger.Information($"tag {tagName} exists {tagExists}");
+
+            if (needsDispose)
+                db.Dispose();
+            return tagExists;
         }
-        public static bool IsValidTag(string tagName)
+        private static bool IsValidTag(string tagName, DatabaseContext db)
         {
             if (string.IsNullOrEmpty(tagName))
-                return true;
-
-            return TagExists(tagName);
-        }
-        public static bool CanAddTag(string tagName)
-        {
-            if (IsValidTag(tagName))
+            {
+                Logger.Information($"invalid tag {tagName} (null or empty)");
                 return false;
+            }
+
+            var tagExists = TagExists(tagName, db);
+            if (tagExists)
+            {
+                Logger.Information($"invalid tag {tagName} (already exists)");
+                return false;
+            }
             return true;
         }
-        public static void AddTag(string tagName)
+        public static bool CanAddTag(string tagName, DatabaseContext db = null)
         {
-            if (!CanAddTag(tagName)) return;
+            if (!IsValidTag(tagName, db))
+                return false;
+                
+            return true;
+        }
+        public static bool AddTag(string tagName)
+        {
+            using var db = ConnectionManager.NewContext();
+            if (!CanAddTag(tagName, db)) return false;
 
             tagName = tagName.ToLower();
             var tag = new Tag { Name = tagName };
-            Db.Tags.Add(tag);
-            Db.SaveChanges();
-            DataContainer.Instance.Tags.Add(tag);
+
+            db.Tags.Add(tag);
+            db.SaveChanges();
+            Logger.Information($"added tag {tagName}");
+            DataContainer.Instance.Tags?.Add(tag);
+            return true;
         }
-        public static bool CanEditTag(Tag tag, string newName)
+        public static bool CanEditTag(Tag tag, string newName, DatabaseContext db = null)
         {
-            if (IsValidTag(newName))
+            if (!IsValidTag(newName, db))
                 return false;
             return true;
         }
-        public static void EditTag(Tag tag, string newName)
+        public static bool EditTag(Tag tag, string newName)
         {
-            if (!CanEditTag(tag, newName)) return;
+            using var db = ConnectionManager.NewContext();
+            if (!CanEditTag(tag, newName, db)) return false;
 
+            var oldName = tag.Name;
             tag.Name = newName;
-            Db.SaveChanges();
-        }
-        public static void DeleteTag(Tag tag)
-        {
-            Db.Tags.Remove(tag);
-            Db.SaveChanges();
-            DataContainer.Instance.Tags.Remove(tag);
-        }
-        public static bool AssignTag(Track track, string tagName)
-        {
-            // avoid duplicates
-            if (track.Tags.Select(t => t.Name).Contains(tagName))
-                return false;
-
-            // check if tag exists in db
-            var dbTag = Db.Tags.FirstOrDefault(t => t.Name == tagName.ToLower());
-            if (dbTag == null)
-                return false;
-
-            track.Tags.Add(dbTag);
-            Db.SaveChanges();
+            db.Update(tag);
+            db.SaveChanges();
+            Logger.Information($"updated tagname old={oldName} new={newName}");
             return true;
         }
-        public static async Task AssignTags(AssignTagNode assignTagNode)
+        public static bool DeleteTag(Tag tag)
         {
-            if (assignTagNode.AnyBackward(gn => !gn.IsValid)) return;
-
-            await Task.Run(() =>
+            if (tag == null)
             {
-                assignTagNode.CalculateOutputResult();
-                var tracks = assignTagNode.OutputResult;
-                foreach (var track in tracks)
-                {
-                    if (!track.Tags.Contains(assignTagNode.Tag))
-                        track.Tags.Add(assignTagNode.Tag);
-                }
-                    
-                Db.SaveChanges();
-            });
-        }
-        public static bool RemoveAssignment(Track track, Tag tag)
-        {
-            if (track == null)
+                Logger.Information($"could not delete tag (is null)");
                 return false;
+            }
 
-            track.Tags.Remove(tag);
-            Db.SaveChanges();
+            using var db = ConnectionManager.NewContext();
+            try
+            {
+                db.Tags.Remove(tag);
+                db.SaveChanges();
+            }
+            catch(Exception)
+            {
+                Logger.Information($"could not delete tag {tag.Name} (does not exist)");
+                return false;
+            }
+            Logger.Information($"deleted tag {tag.Name}");
+            DataContainer.Instance.Tags?.Remove(tag);
+            return true;
+        }
+        #endregion
+
+        #region tracks
+        public static bool AssignTag(Track track, Tag tag)
+        {
+            if(track == null)
+            {
+                Logger.Information($"cannot assign tag {tag?.Name} to track null");
+                return false;
+            }
+            if(tag == null)
+            {
+                Logger.Information($"cannot assign tag null to track {track.Name}");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            // get tag from db
+            var dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
+            if (dbTag == null)
+            {
+                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (tag does not exist)");
+                return false;
+            }
+
+            // get track from db
+            var dbTrack = db.Tracks.Include(t => t.Tags).FirstOrDefault(t => t.Id == track.Id);
+            if (dbTrack == null)
+            {
+                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (track does not exist)");
+                return false;
+            }
+
+            // avoid duplicates
+            if (dbTrack.Tags.Contains(dbTag))
+            {
+                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (already assigned)");
+                return false;
+            }
+
+            dbTrack.Tags.Add(dbTag);
+            try
+            {
+                db.SaveChanges();
+            }catch(Exception e)
+            {
+                Logger.Information($"cannot assign tag {tag.Name} to {track.Name}: " +
+                    $"{e.Message} - {e.InnerException?.Message}");
+                return false;
+            }
+
+            Logger.Information($"assigned tag {tag.Name} to {track.Name}");
+            return true;
+        }
+        public static bool DeleteAssignment(Track track, Tag tag)
+        {
+            if(track == null)
+            {
+                Logger.Information($"cannot delete track-tag assignment (track is null)");
+                return false;
+            }
+            if (tag == null)
+            {
+                Logger.Information($"cannot delete track-tag assignment (tag is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            // get tag from db
+            var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
+            if (dbTag == null)
+            {
+                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (tag does not exist)");
+                return false;
+            }
+
+            // get track from db
+            var dbTrack = db.Tracks.Include(t => t.Tags).FirstOrDefault(t => t.Id == track.Id);
+            if (dbTrack == null)
+            {
+                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (track does not exist)");
+                return false;
+            }
+
+            if (!dbTrack.Tags.Contains(dbTag))
+            {
+                Logger.Information($"cannot delete tag {tag.Name} from track {track.Name} (no assignment)");
+                return false;
+            }
+
+            dbTrack.Tags.Remove(dbTag);
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Information($"cannot delete tag {tag.Name} from track {track.Name}: " +
+                    $"{e.Message} - {e.InnerException?.Message}");
+                return false;
+            }
+
+            Logger.Information($"removed tag {tag.Name} from track {track.Name}");
             return true;
         }
         #endregion
@@ -140,6 +256,40 @@ namespace Backend
         }
         #endregion
 
+        #region graphNodes
+        public static void DeleteGraphNode(GraphNode node)
+        {
+            Db.GraphNodes.Remove(node);
+            Db.SaveChanges();
+        }
+        public static async Task AssignTags(AssignTagNode assignTagNode)
+        {
+            if (assignTagNode.AnyBackward(gn => !gn.IsValid))
+            {
+                Logger.Information("cannot run AssignTagNode (graph contains invalid node)");
+                return;
+            }
+
+            await Task.Run(() =>
+            {
+                assignTagNode.CalculateOutputResult();
+                var tracks = assignTagNode.OutputResult;
+
+                using var db = ConnectionManager.NewContext();
+                foreach (var track in tracks)
+                {
+                    if (!track.Tags.Contains(assignTagNode.Tag))
+                    {
+                        track.Tags.Add(assignTagNode.Tag);
+                        db.Update(track);
+                    }
+                }
+
+                Db.SaveChanges();
+                Logger.Information($"assigned tag {assignTagNode.Tag.Name} to {tracks.Count} tracks");
+            });
+        }
+        #endregion
 
         #region sync library
         private static void ReplacePlaylistsWithDbPlaylists(Dictionary<string, Playlist> playlistDict, Track track)
@@ -235,7 +385,7 @@ namespace Backend
             {
                 Log.Information("Syncing library");
                 // exclude generated playlists from library
-                var playlistOutputNodes = ConnectionManager.Instance.Database.PlaylistOutputNodes.ToList();
+                var playlistOutputNodes = Db.PlaylistOutputNodes.ToList();
                 var generatedPlaylistIds = playlistOutputNodes.Select(pl => pl.GeneratedPlaylistId).ToList();
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -351,7 +501,8 @@ namespace Backend
         #region get playlist tracks
         public static List<Track> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
-            var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
+            using var db = ConnectionManager.NewContext();
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
             return playlistId switch
             {
                 Constants.ALL_SONGS_PLAYLIST_ID => query.ToList(),
@@ -362,7 +513,8 @@ namespace Backend
         }
         public static List<Track> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
         {
-            var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
+            using var db = ConnectionManager.NewContext();
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
             return query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToList();
         }
         public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
@@ -377,12 +529,13 @@ namespace Backend
             var spotifyTrackIds = spotifyTracks.Select(t => t.Id);
 
             // replace spotify track with db track
-            var query = GetTrackIncludeQuery(includeAlbums, includeArtists, includeTags);
+            using var db = ConnectionManager.NewContext();
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
             return query.Where(t => spotifyTrackIds.Contains(t.Id)).ToList();
         }
-        private static IQueryable<Track> GetTrackIncludeQuery(bool includeAlbums, bool includeArtists, bool includeTags)
+        private static IQueryable<Track> GetTrackIncludeQuery(DatabaseContext db, bool includeAlbums, bool includeArtists, bool includeTags)
         {
-            IQueryable<Track> query = Db.Tracks
+            IQueryable<Track> query = db.Tracks
                 .Include(t => t.Playlists);
             if (includeAlbums)
                 query = query.Include(t => t.Album);

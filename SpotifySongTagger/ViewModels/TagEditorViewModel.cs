@@ -22,7 +22,8 @@ namespace SpotifySongTagger.ViewModels
             MessageQueue = messageQueue;
         }
 
-        public async Task OnLoaded()
+        private Task LoadTagsTask { get; set; }
+        public void OnLoaded()
         {
             // register PlayerManager error handling
             BaseViewModel.PlayerManager.OnPlayerError += OnPlayerError;
@@ -37,17 +38,19 @@ namespace SpotifySongTagger.ViewModels
             // update playback info to display it at once (otherwise it would wait for first UpdatePlaybackInfoTimer tick)
             var updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
 
-            // load playlists
-            await BaseViewModel.DataContainer.LoadSourcePlaylists();
-            await BaseViewModel.DataContainer.LoadGeneratedPlaylists();
-            NotifyPropertyChanged(nameof(PlaylistCategories));
-            LoadedPlaylists = true;
-
-            // load tags
-            await BaseViewModel.DataContainer.LoadTags();
-
             // update treeview on playlists refresh (e.g. when sync library updates sourceplaylists)
             BaseViewModel.DataContainer.OnPlaylistsUpdated += () => NotifyPropertyChanged(nameof(PlaylistCategories));
+
+            // load playlists
+            var sourcePlaylistsTask = BaseViewModel.DataContainer.LoadSourcePlaylists();
+            var generatedPlaylistsTask = BaseViewModel.DataContainer.LoadGeneratedPlaylists();
+            var _ = Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result =>
+            {
+                LoadedPlaylists = true;
+            });
+
+            // load tags
+            LoadTagsTask = BaseViewModel.DataContainer.LoadTags();
         }
 
         public void OnUnloaded()
@@ -96,6 +99,25 @@ namespace SpotifySongTagger.ViewModels
             // check if the playlist is still selected
             if (SelectedPlaylist.Id == playlist.Id)
             {
+                await LoadTagsTask;
+                // tags of tracks dont have the same reference to tag as they come from a different db context
+                foreach(var trackVM in newTrackVMs)
+                {
+                    var track = trackVM.Track;
+                    for (var i = 0; i < track.Tags.Count; i++)
+                    {
+                        var vmTag = track.Tags[i];
+                        var globalTag = DataContainer.Tags.FirstOrDefault(t => t.Id == vmTag.Id);
+                        if(globalTag == null)
+                        {
+                            Log.Error($"tag {vmTag.Name} of track {track.Name} is not in database");
+                            continue;
+                        }
+
+                        track.Tags[i] = globalTag;
+                    }
+                }
+
                 TrackVMs = newTrackVMs;
                 IsLoadingTracks = false;
                 Log.Information($"Selected playlist {playlist.Name} with {TrackVMs.Count} songs");
@@ -144,8 +166,22 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref loadedPlaylists, value, nameof(LoadedPlaylists));
         }
 
-        public static void AssignTag(Track track, string tag) => DatabaseOperations.AssignTag(track, tag);
-        public void RemoveAssignment(Tag tag) => DatabaseOperations.RemoveAssignment(SelectedTrackVM.Track, tag);
+        public static void AssignTag(Track track, string tagName)
+        {
+            var tag = DataContainer.Tags.FirstOrDefault(t => t.Name == tagName);
+            if(tag == null)
+            {
+                Log.Error($"Could not find tagName {tagName} in db");
+                return;
+            }
+            if(DatabaseOperations.AssignTag(track, tag))
+                track.Tags.Add(tag);
+        }
+        public void RemoveAssignment(Tag tag)
+        {
+            if(DatabaseOperations.DeleteAssignment(SelectedTrackVM.Track, tag))
+                SelectedTrackVM.Track.Tags.Remove(tag);
+        }
         public bool CanAddTag => DatabaseOperations.CanAddTag(NewTagName);
         public void AddTag()
         {
@@ -162,7 +198,14 @@ namespace SpotifySongTagger.ViewModels
         public void DeleteTag()
         {
             if (ClickedTag == null) return;
-            DatabaseOperations.DeleteTag(ClickedTag);
+            if (DatabaseOperations.DeleteTag(ClickedTag))
+            {
+                foreach(var trackVM in TrackVMs)
+                {
+                    if (trackVM.Track.Tags.Contains(ClickedTag))
+                        trackVM.Track.Tags.Remove(ClickedTag);
+                }
+            }
         }
 
         #region edit/delete icons for tags

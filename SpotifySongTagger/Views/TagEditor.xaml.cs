@@ -28,7 +28,7 @@ namespace SpotifySongTagger.Views
             DataContext = ViewModel;
         }
         #region load/unload
-        private async void UserControl_Loaded(object sender, RoutedEventArgs e) => await ViewModel.OnLoaded();
+        private void UserControl_Loaded(object sender, RoutedEventArgs e) => ViewModel.OnLoaded();
         private void UserControl_Unloaded(object sender, RoutedEventArgs e) => ViewModel.OnUnloaded();
         #endregion
 
@@ -89,6 +89,7 @@ namespace SpotifySongTagger.Views
             await ViewModel.LoadTracks(playlist);
         }
 
+
         #region add/edit/delete tag dialog
         public void AddTagDialog_Cancel(object sender, RoutedEventArgs e)
         {
@@ -130,7 +131,7 @@ namespace SpotifySongTagger.Views
             // if validation gives an error for NewTagName, it is not updated in the ViewModel
             var textBox = sender as TextBox;
             ViewModel.NewTagName = textBox.Text;
-            Log.Information("TextChanged");
+            //Log.Information("TextChanged");
             // binding would sometimes bug and not bind properly
             var textBinding = NewTagNameTextBox.GetBindingExpression(TextBox.TextProperty);
             var validationRule = textBinding.ParentBinding.ValidationRules[0];

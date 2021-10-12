@@ -164,8 +164,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             {
                 var successorNodes = nodeVM.GraphNode.Outputs;
                 // remove from db
-                ConnectionManager.Instance.Database.GraphNodes.Remove(nodeVM.GraphNode);
-                ConnectionManager.Instance.Database.SaveChanges();
+                DatabaseOperations.DeleteGraphNode(nodeVM.GraphNode);
 
                 // update ui
                 GraphNodeVMs.Remove(nodeVM);

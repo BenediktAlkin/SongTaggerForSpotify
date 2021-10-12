@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using Util;
 #if !DEBUG
 using Util;
 #endif
@@ -33,8 +34,8 @@ namespace SpotifySongTagger
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(@"frontend.log")
-                .WriteTo.Trace()
+                .WriteTo.File(formatter: new LogFormatter(), @"frontend.log")
+                .WriteTo.Trace(formatter: new LogFormatter())
                 .CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 
