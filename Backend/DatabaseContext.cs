@@ -82,7 +82,9 @@ namespace Backend
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Track> Tracks { get; set; }
         public DbSet<GraphNode> GraphNodes { get; set; }
+        public DbSet<FilterYearNode> FilterYearNodes { get; set; }
         public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
+        public DbSet<RemoveNode> RemoveNodes { get; set; }
         public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }
     }
 }

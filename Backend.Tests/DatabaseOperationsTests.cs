@@ -217,19 +217,28 @@ namespace Backend.Tests
         [Test]
         public void GraphNode_Add()
         {
-            var newNode = new ConcatNode
+            var ggp = new GraphGeneratorPage { Name = "testpage" };
+            DatabaseOperations.AddGraphGeneratorPage(ggp);
+            Assert.AreEqual(1, Db.GraphGeneratorPages.Count());
+
+            var newNode1 = new ConcatNode
             {
                 X = 0.5,
                 Y = 0.7,
-                GraphGeneratorPage = new GraphGeneratorPage(),
+            }; 
+            var newNode2 = new ConcatNode
+            {
+                X = 0.5,
+                Y = 0.7,
             };
 
             using (var db = ConnectionManager.NewContext())
             {
-                Assert.IsTrue(DatabaseOperations.AddGraphNode(newNode));
-                Assert.IsFalse(DatabaseOperations.AddGraphNode(null));
+                Assert.IsTrue(DatabaseOperations.AddGraphNode(newNode1, ggp));
+                Assert.IsTrue(DatabaseOperations.AddGraphNode(newNode2, ggp));
+                Assert.IsFalse(DatabaseOperations.AddGraphNode(null, ggp));
 
-                Assert.AreEqual(1, db.GraphNodes.Count());
+                Assert.AreEqual(2, db.GraphNodes.Count());
             }
         }
         [Test]
@@ -247,6 +256,64 @@ namespace Backend.Tests
                 Assert.AreEqual(0.2, db.GraphNodes.First(gn => gn.Id == nodes[0].Id).Y);
             }
         }
+
+        [Test]
+        public void GraphNode_PlaylistOutputNode_Edit()
+        {
+            var nodes = InsertGraphNodes<PlaylistOutputNode>(1, gn => gn.PlaylistName = $"genPlaylist{gn.Id}");
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.EditPlaylistOutputNode(nodes[0], "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNode(null, "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNode(new PlaylistOutputNode(), "asdf"));
+
+                Assert.AreEqual("asdf", db.PlaylistOutputNodes.First(gn => gn.Id == nodes[0].Id).PlaylistName);
+            }
+        }
+        [Test]
+        public void GraphNode_RemoveSet_SwapSets()
+        {
+            var baseSetNode = InsertGraphNodes(1)[0];
+            var nodes = InsertGraphNodes<RemoveNode>(1, gn => gn.BaseSetId = baseSetNode.Id);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.SwapRemoveNodeSets(nodes[0]));
+                Assert.IsFalse(DatabaseOperations.SwapRemoveNodeSets(null));
+                Assert.IsFalse(DatabaseOperations.SwapRemoveNodeSets(new RemoveNode()));
+
+                var removeSetType = db.RemoveNodes
+                    .Include(gn => gn.RemoveSet)
+                    .First(gn => gn.Id == nodes[0].Id)
+                    .RemoveSet
+                    .GetType();
+                Assert.AreEqual(typeof(ConcatNode), removeSetType);
+                Assert.IsNull(db.RemoveNodes.Include(gn => gn.BaseSet).First(gn => gn.Id == nodes[0].Id).BaseSet);
+            }
+        }
+        [Test]
+        public void GraphNode_FilterYearNode_Edit()
+        {
+            var nodes = InsertGraphNodes<FilterYearNode>(3);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.EditFilterYearNode(nodes[0], 1999, null));
+                Assert.IsTrue(DatabaseOperations.EditFilterYearNode(nodes[1], null, 2000));
+                Assert.IsTrue(DatabaseOperations.EditFilterYearNode(nodes[2], 2010, 2020));
+                Assert.IsFalse(DatabaseOperations.EditFilterYearNode(null, 1990, 2005));
+                Assert.IsFalse(DatabaseOperations.EditFilterYearNode(new FilterYearNode(), 1909, 2100));
+
+                Assert.AreEqual(1999, db.FilterYearNodes.First(gn => gn.Id == nodes[0].Id).YearFrom);
+                Assert.AreEqual(null, db.FilterYearNodes.First(gn => gn.Id == nodes[0].Id).YearTo);
+                Assert.AreEqual(null, db.FilterYearNodes.First(gn => gn.Id == nodes[1].Id).YearFrom);
+                Assert.AreEqual(2000, db.FilterYearNodes.First(gn => gn.Id == nodes[1].Id).YearTo);
+                Assert.AreEqual(2010, db.FilterYearNodes.First(gn => gn.Id == nodes[2].Id).YearFrom);
+                Assert.AreEqual(2020, db.FilterYearNodes.First(gn => gn.Id == nodes[2].Id).YearTo);
+            }
+        }
+
         [Test]
         public void GraphNode_AddConnection()
         {

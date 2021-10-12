@@ -172,8 +172,7 @@ namespace SpotifySongTagger.Views.Controls
             var frameworkElement = sender as FrameworkElement;
             var outputNode = frameworkElement.DataContext as PlaylistOutputNode;
 
-            outputNode.PlaylistName = textBox.Text;
-            ConnectionManager.Instance.Database.SaveChanges();
+            ViewModel.PlaylistOutputNode_SetName(outputNode, textBox.Text);
         }
         private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
         {
@@ -189,24 +188,16 @@ namespace SpotifySongTagger.Views.Controls
         {
             var frameworkElement = sender as FrameworkElement;
             var removeNode = frameworkElement.DataContext as RemoveNode;
-            removeNode.SwapSets();
-            ConnectionManager.Instance.Database.SaveChanges();
-            await ViewModel.RefreshInputResults();
+
+            await ViewModel.RemoveNode_SwapSets(removeNode);
         }
         private async void YearFilterNode_YearChanged(object sender, TextChangedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
             if(Validation.GetErrors(frameworkElement).Count == 0)
             {
-                try
-                {
-                    ConnectionManager.Instance.Database.SaveChanges();
-                }catch(Exception ex)
-                {
-                    Log.Error($"Error Updating YearFilterNode {ex.Message}");
-                }
-                
-                await ViewModel.RefreshInputResults();
+                var filterYearNode = frameworkElement.DataContext as FilterYearNode;
+                await ViewModel.FilterYearNode_Edit(filterYearNode, filterYearNode.YearFrom, filterYearNode.YearTo);
             }
         }
         #endregion

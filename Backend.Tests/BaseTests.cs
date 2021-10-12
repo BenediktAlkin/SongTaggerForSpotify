@@ -87,16 +87,20 @@ namespace Backend.Tests
             return ggps;
         }
 
-        protected static List<GraphNode> InsertGraphNodes(int count)
+
+        protected static List<ConcatNode> InsertGraphNodes(int count) => InsertGraphNodes<ConcatNode>(count);
+        protected static List<T> InsertGraphNodes<T>(int count, Action<T> onInit = null) where T: GraphNode
         {
             using var db = ConnectionManager.NewContext();
-            var nodes = Enumerable.Range(1, count).Select(i => 
-            new ConcatNode
+            var nodes = Enumerable.Range(1, count).Select(i =>
             {
-                X = new Random().NextDouble(),
-                Y = new Random().NextDouble(),
-                GraphGeneratorPage = new GraphGeneratorPage(),
-            }).Cast<GraphNode>().ToList();
+                var newNode = (T)Activator.CreateInstance(typeof(T));
+                newNode.X = new Random().NextDouble();
+                newNode.Y = new Random().NextDouble();
+                newNode.GraphGeneratorPage = new GraphGeneratorPage();
+                onInit?.Invoke(newNode);
+                return newNode;
+            }).Cast<T>().ToList();
             db.GraphNodes.AddRange(nodes);
             db.SaveChanges();
 

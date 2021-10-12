@@ -304,15 +304,27 @@ namespace Backend
         #endregion
 
         #region graphNodes
-        public static bool AddGraphNode(GraphNode node)
+        public static bool AddGraphNode(GraphNode node, GraphGeneratorPage ggp)
         {
             if(node == null)
             {
                 Logger.Information("cannot add GraphNode (is null)");
                 return false;
             }
+            if(ggp == null)
+            {
+                Logger.Information("cannot add GraphNode (GraphGeneratorPage is null)");
+                return false;
+            }
 
             using var db = ConnectionManager.NewContext();
+            GraphGeneratorPage dbGgp = db.GraphGeneratorPages.FirstOrDefault(ggp => ggp.Id == ggp.Id);
+            if (dbGgp == null)
+            {
+                Logger.Information("cannot add GraphNode (GraphGeneratorPage does not exist)");
+                return false;
+            }
+            node.GraphGeneratorPage = dbGgp;
             db.GraphNodes.Add(node);
             db.SaveChanges();
             Logger.Information($"added GraphNode {node}");
@@ -333,10 +345,13 @@ namespace Backend
                 Logger.Information($"cannot update GraphNode {node} (not in db)");
                 return false;
             }
+
+            var oldX = dbNode.X;
+            var oldY = dbNode.Y;
             dbNode.X = posX;
             dbNode.Y = posY;
             db.SaveChanges();
-            Logger.Information($"updated GraphNode posX {node.X:N2} --> {posX:N2} posY {node.Y:N2} --> {posY:N2}");
+            Logger.Information($"updated GraphNode posX {oldX:N2} --> {posX:N2} posY {oldY:N2} --> {posY:N2}");
             return true;
         }
         public static bool DeleteGraphNode(GraphNode node)
@@ -361,6 +376,87 @@ namespace Backend
             return true;
         }
 
+        public static bool EditPlaylistOutputNode(PlaylistOutputNode node, string newName)
+        {
+            if(node == null)
+            {
+                Logger.Information("cannot update PlaylistOutputNode (is null)");
+                return false;
+            }
+            // null value is allowed (graphnode becomes invalid but it is updated in db)
+            //if (string.IsNullOrEmpty(newName))
+            //{
+            //    Logger.Information("cannot update PlaylistOutputNode (newName is null)");
+            //    return false;
+            //}
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.PlaylistOutputNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if(dbNode == null)
+            {
+                Logger.Information("cannot update PlaylistOutputNode (not in db)");
+                return false;
+            }
+
+            var oldName = dbNode.PlaylistName;
+            dbNode.PlaylistName = newName;
+            db.SaveChanges();
+
+            Logger.Information($"updated PlaylistOutputNode old={oldName} new={newName}");
+            return true;
+        }
+        public static bool SwapRemoveNodeSets(RemoveNode node)
+        {
+            if(node == null)
+            {
+                Logger.Information("cannot swap sets of RemoveNode (is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.RemoveNodes
+                .Include(gn => gn.BaseSet)
+                .Include(gn => gn.RemoveSet)
+                .FirstOrDefault(gn => gn.Id == node.Id);
+            if(dbNode == null)
+            {
+                Logger.Information("cannot swap sets of RemoveNode (not in db)");
+                return false;
+            }
+
+            dbNode.SwapSets();
+            db.SaveChanges();
+
+            Logger.Information($"swapped sets of RemoveNode oldBaseSet={node.BaseSet} " +
+                $"oldRemoveSet={node.RemoveSet} newBaseSet={dbNode.BaseSet} newRemoveSet={dbNode.RemoveSet}");
+            return true;
+        }
+        public static bool EditFilterYearNode(FilterYearNode node, int? newFrom, int? newTo)
+        {
+            if (node == null)
+            {
+                Logger.Information("cannot update FilterYearNode (is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterYearNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("cannot update FilterYearNode (not in db)");
+                return false;
+            }
+
+            var oldFrom = dbNode.YearFrom;
+            var oldTo = dbNode.YearTo;
+            dbNode.YearFrom = newFrom;
+            dbNode.YearTo = newTo;
+            db.SaveChanges();
+
+            Logger.Information($"updated FilterYearNode oldFrom={oldFrom} oldTo={oldTo} " +
+                $"newFrom={node.YearFrom} newTo={dbNode.YearTo}");
+            return true;
+        }
 
         public static async Task AssignTags(AssignTagNode assignTagNode)
         {

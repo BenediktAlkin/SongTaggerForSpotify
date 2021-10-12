@@ -94,10 +94,11 @@ namespace SpotifySongTagger.ViewModels.Controls
             var newNode = (GraphNode)Activator.CreateInstance(nodeType.Type);
             newNode.X = pos.X / CanvasWidth;
             newNode.Y = pos.Y / CanvasHeight;
-            newNode.GraphGeneratorPage = GraphGeneratorPage;
-            if (DatabaseOperations.AddGraphNode(newNode))
+            if (DatabaseOperations.AddGraphNode(newNode, GraphGeneratorPage))
             {
                 // add in ui
+                newNode.GraphGeneratorPage = GraphGeneratorPage;
+                GraphGeneratorPage.GraphNodes.Add(newNode);
                 var nodeVM = new GraphNodeViewModel(newNode, GraphNodeVMs);
                 nodeVM.CanvasWidth = CanvasWidth;
                 nodeVM.CanvasHeight = CanvasHeight;
@@ -213,6 +214,39 @@ namespace SpotifySongTagger.ViewModels.Controls
             }
             foreach (var nodeVM in GraphNodeVMs)
                 nodeVM.UpdateArrows(false);
+        }
+        #endregion
+
+        #region special GraphNode updates
+        public void PlaylistOutputNode_SetName(PlaylistOutputNode node, string newName)
+        {
+            // update in db
+            if(DatabaseOperations.EditPlaylistOutputNode(node, newName))
+            {
+                // update in ui
+                //node.PlaylistName = newName; // not required as binding is directly to the node
+            }
+        }
+        public async Task RemoveNode_SwapSets(RemoveNode node)
+        {
+            // update in db
+            if (DatabaseOperations.SwapRemoveNodeSets(node))
+            {
+                // update in ui
+                node.SwapSets();
+                await RefreshInputResults();
+            }
+        }
+        public async Task FilterYearNode_Edit(FilterYearNode node, int? yearFrom, int? yearTo)
+        {
+            // update in db
+            if (DatabaseOperations.EditFilterYearNode(node, yearFrom, yearTo))
+            {
+                // update in ui
+                //node.YearFrom = yearFrom; // not required as binding is directly to the node
+                //node.YearTo = yearTo; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
         }
         #endregion
 
