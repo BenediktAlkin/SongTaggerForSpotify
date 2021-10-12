@@ -112,8 +112,8 @@
                         </TextBox>
                     </Grid>
                 </DataTemplate>
-                <!-- MetaPlaylistInputNodeView -->
-                <DataTemplate x:Key="MetaPlaylistInputNodeView">
+                <!-- PlaylistInputMetaNodeView -->
+                <DataTemplate x:Key="PlaylistInputMetaNodeView">
                     <ComboBox materialDesign:HintAssist.Hint="Playlist"
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding DataContext.DataContainer.MetaPlaylists, ElementName=GraphEditorUserControl}"
@@ -129,8 +129,8 @@
                         </ComboBox.Text>
                     </ComboBox>
                 </DataTemplate>
-                <!-- LikedPlaylistInputNodeView -->
-                <DataTemplate x:Key="LikedPlaylistInputNodeView">
+                <!-- PlaylistInputLikedNodeView -->
+                <DataTemplate x:Key="PlaylistInputLikedNodeView">
                     <ComboBox materialDesign:HintAssist.Hint="Playlist"
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding DataContext.DataContainer.LikedPlaylists, ElementName=GraphEditorUserControl}"
@@ -248,11 +248,11 @@
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="IntersectNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="MetaPlaylistInputNode">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource MetaPlaylistInputNodeView}" />
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistInputMetaNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource PlaylistInputMetaNodeView}" />
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="LikedPlaylistInputNode">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource LikedPlaylistInputNodeView}" />
+                                                <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistInputLikedNode">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource PlaylistInputLikedNodeView}" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistOutputNode">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource PlaylistOutputNodeView}" />

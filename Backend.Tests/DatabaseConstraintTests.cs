@@ -21,7 +21,7 @@ namespace Backend.Tests
             playlist.Tracks = new() { track };
             Db.Playlists.Add(playlist);
             Db.SaveChanges();
-            var inputNode = new LikedPlaylistInputNode { Playlist = playlist, GraphGeneratorPage = new GraphGeneratorPage() };
+            var inputNode = new PlaylistInputLikedNode { Playlist = playlist, GraphGeneratorPage = new GraphGeneratorPage() };
             Db.GraphNodes.Add(inputNode);
             Db.SaveChanges();
 
@@ -32,20 +32,20 @@ namespace Backend.Tests
             Assert.IsNull(Db.Playlists.FirstOrDefault(p => p.Id == playlist.Id));
             Assert.AreEqual(0, Db.Tracks.Include(t => t.Playlists).First(t => t.Id == track.Id).Playlists.Count);
             Assert.IsNotNull(Db.GraphNodes.FirstOrDefault(gn => gn.Id == inputNode.Id));
-            Assert.IsNull(((LikedPlaylistInputNode)Db.GraphNodes.First(gn => gn.Id == inputNode.Id)).Playlist);
-            Assert.IsNull(((LikedPlaylistInputNode)Db.GraphNodes.First(gn => gn.Id == inputNode.Id)).PlaylistId);
+            Assert.IsNull(((PlaylistInputLikedNode)Db.GraphNodes.First(gn => gn.Id == inputNode.Id)).Playlist);
+            Assert.IsNull(((PlaylistInputLikedNode)Db.GraphNodes.First(gn => gn.Id == inputNode.Id)).PlaylistId);
         }
 
         [Test]
         public void RemoveGraphNode_BaseSet_OnDeleteSetNull()
         {
             var ggp = new GraphGeneratorPage();
-            var input1 = new LikedPlaylistInputNode 
+            var input1 = new PlaylistInputLikedNode 
             { 
                 Playlist = new Playlist { Id = "Playlist1", Name = "Playlist1" }, 
                 GraphGeneratorPage = ggp 
             };
-            var input2 = new LikedPlaylistInputNode 
+            var input2 = new PlaylistInputLikedNode 
             { 
                 Playlist = new Playlist { Id = "Playlist2", Name = "Playlist2" }, 
                 GraphGeneratorPage = ggp 
@@ -65,12 +65,12 @@ namespace Backend.Tests
         public void RemoveGraphNode_RemoveSet_OnDeleteSetNull()
         {
             var ggp = new GraphGeneratorPage();
-            var input1 = new LikedPlaylistInputNode
+            var input1 = new PlaylistInputLikedNode
             {
                 Playlist = new Playlist { Id = "Playlist1", Name = "Playlist1" },
                 GraphGeneratorPage = ggp
             };
-            var input2 = new LikedPlaylistInputNode
+            var input2 = new PlaylistInputLikedNode
             {
                 Playlist = new Playlist { Id = "Playlist2", Name = "Playlist2" },
                 GraphGeneratorPage = ggp

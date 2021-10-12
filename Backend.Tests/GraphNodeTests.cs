@@ -61,7 +61,7 @@ namespace Backend.Tests
         [TestCaseSource(nameof(PlaylistIdxs))]
         public void Input_Output(int playlistIdx)
         {
-            var inputNode = new LikedPlaylistInputNode { Playlist = Playlists[playlistIdx] };
+            var inputNode = new PlaylistInputLikedNode { Playlist = Playlists[playlistIdx] };
             var outputNode = new PlaylistOutputNode();
             outputNode.AddInput(inputNode);
 
@@ -81,7 +81,7 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Playlist = playlist });
             concatNode.CalculateOutputResult();
             Assert.AreEqual(N_TRACKS, concatNode.OutputResult.Count);
         }
@@ -91,9 +91,9 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Playlist = playlist });
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Playlist = playlist });
             var deduplicateNode = new DeduplicateNode();
             deduplicateNode.AddInput(concatNode);
             concatNode.CalculateOutputResult();
@@ -108,7 +108,7 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Playlist = playlist });
             var tagFilterNode = new FilterTagNode { Tag = Tags[tagIdx] };
             tagFilterNode.AddInput(concatNode);
             var outputNode = new PlaylistOutputNode();
@@ -130,7 +130,7 @@ namespace Backend.Tests
         {
             var concatNode = new ConcatNode();
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new LikedPlaylistInputNode { Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Playlist = playlist });
             var yearFilterNode = new FilterYearNode{ YearFrom = yearFrom, YearTo = yearTo };
             yearFilterNode.AddInput(concatNode);
             var outputNode = new PlaylistOutputNode();
@@ -155,7 +155,7 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_NoInputSet()
         {
-            var playlist = new LikedPlaylistInputNode { Playlist = Playlists[0] };
+            var playlist = new PlaylistInputLikedNode { Playlist = Playlists[0] };
             var removeNode = new RemoveNode();
             removeNode.AddInput(playlist);
             removeNode.SwapSets();
@@ -165,7 +165,7 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_NoRemoveSet()
         {
-            var playlist = new LikedPlaylistInputNode { Playlist = Playlists[0] };
+            var playlist = new PlaylistInputLikedNode { Playlist = Playlists[0] };
             var removeNode = new RemoveNode();
             removeNode.AddInput(playlist);
             removeNode.CalculateOutputResult();
@@ -175,8 +175,8 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_RemoveSameNode()
         {
-            var playlist1 = new LikedPlaylistInputNode { Playlist = Playlists[0] };
-            var playlist2 = new LikedPlaylistInputNode { Playlist = Playlists[0] };
+            var playlist1 = new PlaylistInputLikedNode { Playlist = Playlists[0] };
+            var playlist2 = new PlaylistInputLikedNode { Playlist = Playlists[0] };
             var removeNode = new RemoveNode();
             removeNode.AddInput(playlist1);
             removeNode.AddInput(playlist2);
@@ -187,8 +187,8 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_UndoConcat()
         {
-            var playlist1 = new LikedPlaylistInputNode { Playlist = Playlists[0] };
-            var playlist2 = new LikedPlaylistInputNode { Playlist = Playlists[1] };
+            var playlist1 = new PlaylistInputLikedNode { Playlist = Playlists[0] };
+            var playlist2 = new PlaylistInputLikedNode { Playlist = Playlists[1] };
             var concatNode = new ConcatNode();
             concatNode.AddInput(playlist1);
             concatNode.AddInput(playlist2);
@@ -207,7 +207,7 @@ namespace Backend.Tests
         [Test]
         public void DetectCycles_SameSource_NoCycle()
         {
-            var input = new LikedPlaylistInputNode { Playlist = Playlists[0] };
+            var input = new PlaylistInputLikedNode { Playlist = Playlists[0] };
             input.CalculateOutputResult();
             var allArtists = input.OutputResult.SelectMany(t => t.Artists);
             var filter1 = new FilterArtistNode { Artist = allArtists.First() };

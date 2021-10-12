@@ -35,8 +35,8 @@ namespace SpotifySongTagger.ViewModels
         {
             new NodeTypeCategory("Inputs", "provide songs for other nodes", true, new[]
             {
-                new NodeType("Meta Playlist Input", "all songs of a meta playlist", typeof(MetaPlaylistInputNode)),
-                new NodeType("Liked Playlist Input", "all songs of a liked playlist", typeof(LikedPlaylistInputNode)),
+                new NodeType("Meta Playlist Input", "all songs of a meta playlist", typeof(PlaylistInputMetaNode)),
+                new NodeType("Liked Playlist Input", "all songs of a liked playlist", typeof(PlaylistInputLikedNode)),
             }),
             new NodeTypeCategory("Set Operations", "perform set operations on their inputs", true, new[]
             {
