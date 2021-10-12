@@ -248,6 +248,28 @@ namespace SpotifySongTagger.ViewModels.Controls
                 await RefreshInputResults();
             }
         }
+
+        public async Task AssignTagNode_TagChanged(AssignTagNode node, Tag tag)
+        {
+            // update in db
+            if (DatabaseOperations.EditAssignTagNode(node, tag))
+            {
+                // update in ui
+                //node.Tag = tag; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
+        public async Task FilterTagNode_TagChanged(FilterTagNode node, Tag tag)
+        {
+            // update in db
+            if (DatabaseOperations.EditFilterTagNode(node, tag))
+            {
+                // update in ui
+                //node.Tag = tag; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
+
         #endregion
 
     }

@@ -458,6 +458,71 @@ namespace Backend
             return true;
         }
 
+        public static bool EditAssignTagNode(AssignTagNode node, Tag tag)
+        {
+            if (node == null)
+            {
+                Logger.Information("cannot update AssignTagNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.AssignTagNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("cannot update AssignTagNode (not in db)");
+                return false;
+            }
+            Tag dbTag = null;
+            if (tag != null)
+            {
+                dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
+                if (dbTag == null)
+                {
+                    Logger.Information("cannot update AssignTagNode (tag not in db)");
+                    return false;
+                }
+            }
+
+            var oldTagId = dbNode.TagId;
+            dbNode.TagId = dbTag?.Id;
+            db.SaveChanges();
+            Logger.Information($"updated AssignTagNode oldTagId={oldTagId} newTagId={dbNode.TagId} newTag={dbTag}");
+            return true;
+        }
+        public static bool EditFilterTagNode(FilterTagNode node, Tag tag)
+        {
+            if (node == null)
+            {
+                Logger.Information("cannot update FilterTagNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterTagNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("cannot update FilterTagNode (not in db)");
+                return false;
+            }
+            Tag dbTag = null;
+            if (tag != null)
+            {
+                dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
+                if (dbTag == null)
+                {
+                    Logger.Information("cannot update FilterTagNode (tag not in db)");
+                    return false;
+                }
+            }
+
+            var oldTagId = dbNode.TagId;
+            dbNode.TagId = dbTag?.Id;
+            db.SaveChanges();
+            Logger.Information($"updated FilterTagNode oldTagId={oldTagId} newTagId={dbNode.TagId} newTag={dbTag}");
+            return true;
+        }
+
         public static async Task AssignTags(AssignTagNode assignTagNode)
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid))

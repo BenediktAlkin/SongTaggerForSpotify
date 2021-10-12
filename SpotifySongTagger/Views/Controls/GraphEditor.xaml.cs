@@ -174,6 +174,22 @@ namespace SpotifySongTagger.Views.Controls
 
             ViewModel.PlaylistOutputNode_SetName(outputNode, textBox.Text);
         }
+        private async void AssignTagNode_TagChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as AssignTagNode;
+
+            await ViewModel.AssignTagNode_TagChanged(node, node.Tag);
+        }
+        private async void FilterTagNode_TagChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as FilterTagNode;
+
+            await ViewModel.FilterTagNode_TagChanged(node, node.Tag);
+        }
         private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
         {
             if (ViewModel == null) return;

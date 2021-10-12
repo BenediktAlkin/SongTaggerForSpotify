@@ -38,7 +38,7 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding DataContext.DataContainer.Tags, ElementName=GraphEditorUserControl}"
                             SelectedItem="{Binding Tag}"
-                            SelectionChanged="UpdateGraphNode"
+                            SelectionChanged="AssignTagNode_TagChanged"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">
@@ -72,7 +72,7 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding ValidTags}"
                             SelectedItem="{Binding Tag}"
-                            SelectionChanged="UpdateGraphNode"
+                            SelectionChanged="FilterTagNode_TagChanged"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Tag" Converter="{StaticResource ObjectToStringConverter}">

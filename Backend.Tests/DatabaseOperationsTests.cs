@@ -315,6 +315,53 @@ namespace Backend.Tests
         }
 
         [Test]
+        public void GraphNode_AssignTagNode_Edit()
+        {
+            var tags = InsertTags(1);
+            var nodes = InsertGraphNodes<AssignTagNode>(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditAssignTagNode(null, tags[0]));
+                Assert.IsFalse(DatabaseOperations.EditAssignTagNode(new AssignTagNode(), tags[0]));
+                Assert.IsFalse(DatabaseOperations.EditAssignTagNode(nodes[0], new Tag { Name = "asdf" }));
+
+                Assert.IsTrue(DatabaseOperations.EditAssignTagNode(nodes[0], tags[0]));
+                Assert.AreEqual(tags[0].Id, db.AssignTagNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).TagId);
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                // not sure why this needs a new context
+                Assert.IsTrue(DatabaseOperations.EditAssignTagNode(nodes[0], null));
+                Assert.IsNull(db.AssignTagNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).TagId);
+            }
+        }
+        [Test]
+        public void GraphNode_FilterTagNode_Edit()
+        {
+            var tags = InsertTags(1);
+            var nodes = InsertGraphNodes<FilterTagNode>(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditFilterTagNode(null, tags[0]));
+                Assert.IsFalse(DatabaseOperations.EditFilterTagNode(new FilterTagNode(), tags[0]));
+                Assert.IsFalse(DatabaseOperations.EditFilterTagNode(nodes[0], new Tag { Name = "asdf" }));
+
+                Assert.IsTrue(DatabaseOperations.EditFilterTagNode(nodes[0], tags[0]));
+                Assert.AreEqual(tags[0].Id, db.FilterTagNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).TagId);
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                // not sure why this needs a new context
+                Assert.IsTrue(DatabaseOperations.EditFilterTagNode(nodes[0], null));
+                Assert.IsNull(db.FilterTagNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).TagId);
+            }
+        }
+
+        [Test]
         public void GraphNode_AddConnection()
         {
             var nodes = InsertGraphNodes(2);
