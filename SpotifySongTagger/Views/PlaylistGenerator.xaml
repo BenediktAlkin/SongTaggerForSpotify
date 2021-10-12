@@ -78,7 +78,7 @@
                 </StackPanel>
                 <TextBlock Text="2. Select a generator" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                 <TextBlock Text="3. Add nodes with drag &amp; drop" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
-                <TextBlock Text="4. Connect nodes with rightclick drag &amp; drop" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                <TextBlock Text="4. Connect nodes with rightclick drag &amp; drop" TextWrapping="Wrap" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="5. Run a generator with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                     <materialDesign:PackIcon Kind="Play" Width="48" Height="48" VerticalAlignment="Center"/>

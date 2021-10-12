@@ -68,22 +68,21 @@ namespace Backend
             }
         }
 
-        public async Task LoadSourcePlaylists(bool forceReload = false)
+        public Task LoadSourcePlaylists(bool forceReload = false)
         {
             // if liked changes --> force reload
             var newLikedTask = MetaPlaylists == null || forceReload 
                 ? Task.Run(() => LikedPlaylists = DatabaseOperations.PlaylistsLiked())
                 : Task.CompletedTask;
-            await newLikedTask;
             // meta does not change --> only require loading once
             var newMetaTask = MetaPlaylists == null
                 ? Task.Run(() => MetaPlaylists = DatabaseOperations.PlaylistsMeta())
                 : Task.CompletedTask;
-            await newMetaTask;
+            return Task.WhenAll(newLikedTask, newMetaTask);
         }
-        public async Task LoadGeneratedPlaylists()
+        public Task LoadGeneratedPlaylists()
         {
-            await Task.Run(() => GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated());
+            return Task.Run(() => GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated());
         }
         #endregion
 

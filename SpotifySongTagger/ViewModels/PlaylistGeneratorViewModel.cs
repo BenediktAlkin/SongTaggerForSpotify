@@ -14,12 +14,11 @@ namespace SpotifySongTagger.ViewModels
 {
     public class PlaylistGeneratorViewModel : BaseViewModel
     {
-        public async Task Init()
+        public void Init()
         {
-            await DataContainer.LoadSourcePlaylists();
-            await DataContainer.LoadGraphGeneratorPages();
-            await DataContainer.LoadTags();
-            IsReady = true;
+            var loadSourcePlaylistsTask = DataContainer.LoadSourcePlaylists();
+            var loadSourcePagesTask = DataContainer.LoadGraphGeneratorPages();
+            Task.WhenAll(loadSourcePlaylistsTask, loadSourcePagesTask).ContinueWith(result => IsReady = true);
         }
 
         // PlaylistGenerator is ready when GraphGeneratorPages and SourcePlaylists are loaded
@@ -105,8 +104,6 @@ namespace SpotifySongTagger.ViewModels
 
             // add to db
             var page = new GraphGeneratorPage { Name = NewGraphGeneratorPageName };
-            var node = new PlaylistOutputNode { PlaylistName = NewGraphGeneratorPageName };
-            page.GraphNodes.Add(node);
             DatabaseOperations.AddGraphGeneratorPage(page);
 
             // update ui
@@ -127,6 +124,7 @@ namespace SpotifySongTagger.ViewModels
         public async Task RunAll()
         {
             if (IsRunningAll) return;
+
             Log.Information("RunAll GraphGeneratorPages");
             IsRunningAll = true;
             foreach (var ggpVM in BaseViewModel.DataContainer.GraphGeneratorPages)
@@ -139,7 +137,8 @@ namespace SpotifySongTagger.ViewModels
 
         public void EditGraphGeneratorPageName(GraphGeneratorPage page)
         {
-            DatabaseOperations.EditGraphGeneratorPage(page, NewGraphGeneratorPageName);
+            if (DatabaseOperations.EditGraphGeneratorPage(page, NewGraphGeneratorPageName))
+                page.Name = NewGraphGeneratorPageName;
             NewGraphGeneratorPageName = null;
         }
 

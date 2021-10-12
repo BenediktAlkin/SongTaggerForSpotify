@@ -11,16 +11,14 @@ namespace Backend.Tests
 {
     public class DatabaseOperationsTests : BaseTests
     {
+        #region add/edit/delete tags
         [Test]
         [TestCase(10)]
         public void Tags_GetTags(int count)
         {
             InsertTags(count);
 
-            using (var db = ConnectionManager.NewContext())
-            {
-                Assert.AreEqual(count, db.Tags.Count());
-            }
+            Assert.AreEqual(count, DatabaseOperations.GetTags().Count);
         }
         [Test]
         public void Tags_TagExists()
@@ -36,16 +34,16 @@ namespace Backend.Tests
             }
         }
         [Test]
-        public void Tags_CanAddTag()
+        public void Tags_IsValidTag()
         {
             InsertTags(1);
 
             using (var db = ConnectionManager.NewContext())
             {
-                Assert.IsFalse(DatabaseOperations.CanAddTag(db.Tags.First().Name, db));
-                Assert.IsTrue(DatabaseOperations.CanAddTag("asdf", db));
-                Assert.IsFalse(DatabaseOperations.CanAddTag("", db));
-                Assert.IsFalse(DatabaseOperations.CanAddTag(null, db));
+                Assert.IsFalse(DatabaseOperations.IsValidTag(db.Tags.First().Name, db));
+                Assert.IsTrue(DatabaseOperations.IsValidTag("asdf", db));
+                Assert.IsFalse(DatabaseOperations.IsValidTag("", db));
+                Assert.IsFalse(DatabaseOperations.IsValidTag(null, db));
             }
         }
         [Test]
@@ -55,13 +53,27 @@ namespace Backend.Tests
 
             using (var db = ConnectionManager.NewContext())
             {
-                Assert.IsFalse(DatabaseOperations.AddTag(tags[0].Name));
-                Assert.IsTrue(DatabaseOperations.AddTag("asdf"));
+                Assert.IsFalse(DatabaseOperations.AddTag(tags[0]));
+                Assert.IsTrue(DatabaseOperations.AddTag(new Tag { Name = "asdf" }));
                 Assert.IsNotNull(db.Tags.FirstOrDefault(t => t.Name == "asdf"));
-                Assert.IsFalse(DatabaseOperations.AddTag("asdf"));
-                Assert.IsFalse(DatabaseOperations.AddTag(""));
+                Assert.IsFalse(DatabaseOperations.AddTag(new Tag { Name = "asdf" }));
+                Assert.IsFalse(DatabaseOperations.AddTag(new Tag { Name = "" }));
+                Assert.IsFalse(DatabaseOperations.AddTag(new Tag { }));
                 Assert.IsFalse(DatabaseOperations.AddTag(null));
                 Assert.AreEqual(2, db.Tags.Count());
+            }
+        }
+        [Test]
+        public void Tags_Edit()
+        {
+            var tags = InsertTags(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditTag(null, "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditTag(new Tag(), "asdf"));
+                Assert.IsTrue(DatabaseOperations.EditTag(tags[0], "asdf"));
+                Assert.AreEqual("asdf", db.Tags.First(t => t.Id == tags[0].Id).Name);
             }
         }
         [Test]
@@ -77,6 +89,9 @@ namespace Backend.Tests
                 Assert.IsFalse(DatabaseOperations.DeleteTag(new Tag { Id = 5 }));
             }
         }
+        #endregion
+
+        #region assign tags to tracks
         [Test]
         public void Track_AssignTag()
         {
@@ -149,5 +164,126 @@ namespace Backend.Tests
                 Assert.AreEqual(0, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
             }
         }
+        #endregion
+
+        #region GraphGeneratorPage
+        [Test]
+        [TestCase(10)]
+        public void GraphGeneratorPage_Get(int count)
+        {
+            InsertGraphGeneratorPages(count);
+
+            Assert.AreEqual(count, DatabaseOperations.GetGraphGeneratorPages().Count);
+        }
+        [Test]
+        public void GraphGeneratorPage_Add()
+        {
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.AddGraphGeneratorPage(new GraphGeneratorPage { Name = "ggp1" }));
+                Assert.IsFalse(DatabaseOperations.AddGraphGeneratorPage(null));
+                Assert.AreEqual(1, db.GraphGeneratorPages.Count());
+            }
+        }
+        [Test]
+        public void GraphGeneratorPage_Edit()
+        {
+            var pages = InsertGraphGeneratorPages(1);
+            
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditGraphGeneratorPage(null, "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditGraphGeneratorPage(new GraphGeneratorPage(), "asdf"));
+                Assert.IsTrue(DatabaseOperations.EditGraphGeneratorPage(pages[0], "asdf"));
+                Assert.AreEqual("asdf", db.GraphGeneratorPages.First(ggp => ggp.Id == pages[0].Id).Name);
+            }
+        }
+        [Test]
+        public void GraphGeneratorPage_Delete()
+        {
+            var pages = InsertGraphGeneratorPages(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.DeleteGraphGeneratorPage(null));
+                Assert.IsFalse(DatabaseOperations.DeleteGraphGeneratorPage(new GraphGeneratorPage()));
+                Assert.IsTrue(DatabaseOperations.DeleteGraphGeneratorPage(pages[0]));
+                Assert.AreEqual(0, db.GraphGeneratorPages.Count());
+            }
+        }
+        #endregion
+
+        #region GraphNodes
+        [Test]
+        public void GraphNode_Add()
+        {
+            var newNode = new ConcatNode
+            {
+                X = 0.5,
+                Y = 0.7,
+                GraphGeneratorPage = new GraphGeneratorPage(),
+            };
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.AddGraphNode(newNode));
+                Assert.IsFalse(DatabaseOperations.AddGraphNode(null));
+
+                Assert.AreEqual(1, db.GraphNodes.Count());
+            }
+        }
+        [Test]
+        public void GraphNode_Edit()
+        {
+            var nodes = InsertGraphNodes(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.EditGraphNode(nodes[0], 0.1, 0.2));
+                Assert.IsFalse(DatabaseOperations.EditGraphNode(null, 0.1, 0.2));
+                Assert.IsFalse(DatabaseOperations.EditGraphNode(new ConcatNode(), 0.1, 0.2));
+
+                Assert.AreEqual(0.1, db.GraphNodes.First(gn => gn.Id == nodes[0].Id).X);
+                Assert.AreEqual(0.2, db.GraphNodes.First(gn => gn.Id == nodes[0].Id).Y);
+            }
+        }
+        [Test]
+        public void GraphNode_AddConnection()
+        {
+            var nodes = InsertGraphNodes(2);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.AddGraphNodeConnection(null, nodes[1]));
+                Assert.IsFalse(DatabaseOperations.AddGraphNodeConnection(nodes[0], null));
+                Assert.IsFalse(DatabaseOperations.AddGraphNodeConnection(new ConcatNode(), nodes[1]));
+                Assert.IsFalse(DatabaseOperations.AddGraphNodeConnection(nodes[0], new ConcatNode()));
+                Assert.IsTrue(DatabaseOperations.AddGraphNodeConnection(nodes[0], nodes[1]));
+                Assert.IsFalse(DatabaseOperations.AddGraphNodeConnection(nodes[0], nodes[1]));
+
+                Assert.AreEqual(1, db.GraphNodes.Include(gn => gn.Outputs).First(gn => gn.Id == nodes[0].Id).Outputs.Count());
+                Assert.AreEqual(1, db.GraphNodes.Include(gn => gn.Inputs).First(gn => gn.Id == nodes[1].Id).Inputs.Count());
+            }
+        }
+        [Test]
+        public void GraphNode_DeleteConnection()
+        {
+            var nodes = InsertGraphNodes(2);
+            DatabaseOperations.AddGraphNodeConnection(nodes[0], nodes[1]);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.DeleteGraphNodeConnection(null, nodes[1]));
+                Assert.IsFalse(DatabaseOperations.DeleteGraphNodeConnection(nodes[0], null));
+                Assert.IsFalse(DatabaseOperations.DeleteGraphNodeConnection(new ConcatNode(), nodes[1]));
+                Assert.IsFalse(DatabaseOperations.DeleteGraphNodeConnection(nodes[0], new ConcatNode()));
+                Assert.IsTrue(DatabaseOperations.DeleteGraphNodeConnection(nodes[0], nodes[1]));
+                Assert.IsFalse(DatabaseOperations.DeleteGraphNodeConnection(nodes[0], nodes[1]));
+
+                Assert.AreEqual(0, db.GraphNodes.Include(gn => gn.Outputs).First(gn => gn.Id == nodes[0].Id).Outputs.Count());
+                Assert.AreEqual(0, db.GraphNodes.Include(gn => gn.Inputs).First(gn => gn.Id == nodes[1].Id).Inputs.Count());
+            }
+        }
+        #endregion
     }
 }

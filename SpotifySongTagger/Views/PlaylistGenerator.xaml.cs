@@ -17,7 +17,7 @@ namespace SpotifySongTagger.Views
             ViewModel = new PlaylistGeneratorViewModel();
             DataContext = ViewModel;
         }
-        private async void UserControl_Loaded(object sender, RoutedEventArgs e) => await ViewModel.Init();
+        private void UserControl_Loaded(object sender, RoutedEventArgs e) => ViewModel.Init();
 
 
         #region drag & drop new nodes

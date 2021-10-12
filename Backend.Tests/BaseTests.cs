@@ -1,6 +1,8 @@
 ﻿using Backend.Entities;
+using Backend.Entities.GraphNodes;
 using NUnit.Framework;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Util;
@@ -73,6 +75,32 @@ namespace Backend.Tests
             db.Tracks.AddRange(tracks);
             db.SaveChanges();
             return tracks;
+        }
+        protected static List<GraphGeneratorPage> InsertGraphGeneratorPages(int count)
+        {
+            using var db = ConnectionManager.NewContext();
+            var ggps = Enumerable.Range(1, count).Select(i =>
+            new GraphGeneratorPage { Name = $"ggp{i}" }).ToList();
+            db.GraphGeneratorPages.AddRange(ggps);
+            db.SaveChanges();
+
+            return ggps;
+        }
+
+        protected static List<GraphNode> InsertGraphNodes(int count)
+        {
+            using var db = ConnectionManager.NewContext();
+            var nodes = Enumerable.Range(1, count).Select(i => 
+            new ConcatNode
+            {
+                X = new Random().NextDouble(),
+                Y = new Random().NextDouble(),
+                GraphGeneratorPage = new GraphGeneratorPage(),
+            }).Cast<GraphNode>().ToList();
+            db.GraphNodes.AddRange(nodes);
+            db.SaveChanges();
+
+            return nodes;
         }
 
         // TODO

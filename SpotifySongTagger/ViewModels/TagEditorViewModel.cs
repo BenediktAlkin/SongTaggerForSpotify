@@ -44,10 +44,7 @@ namespace SpotifySongTagger.ViewModels
             // load playlists
             var sourcePlaylistsTask = BaseViewModel.DataContainer.LoadSourcePlaylists();
             var generatedPlaylistsTask = BaseViewModel.DataContainer.LoadGeneratedPlaylists();
-            var _ = Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result =>
-            {
-                LoadedPlaylists = true;
-            });
+            Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result => LoadedPlaylists = true);
 
             // load tags
             LoadTagsTask = BaseViewModel.DataContainer.LoadTags();
@@ -182,18 +179,21 @@ namespace SpotifySongTagger.ViewModels
             if(DatabaseOperations.DeleteAssignment(SelectedTrackVM.Track, tag))
                 SelectedTrackVM.Track.Tags.Remove(tag);
         }
-        public bool CanAddTag => DatabaseOperations.CanAddTag(NewTagName);
+        public bool CanAddTag => DatabaseOperations.IsValidTag(NewTagName);
         public void AddTag()
         {
-            var tag = NewTagName;
-            if (string.IsNullOrEmpty(tag)) return;
+            if (string.IsNullOrEmpty(NewTagName)) return;
+            var tag = new Tag { Name = NewTagName };
             DatabaseOperations.AddTag(tag);
+            DataContainer.Instance.Tags.Add(tag);
         }
-        public bool CanEditTag => DatabaseOperations.CanEditTag(ClickedTag, NewTagName);
+        public bool CanEditTag => DatabaseOperations.IsValidTag(NewTagName);
         public void EditTag()
         {
             if (ClickedTag == null) return;
-            DatabaseOperations.EditTag(ClickedTag, NewTagName);
+
+            if (DatabaseOperations.EditTag(ClickedTag, NewTagName))
+                ClickedTag.Name = NewTagName;
         }
         public void DeleteTag()
         {
@@ -205,6 +205,7 @@ namespace SpotifySongTagger.ViewModels
                     if (trackVM.Track.Tags.Contains(ClickedTag))
                         trackVM.Track.Tags.Remove(ClickedTag);
                 }
+                DataContainer.Instance.Tags.Remove(ClickedTag);
             }
         }
 
