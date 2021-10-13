@@ -243,7 +243,7 @@ namespace SpotifySongTagger.ViewModels.Controls
 #pragma warning restore CA1822 // Mark members as static
         {
             // update in db
-            if(DatabaseOperations.EditPlaylistOutputNode(node, newName))
+            if(DatabaseOperations.EditPlaylistOutputNodeName(node, newName))
             {
                 // update in ui
                 //node.PlaylistName = newName; // not required as binding is directly to the node

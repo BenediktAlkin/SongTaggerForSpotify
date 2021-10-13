@@ -259,19 +259,33 @@ namespace Backend.Tests
                 Assert.AreEqual(0.2, db.GraphNodes.First(gn => gn.Id == nodes[0].Id).Y);
             }
         }
-
         [Test]
-        public void GraphNode_PlaylistOutputNode_Edit()
+        public void GraphNode_PlaylistOutputNode_EditName()
         {
             var nodes = InsertGraphNodes<PlaylistOutputNode>(1, gn => gn.PlaylistName = $"genPlaylist{gn.Id}");
 
             using (var db = ConnectionManager.NewContext())
             {
-                Assert.IsTrue(DatabaseOperations.EditPlaylistOutputNode(nodes[0], "asdf"));
-                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNode(null, "asdf"));
-                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNode(new PlaylistOutputNode(), "asdf"));
+                Assert.IsTrue(DatabaseOperations.EditPlaylistOutputNodeName(nodes[0], "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNodeName(null, "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNodeName(new PlaylistOutputNode(), "asdf"));
 
                 Assert.AreEqual("asdf", db.PlaylistOutputNodes.First(gn => gn.Id == nodes[0].Id).PlaylistName);
+            }
+        }
+
+        [Test]
+        public void GraphNode_PlaylistOutputNode_EditGeneratedPlaylistId()
+        {
+            var nodes = InsertGraphNodes<PlaylistOutputNode>(1, gn => gn.PlaylistName = $"genPlaylist{gn.Id}");
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(nodes[0], "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(null, "asdf"));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(new PlaylistOutputNode(), "asdf"));
+
+                Assert.AreEqual("asdf", db.PlaylistOutputNodes.First(gn => gn.Id == nodes[0].Id).GeneratedPlaylistId);
             }
         }
         [Test]
@@ -410,6 +424,9 @@ namespace Backend.Tests
             }
         }
 
+        #endregion
+
+        #region GraphNode connections
         [Test]
         public void GraphNode_AddConnection()
         {

@@ -9,7 +9,7 @@ namespace Util.Tests
         public void SetUp()
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(formatter: new LogFormatter())
+                .WriteTo.Console(formatter: new LogFormatter("??"))
                 .CreateLogger();
         }
         [TearDown]

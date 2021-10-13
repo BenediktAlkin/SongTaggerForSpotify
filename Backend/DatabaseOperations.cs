@@ -18,7 +18,7 @@ namespace Backend
     {
         private static ILogger Logger { get; } = Log.ForContext("SourceContext", "DB");
 
-        #region tag
+        #region tags
         public static List<Tag> GetTags()
         {
             using var db = ConnectionManager.NewContext();
@@ -301,7 +301,6 @@ namespace Backend
         #endregion
 
         #region graphNodes
-
         public static List<GraphNode> GetGraphNodes(GraphGeneratorPage ggp)
         {
             if (ggp == null) return new();
@@ -399,9 +398,9 @@ namespace Backend
             return true;
         }
 
-        public static bool EditPlaylistOutputNode(PlaylistOutputNode node, string newName)
+        public static bool EditPlaylistOutputNodeName(PlaylistOutputNode node, string newName)
         {
-            if(node == null)
+            if (node == null)
             {
                 Logger.Information("cannot update PlaylistOutputNode (is null)");
                 return false;
@@ -415,7 +414,7 @@ namespace Backend
 
             using var db = ConnectionManager.NewContext();
             var dbNode = db.PlaylistOutputNodes.FirstOrDefault(gn => gn.Id == node.Id);
-            if(dbNode == null)
+            if (dbNode == null)
             {
                 Logger.Information("cannot update PlaylistOutputNode (not in db)");
                 return false;
@@ -425,7 +424,35 @@ namespace Backend
             dbNode.PlaylistName = newName;
             db.SaveChanges();
 
-            Logger.Information($"updated PlaylistOutputNode old={oldName} new={newName}");
+            Logger.Information($"updated PlaylistOutputNode name old={oldName} new={newName}");
+            return true;
+        }
+        public static bool EditPlaylistOutputNodeGeneratedPlaylistId(PlaylistOutputNode node, string newId)
+        {
+            if (node == null)
+            {
+                Logger.Information("cannot update PlaylistOutputNode (is null)");
+                return false;
+            }
+            if (string.IsNullOrEmpty(newId))
+            {
+                Logger.Information("cannot update PlaylistOutputNode (newId is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.PlaylistOutputNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("cannot update PlaylistOutputNode (not in db)");
+                return false;
+            }
+
+            var oldId = dbNode.GeneratedPlaylistId;
+            dbNode.GeneratedPlaylistId = newId;
+            db.SaveChanges();
+
+            Logger.Information($"updated PlaylistOutputNode GeneratedPlaylistId old={oldId} new={newId}");
             return true;
         }
         public static bool SwapRemoveNodeSets(RemoveNode node)
@@ -578,7 +605,6 @@ namespace Backend
                 $"newArtistId={dbNode.ArtistId} newArtist={dbArtist}");
             return true;
         }
-
         public static bool EditPlaylistInputNode(PlaylistInputNode node, Playlist playlist)
         {
             if (node == null)
@@ -611,34 +637,6 @@ namespace Backend
             Logger.Information($"updated PlaylistInputNode oldPlaylistId={oldPlaylistId} " +
                 $"newPlaylistId={dbNode.PlaylistId} newPlalist={dbPlaylist}");
             return true;
-        }
-
-        public static async Task AssignTags(AssignTagNode assignTagNode)
-        {
-            if (assignTagNode.AnyBackward(gn => !gn.IsValid))
-            {
-                Logger.Information("cannot run AssignTagNode (graph contains invalid node)");
-                return;
-            }
-
-            await Task.Run(() =>
-            {
-                assignTagNode.CalculateOutputResult();
-                var tracks = assignTagNode.OutputResult;
-
-                using var db = ConnectionManager.NewContext();
-                foreach (var track in tracks)
-                {
-                    if (!track.Tags.Contains(assignTagNode.Tag))
-                    {
-                        track.Tags.Add(assignTagNode.Tag);
-                        db.Update(track);
-                    }
-                }
-
-                db.SaveChanges();
-                Logger.Information($"assigned tag {assignTagNode.Tag.Name} to {tracks.Count} tracks");
-            });
         }
         #endregion
 
@@ -808,6 +806,26 @@ namespace Backend
         #endregion
 
 
+        #region AssignTagNode
+        public static async Task AssignTags(AssignTagNode assignTagNode)
+        {
+            if (assignTagNode.AnyBackward(gn => !gn.IsValid))
+            {
+                Logger.Information("cannot run AssignTagNode (graph contains invalid node)");
+                return;
+            }
+
+            await Task.Run(() =>
+            {
+                assignTagNode.CalculateOutputResult();
+                var tracks = assignTagNode.OutputResult;
+
+                foreach (var track in tracks)
+                    AssignTag(track, assignTagNode.Tag);
+                Logger.Information($"assigned tag {assignTagNode.Tag.Name} to {tracks.Count} tracks");
+            });
+        }
+        #endregion
 
         #region sync library
         private static void ReplacePlaylistsWithDbPlaylists(DatabaseContext db, Dictionary<string, Playlist> playlistDict, Track track)

@@ -11,6 +11,7 @@ namespace Backend
 {
     public static class SpotifyOperations
     {
+        private static ILogger Logger { get; } = Log.ForContext("SourceContext", "SP");
         private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
         private static Func<object, bool> TrackIsValid { get; } = t => t is FullTrack ft && !ft.IsLocal && ft.IsPlayable;
@@ -42,20 +43,20 @@ namespace Backend
 
         private static async Task<List<Track>> LikedTracks()
         {
-            Log.Information("Start fetching liked tracks");
+            Logger.Information("Start fetching liked tracks");
             var page = await Spotify.Library.GetTracks(new LibraryTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country });
             var allTracks = await GetAll(page);
-            Log.Information("Finished fetching liked tracks");
+            Logger.Information("Finished fetching liked tracks");
             var testTrack = allTracks.FirstOrDefault(t => t.Track.Name.Contains("OMG What's"));
             return allTracks.Where(t => TrackIsValid(t.Track)).Select(t => ToTrack(t.Track)).ToList();
         }
 
         private static async Task<List<Playlist>> PlaylistCurrentUsers()
         {
-            Log.Information("Start fetching users playlists");
+            Logger.Information("Start fetching users playlists");
             var page = await Spotify.Playlists.CurrentUsers(new PlaylistCurrentUsersRequest { Limit = 50 });
             var allPlaylists = await GetAll(page);
-            Log.Information("Finished fetching users playlists");
+            Logger.Information("Finished fetching users playlists");
             return allPlaylists.Select(p => new Playlist
             {
                 Id = p.Id,
@@ -81,31 +82,38 @@ namespace Backend
                         "album(id,name,release_date,release_date_precision)," +
                         "artists(id,name)))," +
                 "next");
-            Log.Information($"Start fetching playlist items playlistId={playlistId}");
+            Logger.Information($"Start fetching playlist items playlistId={playlistId}");
             try
             {
                 var page = await Spotify.Playlists.GetItems(playlistId, request);
                 var allTracks = await GetAll(page);
-                Log.Information($"Finished fetching playlist items playlistId={playlistId}");
+                Logger.Information($"Finished fetching playlist items playlistId={playlistId}");
                 return allTracks.Where(t => TrackIsValid(t.Track)).Select(playlistTrack => ToTrack(playlistTrack.Track as FullTrack)).ToList();
             }
             catch (Exception e)
             {
-                Log.Error($"Error in PlaylistItems: {e.Message}");
+                Logger.Error($"Error in PlaylistItems: {e.Message}");
                 return new();
             }
         }
 
         public static async Task SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
         {
-            if (playlistOutputNode.AnyBackward(gn => !gn.IsValid)) return;
+            if (playlistOutputNode.AnyBackward(gn => !gn.IsValid))
+            {
+                Logger.Information($"cannot run PlaylistOutputNode Id={playlistOutputNode.Id} (encountered invalid graphNode)");
+                return;
+            }
+            Logger.Information($"synchronizing PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
 
             if (playlistOutputNode.GeneratedPlaylistId == null)
             {
                 // create playlist
                 var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName);
                 var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
-                playlistOutputNode.GeneratedPlaylistId = createdPlaylist.Id;
+
+                if(DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(playlistOutputNode, createdPlaylist.Id))
+                    playlistOutputNode.GeneratedPlaylistId = createdPlaylist.Id;
             }
             else
             {
@@ -115,7 +123,7 @@ namespace Backend
                 if (!(await Spotify.Follow.CheckPlaylist(playlistOutputNode.GeneratedPlaylistId, followCheckReq)).First())
                     await Spotify.Follow.FollowPlaylist(playlistOutputNode.GeneratedPlaylistId);
 
-                // rename playlist if name changed
+                // rename spotify playlist if name changed
                 if (playlistDetails.Name != playlistOutputNode.PlaylistName)
                 {
                     var changeNameReq = new PlaylistChangeDetailsRequest { Name = playlistOutputNode.PlaylistName };
@@ -147,6 +155,7 @@ namespace Backend
                         .ToList());
                 await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
             }
+            Logger.Information($"synchronized PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
         }
 
         public static async Task<(List<Playlist>, Dictionary<string, Track>)> GetFullLibrary(List<string> generatedPlaylistIds)
@@ -174,10 +183,10 @@ namespace Backend
                 // add tracks from liked playlists
                 var playlists = (await playlistsTask).Where(pl => !generatedPlaylistIds.Contains(pl.Id)).ToList();
                 var playlistsTracks = await playlistsTracksTask;
-                Log.Information("Start fetching full spotify library");
+                Logger.Information("Start fetching full spotify library");
                 for (var i = 0; i < playlists.Count; i++)
                 {
-                    Log.Information($"Fetching tracks from playlist \"{playlists[i].Name}\" {i + 1}/{playlists.Count} " +
+                    Logger.Information($"Fetching tracks from playlist \"{playlists[i].Name}\" {i + 1}/{playlists.Count} " +
                         $"({playlistsTracks[i].Count} tracks)");
                     var playlist = playlists[i];
                     foreach (var track in playlistsTracks[i])
@@ -195,12 +204,12 @@ namespace Backend
                         }
                     }
                 }
-                Log.Information("Finished fetching full spotify library");
+                Logger.Information("Finished fetching full spotify library");
                 return (playlists, tracks);
             }
             catch (Exception e)
             {
-                Log.Error($"Error in GetFullLibrary: {e.Message}");
+                Logger.Error($"Error in GetFullLibrary: {e.Message}");
                 return (null, null);
             }
         }
@@ -214,7 +223,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in GetTracks {e.Message} {e.InnerException?.Message}");
+                Logger.Error($"Error in GetTracks {e.Message} {e.InnerException?.Message}");
                 return new();
             }
         }

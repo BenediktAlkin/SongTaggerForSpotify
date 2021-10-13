@@ -1,5 +1,5 @@
-runall is probably sync
-revisit RunAll/Run
+invalid --> error message
+maybe make invalid nodes red
 
 tutorial
 - login

@@ -34,8 +34,8 @@ namespace SpotifySongTagger
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(formatter: new LogFormatter(), @"frontend.log")
-                .WriteTo.Trace(formatter: new LogFormatter())
+                .WriteTo.File(formatter: new LogFormatter("??"), @"frontend.log")
+                .WriteTo.Trace(formatter: new LogFormatter("??"))
                 .CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 

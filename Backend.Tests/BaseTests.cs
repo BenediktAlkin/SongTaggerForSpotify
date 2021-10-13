@@ -15,7 +15,7 @@ namespace Backend.Tests
         public virtual void SetUp()
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(formatter: new LogFormatter())
+                .WriteTo.Console(formatter: new LogFormatter("??"))
                 .CreateLogger();
             ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
             // drop db

@@ -11,9 +11,15 @@ namespace Util
 {
     public class LogFormatter : ITextFormatter
     {
+        private string DefaultSourceContext { get; }
+        public LogFormatter(string defaultSourceContext)
+        {
+            DefaultSourceContext = defaultSourceContext;
+        }
+
         public void Format(LogEvent logEvent, TextWriter output)
         {
-            var sourceContextStr = string.Empty;
+            var sourceContextStr = DefaultSourceContext;
             if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
             {
                 // remove " before and after
