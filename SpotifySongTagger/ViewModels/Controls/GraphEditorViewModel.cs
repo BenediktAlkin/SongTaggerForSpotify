@@ -19,9 +19,6 @@ namespace SpotifySongTagger.ViewModels.Controls
         public GraphEditorViewModel(GraphGeneratorPage ggp)
         {
             GraphGeneratorPage = ggp;
-            var nodeViewModels = ggp.GraphNodes.Select(gn => new GraphNodeViewModel(gn, GraphNodeVMs));
-            foreach (var nodeViewModel in nodeViewModels)
-                GraphNodeVMs.Add(nodeViewModel);
         }
 
         private bool isUpdatingInputResults;
@@ -30,6 +27,29 @@ namespace SpotifySongTagger.ViewModels.Controls
             get => isUpdatingInputResults;
             set => SetProperty(ref isUpdatingInputResults, value, nameof(IsUpdatingInputResults));
         }
+
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => SetProperty(ref isLoading, value, nameof(IsLoading));
+        }
+        public async Task LoadGraphNodes()
+        {
+            IsLoading = true;
+
+            var nodes = await Task.Run(() => DatabaseOperations.GetGraphNodes(GraphGeneratorPage));
+            var nodeViewModels = nodes.Select(gn => new GraphNodeViewModel(gn, GraphNodeVMs));
+            foreach (var nodeViewModel in nodeViewModels)
+                GraphNodeVMs.Add(nodeViewModel);
+            foreach (var nodeVM in GraphNodeVMs)
+            {
+                nodeVM.CanvasWidth = CanvasWidth;
+                nodeVM.CanvasHeight = CanvasHeight;
+            }
+            IsLoading = false;
+        }
+
 
         public void ClearAllInputResults()
         {

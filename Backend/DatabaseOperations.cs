@@ -239,10 +239,7 @@ namespace Backend
         public static List<GraphGeneratorPage> GetGraphGeneratorPages()
         {
             using var db = ConnectionManager.NewContext();
-            return db.GraphGeneratorPages
-                .Include(ggp => ggp.GraphNodes)
-                .ThenInclude(gn => gn.Outputs)
-                .ToList();
+            return db.GraphGeneratorPages.ToList();
         }
         public static bool AddGraphGeneratorPage(GraphGeneratorPage page)
         {
@@ -304,6 +301,32 @@ namespace Backend
         #endregion
 
         #region graphNodes
+
+        public static List<GraphNode> GetGraphNodes(GraphGeneratorPage ggp)
+        {
+            if (ggp == null) return new();
+
+            var nodes = new List<GraphNode>();
+            using var db = ConnectionManager.NewContext();
+            var nodeIds = db.GraphNodes.Where(gn => gn.GraphGeneratorPageId == ggp.Id).Select(gn => gn.Id).ToList();
+
+            IQueryable<T> BaseQuery<T>(DbSet<T> set) where T: GraphNode
+                => set.Include(gn => gn.Outputs).Where(gn => nodeIds.Contains(gn.Id));
+
+            nodes.AddRange(BaseQuery(db.AssignTagNodes).Include(gn => gn.Tag));
+            nodes.AddRange(BaseQuery(db.ConcatNodes));
+            nodes.AddRange(BaseQuery(db.DeduplicateNodes));
+            nodes.AddRange(BaseQuery(db.FilterArtistNodes).Include(gn => gn.Artist));
+            nodes.AddRange(BaseQuery(db.FilterTagNodes).Include(gn => gn.Tag));
+            nodes.AddRange(BaseQuery(db.FilterUntaggedNodes));
+            nodes.AddRange(BaseQuery(db.FilterYearNodes));
+            nodes.AddRange(BaseQuery(db.IntersectNodes));
+            nodes.AddRange(BaseQuery(db.PlaylistInputLikedNodes).Include(gn => gn.Playlist));
+            nodes.AddRange(BaseQuery(db.PlaylistInputMetaNodes).Include(gn => gn.Playlist));
+            nodes.AddRange(BaseQuery(db.PlaylistOutputNodes));
+            nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
+            return nodes;
+        }
         public static bool AddGraphNode(GraphNode node, GraphGeneratorPage ggp)
         {
             if(node == null)

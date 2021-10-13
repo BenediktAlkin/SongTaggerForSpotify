@@ -8,7 +8,7 @@ using Util;
 
 namespace Backend.Entities.GraphNodes
 {
-    public abstract class GraphNode : NotifyPropertyChangedBase
+    public abstract class GraphNode : NotifyPropertyChangedBase, IEquatable<GraphNode>
     {
         #region navigation properties
         // only needed to change on delete behaviour
@@ -246,5 +246,9 @@ namespace Backend.Entities.GraphNodes
         }
 
         public override string ToString() => GetType().Name;
+
+        public override bool Equals(object obj) => obj is GraphNode other ? Equals(other) : false;
+        public bool Equals(GraphNode other) => Id == other.Id;
+        public override int GetHashCode() => Id.GetHashCode();
     }
 }

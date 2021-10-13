@@ -82,13 +82,21 @@ namespace Backend
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Track> Tracks { get; set; }
         public DbSet<GraphNode> GraphNodes { get; set; }
+        public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }
+
+
         public DbSet<AssignTagNode> AssignTagNodes { get; set; }
+        public DbSet<ConcatNode> ConcatNodes { get; set; }
+        public DbSet<DeduplicateNode> DeduplicateNodes { get; set; }
         public DbSet<FilterArtistNode> FilterArtistNodes { get; set; }
         public DbSet<FilterTagNode> FilterTagNodes { get; set; }
+        public DbSet<FilterUntaggedNode> FilterUntaggedNodes { get; set; }
         public DbSet<FilterYearNode> FilterYearNodes { get; set; }
+        public DbSet<IntersectNode> IntersectNodes { get; set; }
+        public DbSet<PlaylistInputLikedNode> PlaylistInputLikedNodes { get; set; }
+        public DbSet<PlaylistInputMetaNode> PlaylistInputMetaNodes { get; set; }
         public DbSet<PlaylistInputNode> PlaylistInputNodes { get; set; }
         public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
         public DbSet<RemoveNode> RemoveNodes { get; set; }
-        public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }
     }
 }

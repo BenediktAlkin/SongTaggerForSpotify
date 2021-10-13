@@ -25,6 +25,7 @@ namespace SpotifySongTagger.Views.Controls
             UpdateCanvasSize();
             if(ViewModel != null)
             {
+                await ViewModel.LoadGraphNodes();
                 ViewModel.ClearAllInputResults();
                 await ViewModel.RefreshInputResults();
             }
