@@ -190,15 +190,21 @@ namespace SpotifySongTagger.Views.Controls
 
             await ViewModel.FilterTagNode_TagChanged(node, node.Tag);
         }
-        private async void UpdateGraphNode(object sender, SelectionChangedEventArgs e)
+        private async void FilterArtistNode_ArtistChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ViewModel == null) return;
             var frameworkElement = sender as FrameworkElement;
-            var from = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
-            var to = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;
-            ConnectionManager.Instance.Database.SaveChanges();
-            Log.Information($"{frameworkElement.DataContext} changed from {from} to {to}");
-            await ViewModel.RefreshInputResults();
+            var node = frameworkElement.DataContext as FilterArtistNode;
+
+            await ViewModel.FilterArtistNode_ArtistChanged(node, node.Artist);
+        }
+        private async void PlaylistInputNode_PlaylistChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as PlaylistInputNode;
+
+            await ViewModel.PlaylistInputNode_PlaylistChanged(node, node.Playlist);
         }
         private async void SwapRemoveNodeInputs(object sender, RoutedEventArgs e)
         {

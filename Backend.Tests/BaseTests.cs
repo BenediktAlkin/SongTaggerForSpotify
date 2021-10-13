@@ -103,8 +103,18 @@ namespace Backend.Tests
             }).Cast<T>().ToList();
             db.GraphNodes.AddRange(nodes);
             db.SaveChanges();
-
             return nodes;
+        }
+
+        protected static List<Playlist> InsertPlaylists(int count)
+        {
+            using var db = ConnectionManager.NewContext();
+            var playlists = Enumerable.Range(1, count).Select(i =>
+            new Playlist { Id=$"playlist{i}", Name = $"playlist{i}" }).ToList();
+            db.Playlists.AddRange(playlists);
+            db.SaveChanges();
+
+            return playlists;
         }
 
         // TODO

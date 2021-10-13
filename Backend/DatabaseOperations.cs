@@ -522,6 +522,73 @@ namespace Backend
             Logger.Information($"updated FilterTagNode oldTagId={oldTagId} newTagId={dbNode.TagId} newTag={dbTag}");
             return true;
         }
+        public static bool EditFilterArtistNode(FilterArtistNode node, Artist artist)
+        {
+            if (node == null)
+            {
+                Logger.Information("cannot update FilterArtistNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterArtistNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("cannot update FilterArtistNode (not in db)");
+                return false;
+            }
+            Artist dbArtist = null;
+            if (artist != null)
+            {
+                dbArtist = db.Artists.FirstOrDefault(a => a.Id == artist.Id);
+                if (dbArtist == null)
+                {
+                    Logger.Information("cannot update FilterArtistNode (artist not in db)");
+                    return false;
+                }
+            }
+
+            var oldArtistId = dbNode.ArtistId;
+            dbNode.ArtistId = dbArtist?.Id;
+            db.SaveChanges();
+            Logger.Information($"updated FilterArtistNode oldArtistId={oldArtistId} " +
+                $"newArtistId={dbNode.ArtistId} newArtist={dbArtist}");
+            return true;
+        }
+
+        public static bool EditPlaylistInputNode(PlaylistInputNode node, Playlist playlist)
+        {
+            if (node == null)
+            {
+                Logger.Information("cannot update PlaylistInputNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.PlaylistInputNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("cannot update PlaylistInputNode (not in db)");
+                return false;
+            }
+            Playlist dbPlaylist = null;
+            if (playlist != null)
+            {
+                dbPlaylist = db.Playlists.FirstOrDefault(a => a.Id == playlist.Id);
+                if (dbPlaylist == null)
+                {
+                    Logger.Information("cannot update PlaylistInputNode (artist not in db)");
+                    return false;
+                }
+            }
+
+            var oldPlaylistId = dbNode.PlaylistId;
+            dbNode.PlaylistId = dbPlaylist?.Id;
+            db.SaveChanges();
+            Logger.Information($"updated PlaylistInputNode oldPlaylistId={oldPlaylistId} " +
+                $"newPlaylistId={dbNode.PlaylistId} newPlalist={dbPlaylist}");
+            return true;
+        }
 
         public static async Task AssignTags(AssignTagNode assignTagNode)
         {

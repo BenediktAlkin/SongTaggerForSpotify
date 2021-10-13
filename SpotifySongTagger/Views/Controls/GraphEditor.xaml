@@ -55,7 +55,7 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding ValidArtists}"
                             SelectedItem="{Binding Artist}"
-                            SelectionChanged="UpdateGraphNode"
+                            SelectionChanged="FilterArtistNode_ArtistChanged"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Artist" Converter="{StaticResource ObjectToStringConverter}">
@@ -118,7 +118,7 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding DataContext.DataContainer.MetaPlaylists, ElementName=GraphEditorUserControl}"
                             SelectedItem="{Binding Playlist}"
-                            SelectionChanged="UpdateGraphNode"
+                            SelectionChanged="PlaylistInputNode_PlaylistChanged"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Playlist" Converter="{StaticResource ObjectToStringConverter}">
@@ -135,7 +135,7 @@
                             materialDesign:HintAssist.HintOpacity=".26"
                             ItemsSource="{Binding DataContext.DataContainer.LikedPlaylists, ElementName=GraphEditorUserControl}"
                             SelectedItem="{Binding Playlist}"
-                            SelectionChanged="UpdateGraphNode"
+                            SelectionChanged="PlaylistInputNode_PlaylistChanged"
                             Margin="0 0 0 20">
                         <ComboBox.Text>
                             <Binding Path="Playlist" Converter="{StaticResource ObjectToStringConverter}">

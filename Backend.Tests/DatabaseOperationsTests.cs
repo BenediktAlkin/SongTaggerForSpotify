@@ -360,6 +360,52 @@ namespace Backend.Tests
                 Assert.IsNull(db.FilterTagNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).TagId);
             }
         }
+        [Test]
+        public void GraphNode_FilterArtistNode_Edit()
+        {
+            var artists = InsertArtist(1);
+            var nodes = InsertGraphNodes<FilterArtistNode>(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(null, artists[0]));
+                Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(new FilterArtistNode(), artists[0]));
+                Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(nodes[0], new Artist { Id="asdf", Name = "asdf" }));
+
+                Assert.IsTrue(DatabaseOperations.EditFilterArtistNode(nodes[0], artists[0]));
+                Assert.AreEqual(artists[0].Id, db.FilterArtistNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).ArtistId);
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                // not sure why this needs a new context
+                Assert.IsTrue(DatabaseOperations.EditFilterArtistNode(nodes[0], null));
+                Assert.IsNull(db.FilterArtistNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).ArtistId);
+            }
+        }
+        [Test]
+        public void GraphNode_PlaylistInputNode_Edit()
+        {
+            var playlists = InsertPlaylists(1);
+            var nodes = InsertGraphNodes<PlaylistInputMetaNode>(1);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditPlaylistInputNode(null, playlists[0]));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistInputNode(new PlaylistInputMetaNode(), playlists[0]));
+                Assert.IsFalse(DatabaseOperations.EditPlaylistInputNode(nodes[0], new Playlist { Id = "asdf", Name = "asdf" }));
+
+                Assert.IsTrue(DatabaseOperations.EditPlaylistInputNode(nodes[0], playlists[0]));
+                Assert.AreEqual(playlists[0].Id, db.PlaylistInputNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).PlaylistId);
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                // not sure why this needs a new context
+                Assert.IsTrue(DatabaseOperations.EditPlaylistInputNode(nodes[0], null));
+                Assert.IsNull(db.PlaylistInputNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).PlaylistId);
+            }
+        }
 
         [Test]
         public void GraphNode_AddConnection()
