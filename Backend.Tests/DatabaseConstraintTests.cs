@@ -19,21 +19,25 @@ namespace Backend.Tests
             var track = new Track { Id = "Track1", Name = "Track1" };
             var playlist = new Playlist { Id = "Playlist1", Name = "Playlist1" };
             playlist.Tracks = new() { track };
-            Db.Playlists.Add(playlist);
-            Db.SaveChanges();
             var inputNode = new PlaylistInputLikedNode { Playlist = playlist, GraphGeneratorPage = new GraphGeneratorPage() };
-            Db.GraphNodes.Add(inputNode);
-            Db.SaveChanges();
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Playlists.Add(playlist);
+                db.SaveChanges();
+                db.GraphNodes.Add(inputNode);
+                db.SaveChanges();
+            }
 
-            RefreshDbConnection();
-
-            Db.Playlists.Remove(Db.Playlists.First(p => p.Id == playlist.Id));
-            Db.SaveChanges();
-            Assert.IsNull(Db.Playlists.FirstOrDefault(p => p.Id == playlist.Id));
-            Assert.AreEqual(0, Db.Tracks.Include(t => t.Playlists).First(t => t.Id == track.Id).Playlists.Count);
-            Assert.IsNotNull(Db.GraphNodes.FirstOrDefault(gn => gn.Id == inputNode.Id));
-            Assert.IsNull(((PlaylistInputLikedNode)Db.GraphNodes.First(gn => gn.Id == inputNode.Id)).Playlist);
-            Assert.IsNull(((PlaylistInputLikedNode)Db.GraphNodes.First(gn => gn.Id == inputNode.Id)).PlaylistId);
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Playlists.Remove(db.Playlists.First(p => p.Id == playlist.Id));
+                db.SaveChanges();
+                Assert.IsNull(db.Playlists.FirstOrDefault(p => p.Id == playlist.Id));
+                Assert.AreEqual(0, db.Tracks.Include(t => t.Playlists).First(t => t.Id == track.Id).Playlists.Count);
+                Assert.IsNotNull(db.GraphNodes.FirstOrDefault(gn => gn.Id == inputNode.Id));
+                Assert.IsNull(((PlaylistInputLikedNode)db.GraphNodes.First(gn => gn.Id == inputNode.Id)).Playlist);
+                Assert.IsNull(((PlaylistInputLikedNode)db.GraphNodes.First(gn => gn.Id == inputNode.Id)).PlaylistId);
+            }
         }
 
         [Test]
@@ -51,15 +55,21 @@ namespace Backend.Tests
                 GraphGeneratorPage = ggp 
             };
             var removeNode = new RemoveNode { BaseSet = input1, RemoveSet = input2, GraphGeneratorPage = ggp };
-            Db.GraphNodes.Add(removeNode);
-            Db.SaveChanges();
 
-            RefreshDbConnection();
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.GraphNodes.Add(removeNode);
+                db.SaveChanges();
+            }
 
-            Db.GraphNodes.Remove(Db.GraphNodes.First(gn => gn.Id == input1.Id));
-            Db.SaveChanges();
-            Assert.IsNull(((RemoveNode)Db.GraphNodes.First(gn => gn.Id == removeNode.Id)).BaseSetId);
-            Assert.IsNotNull(((RemoveNode)Db.GraphNodes.First(gn => gn.Id == removeNode.Id)).RemoveSetId);
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.GraphNodes.Remove(db.GraphNodes.First(gn => gn.Id == input1.Id));
+                db.SaveChanges();
+                Assert.IsNull(((RemoveNode)db.GraphNodes.First(gn => gn.Id == removeNode.Id)).BaseSetId);
+                Assert.IsNotNull(((RemoveNode)db.GraphNodes.First(gn => gn.Id == removeNode.Id)).RemoveSetId);
+            }
+            
         }
         [Test]
         public void RemoveGraphNode_RemoveSet_OnDeleteSetNull()
@@ -75,16 +85,20 @@ namespace Backend.Tests
                 Playlist = new Playlist { Id = "Playlist2", Name = "Playlist2" },
                 GraphGeneratorPage = ggp
             };
-            var removeNode = new RemoveNode { BaseSet = input1, RemoveSet = input2, GraphGeneratorPage = ggp };
-            Db.GraphNodes.Add(removeNode);
-            Db.SaveChanges();
+            var removeNode = new RemoveNode { BaseSet = input1, RemoveSet = input2, GraphGeneratorPage = ggp }; 
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.GraphNodes.Add(removeNode);
+                db.SaveChanges();
+            }
 
-            RefreshDbConnection();
-
-            Db.GraphNodes.Remove(Db.GraphNodes.First(gn => gn.Id == input2.Id));
-            Db.SaveChanges();
-            Assert.IsNull(((RemoveNode)Db.GraphNodes.First(gn => gn.Id == removeNode.Id)).RemoveSetId);
-            Assert.IsNotNull(((RemoveNode)Db.GraphNodes.First(gn => gn.Id == removeNode.Id)).BaseSetId);
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.GraphNodes.Remove(db.GraphNodes.First(gn => gn.Id == input2.Id));
+                db.SaveChanges();
+                Assert.IsNull(((RemoveNode)db.GraphNodes.First(gn => gn.Id == removeNode.Id)).RemoveSetId);
+                Assert.IsNotNull(((RemoveNode)db.GraphNodes.First(gn => gn.Id == removeNode.Id)).BaseSetId);
+            }
         }
         [Test]
         public void AssignTagNode_AssignTag_OnDeleteSetNull()
@@ -92,14 +106,18 @@ namespace Backend.Tests
             var ggp = new GraphGeneratorPage();
             var tag = new Tag { Name = "Tag1" };
             var assignTagNode = new AssignTagNode { Tag = tag, GraphGeneratorPage = ggp };
-            Db.GraphNodes.Add(assignTagNode);
-            Db.SaveChanges();
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.GraphNodes.Add(assignTagNode);
+                db.SaveChanges();
+            }
 
-            RefreshDbConnection();
-
-            Db.Tags.Remove(Db.Tags.First(t => t.Id == tag.Id));
-            Db.SaveChanges();
-            Assert.IsNull(Db.Tags.FirstOrDefault(t => t.Id == tag.Id));
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Tags.Remove(db.Tags.First(t => t.Id == tag.Id));
+                db.SaveChanges();
+                Assert.IsNull(db.Tags.FirstOrDefault(t => t.Id == tag.Id));
+            }
         }
         [Test]
         public void FilterTagNode_AssignTag_OnDeleteSetNull()
@@ -107,14 +125,18 @@ namespace Backend.Tests
             var ggp = new GraphGeneratorPage();
             var tag = new Tag { Name = "Tag1" };
             var filterTagNode = new FilterTagNode { Tag = tag, GraphGeneratorPage = ggp };
-            Db.GraphNodes.Add(filterTagNode);
-            Db.SaveChanges();
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.GraphNodes.Add(filterTagNode);
+                db.SaveChanges();
+            }
 
-            RefreshDbConnection();
-
-            Db.Tags.Remove(Db.Tags.First(t => t.Id == tag.Id));
-            Db.SaveChanges();
-            Assert.IsNull(Db.Tags.FirstOrDefault(t => t.Id == tag.Id));
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Tags.Remove(db.Tags.First(t => t.Id == tag.Id));
+                db.SaveChanges();
+                Assert.IsNull(db.Tags.FirstOrDefault(t => t.Id == tag.Id));
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Util.Tests
 
 
         [Test]
-        public async Task GetRelease()
+        public async Task GetReleases()
         {
             var releases = await Github.GetReleases(USER, REPO);
             Assert.Greater(releases.Length, 0);

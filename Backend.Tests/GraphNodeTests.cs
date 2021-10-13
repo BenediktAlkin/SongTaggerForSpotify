@@ -52,9 +52,11 @@ namespace Backend.Tests
                 track.Tags.Add(Tags[i % Tags.Count]);
                 Tracks.Add(track);
             }
-
-            Db.Tracks.AddRange(Tracks);
-            Db.SaveChanges();
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Tracks.AddRange(Tracks);
+                db.SaveChanges();
+            }
         }
 
         [Test]
@@ -72,7 +74,6 @@ namespace Backend.Tests
                     nTracks++;
                 outputNode.CalculateOutputResult();
                 Assert.AreEqual(nTracks, outputNode.OutputResult.Count);
-                Assert.AreEqual(1, DatabaseQueryLogger.Instance.MessageCount);
             }
         }
 
@@ -208,8 +209,7 @@ namespace Backend.Tests
         public void DetectCycles_SameSource_NoCycle()
         {
             var input = new PlaylistInputLikedNode { Playlist = Playlists[0] };
-            input.CalculateOutputResult();
-            var allArtists = input.OutputResult.SelectMany(t => t.Artists);
+            var allArtists = Playlists[0].Tracks.SelectMany(t => t.Artists).ToList();
             var filter1 = new FilterArtistNode { Artist = allArtists.First() };
             filter1.AddInput(input);
             var filter2 = new FilterArtistNode { Artist = allArtists.Skip(1).First() };

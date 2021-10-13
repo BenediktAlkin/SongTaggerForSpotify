@@ -994,7 +994,7 @@ namespace Backend
             await File.WriteAllTextAsync(outPath, json);
             Logger.Information($"Exported {tracks.Count} tracks");
         }
-        public static async Task ImportTags(string inPath)
+        public static async Task ImportTags(string inPath, DatabaseContext db = null)
         {
             // parse data from json
             var json = await File.ReadAllTextAsync(inPath);
@@ -1010,7 +1010,12 @@ namespace Backend
             if (tracks == null) return;
 
             // merge with existing tags/tracks
-            using var db = ConnectionManager.NewContext();
+            var needsDispose = false;
+            if(db == null)
+            {
+                db = ConnectionManager.NewContext();
+                needsDispose = true;
+            }
             var dbTracks = db.Tracks.Include(t => t.Tags).ToList();
             var dbTags = db.Tags.ToDictionary(t => t.Id, t => t);
             var dbArtists = db.Artists.ToDictionary(a => a.Id, a => a);
@@ -1031,6 +1036,8 @@ namespace Backend
             }
             db.SaveChanges();
             Logger.Information($"Imported {tracks.Count} tracks");
+            if (needsDispose)
+                db.Dispose();
         }
         #endregion
     }

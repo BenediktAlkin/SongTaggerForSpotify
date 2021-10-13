@@ -11,15 +11,15 @@ namespace Backend.Tests
 {
     public class BaseTests
     {
-        protected static DatabaseContext Db => ConnectionManager.Instance.Database;
-
         [SetUp]
         public virtual void SetUp()
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(formatter: new LogFormatter())
                 .CreateLogger();
-            ConnectionManager.InitDb("TestDb", dropDb: true, logTo: DatabaseQueryLogger.Instance.Information);
+            ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
+            // drop db
+            using var _ = ConnectionManager.NewContext(dropDb: true);
         }
 
         protected static List<Tag> InsertTags(int count)
@@ -115,13 +115,6 @@ namespace Backend.Tests
             db.SaveChanges();
 
             return playlists;
-        }
-
-        // TODO
-        protected static void RefreshDbConnection()
-        {
-            Db.Dispose();
-            ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
         }
 
         [TearDown]

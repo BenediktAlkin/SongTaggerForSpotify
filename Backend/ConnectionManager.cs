@@ -21,23 +21,24 @@ namespace Backend
         public static ConnectionManager Instance { get; } = new();
         private ConnectionManager() { }
 
-
-        private HttpListener Server { get; set; }
-
-        public SpotifyClient Spotify { get; private set; }
-        public DatabaseContext Database { get; private set; }
-
-        public static void InitDb(string dbName, bool dropDb = false, Action<string> logTo = null)
+        #region Database
+        public static DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, Action<string> logTo = null) 
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
             if (logTo != null)
                 optionsBuilder.LogTo(logTo, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.LogTo(Log.Information, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.EnableSensitiveDataLogging();
+            return optionsBuilder;
+        }
+        public static void InitDb(string dbName, Action<string> logTo = null) 
+            => OptionsBuilder = GetOptionsBuilder(dbName, logTo);
+        private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
+        public static DatabaseContext NewContext(bool dropDb = false)
+        {
             try
             {
-                Instance.Database = new DatabaseContext(optionsBuilder.Options, dropDb);
-                Options = optionsBuilder.Options;
+                return new DatabaseContext(OptionsBuilder.Options, dropDb);
             }
             catch (Exception e)
             {
@@ -45,11 +46,13 @@ namespace Backend
                 throw;
             }
         }
-        private static DbContextOptions<DatabaseContext> Options { get; set; }
-        public static DatabaseContext NewContext()
-        {
-            return new DatabaseContext(Options);
-        }
+        #endregion
+
+
+        #region Spotify
+        private HttpListener Server { get; set; }
+
+        public SpotifyClient Spotify { get; private set; }
 
         public static async Task TryInitFromSavedToken()
         {
@@ -230,5 +233,6 @@ namespace Backend
             Server.Close();
             Server = null;
         }
+        #endregion
     }
 }

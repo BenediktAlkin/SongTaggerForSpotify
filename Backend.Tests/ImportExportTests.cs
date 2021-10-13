@@ -15,6 +15,8 @@ namespace Backend.Tests
         [Test]
         public async Task ImportExport_Tags_Simple()
         {
+            using var db = ConnectionManager.NewContext();
+
             // create some tags
             var tag = new Tag { Id = 1, Name = "tag1" };
             var track = new Track
@@ -30,24 +32,33 @@ namespace Backend.Tests
                     ReleaseDatePrecision = "day",
                 },
             };
-            var artist = new Artist {Id = "artist1", Name = "artist1" };
-            Db.Artists.Add(artist);
+            var artist = new Artist { Id = "artist1", Name = "artist1" };
+            db.Artists.Add(artist);
             track.Artists = new() { artist };
-            Db.Tracks.Add(track);
+            db.Tracks.Add(track);
             tag.Tracks = new() { track };
-            Db.Tags.Add(tag);
-            Db.SaveChanges();
+            db.Tags.Add(tag);
+            db.SaveChanges();
             await DatabaseOperations.ExportTags("tagexport.tags");
 
             // connect to new db
-            ConnectionManager.InitDb("OtherDb", dropDb: true, logTo: DatabaseQueryLogger.Instance.Information);
-            await DatabaseOperations.ImportTags("tagexport.tags");
+            var otherDbOptions = ConnectionManager.GetOptionsBuilder("OtherDb", 
+                logTo: DatabaseQueryLogger.Instance.Information).Options;
+            using (var otherDb = new DatabaseContext(otherDbOptions, dropDb: true))
+            {
+                await DatabaseOperations.ImportTags("tagexport.tags", otherDb);
 
-            var importedTags = Db.Tags.Include(t => t.Tracks).ThenInclude(tr => tr.Album).Include(t => t.Tracks).ThenInclude(tr => tr.Artists).ToList();
-            Assert.AreEqual(1, importedTags.Count);
-            Assert.AreEqual(1, importedTags.First().Tracks.Count);
-            Assert.AreEqual(1, importedTags.First().Tracks.First().Artists.Count);
-            Assert.AreNotEqual(0, importedTags.First().Tracks.First().DurationMs);
+                var importedTags = otherDb.Tags
+                    .Include(t => t.Tracks)
+                    .ThenInclude(tr => tr.Album)
+                    .Include(t => t.Tracks)
+                    .ThenInclude(tr => tr.Artists)
+                    .ToList();
+                Assert.AreEqual(1, importedTags.Count);
+                Assert.AreEqual(1, importedTags.First().Tracks.Count);
+                Assert.AreEqual(1, importedTags.First().Tracks.First().Artists.Count);
+                Assert.AreNotEqual(0, importedTags.First().Tracks.First().DurationMs);
+            }
         }
     }
 }

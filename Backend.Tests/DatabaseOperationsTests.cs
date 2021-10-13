@@ -219,7 +219,10 @@ namespace Backend.Tests
         {
             var ggp = new GraphGeneratorPage { Name = "testpage" };
             DatabaseOperations.AddGraphGeneratorPage(ggp);
-            Assert.AreEqual(1, Db.GraphGeneratorPages.Count());
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.AreEqual(1, db.GraphGeneratorPages.Count());
+            }
 
             var newNode1 = new ConcatNode
             {
