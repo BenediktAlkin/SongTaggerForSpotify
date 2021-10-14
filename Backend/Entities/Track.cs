@@ -11,13 +11,14 @@ namespace Backend.Entities
         public string Id { get; set; }
         public string Name { get; set; }
         public int DurationMs { get; set; }
+        public bool IsLiked { get; set; }
 
 
         public string AlbumId { get; set; }
         public Album Album { get; set; }
 
         public List<Artist> Artists { get; set; }
-        public List<Playlist> Playlists { get; set; }
+        public List<Playlist> Playlists { get; set; } = new List<Playlist>();
 
 
         public IList<Tag> Tags { get; set; } = new ObservableCollection<Tag>();

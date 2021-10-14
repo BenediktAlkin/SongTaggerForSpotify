@@ -2,6 +2,7 @@ using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -465,5 +466,113 @@ namespace Backend.Tests
             }
         }
         #endregion
+
+        [Test]
+        public async Task SyncLibrary()
+        {
+            var tracks = Enumerable.Range(1, 100).Select(i => NewTrack(i)).ToList();
+            var likedTrackIdxs = new[] { 5, 9, 12, 31, 23, 54, 67, 11, 8 };
+            var likedTracks = likedTrackIdxs.Select(i => tracks[i]).ToList();
+            var playlists = Enumerable.Range(1, 3).Select(i => NewPlaylist(i)).ToList();
+            var likedPlaylists = playlists.ToList();
+            var playlistTrackIdxs = new int[][]
+            {
+                new []{ 1, 2, 3 },
+                new []{ 1, 2, 3, 5 , 8 },
+                new []{ 10, 25, 62, 53, 23, 15, 15},
+            };
+            var playlistTracks = Enumerable.Range(0, playlists.Count)
+                .ToDictionary(i => playlists[i].Id, i => playlistTrackIdxs[i].Select(j => tracks[j]).ToList());
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+
+            // intiial sync
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+
+            // unlike playlist
+            likedPlaylists.RemoveAt(1);
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+
+            // unlike track
+            likedTracks.RemoveAt(5);
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+
+            // unlike tagged song
+            var tag = new Tag { Name = "tag" };
+            var track = likedTracks[0];
+            DatabaseOperations.AddTag(tag);
+            DatabaseOperations.AssignTag(new Track { Id = track.Id, Name = track.Name }, tag);
+            likedTracks.Remove(track);
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify(additionalTracks: 1);
+
+            // remove tag from song (should remove it from db)
+            DatabaseOperations.DeleteAssignment(new Track { Id = track.Id, Name = track.Name }, tag);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+
+            // update playlist name
+            playlists[0].Name = "newName";
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.AreEqual("newName", db.Playlists.First(p => p.Id == playlists[0].Id).Name);
+            }
+
+            // track only in liked playlists is liked
+            var trackToLike = tracks[62]; // track that is in liked playlist but not liked
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(db.Tracks.First(t => t.Id == trackToLike.Id).IsLiked);
+            }
+            likedTracks.Add(trackToLike);
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsTrue(db.Tracks.First(t => t.Id == trackToLike.Id).IsLiked);
+            }
+            // track in liked playlists is unliked
+            likedTracks.Remove(trackToLike);
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            await DatabaseOperations.SyncLibrary();
+            AssertDbEqualsSpotify();
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(db.Tracks.First(t => t.Id == trackToLike.Id).IsLiked);
+            }
+
+
+            void AssertDbEqualsSpotify(int additionalTracks = 0)
+            {
+                var uniqueTracks = playlistTracks.Where(kv => likedPlaylists.Select(p => p.Id).Contains(kv.Key))
+                    .SelectMany(kv => kv.Value)
+                    .Concat(likedTracks)
+                    .Distinct()
+                    .Count();
+                using (var db = ConnectionManager.NewContext())
+                {
+                    Assert.AreEqual(uniqueTracks + additionalTracks, db.Tracks.Count());
+                    Assert.AreEqual(likedTracks.Count, DatabaseOperations.MetaPlaylistTracks(Constants.LIKED_SONGS_PLAYLIST_ID).Count);
+                    Assert.AreEqual(likedPlaylists.Count, db.Playlists.Count() - Constants.META_PLAYLIST_IDS.Length);
+                    foreach (var item in playlistTracks)
+                    {
+                        if (!likedPlaylists.Select(p => p.Id).Contains(item.Key)) continue;
+                        var expected = item.Value.Distinct().Count();
+                        var actual = db.Playlists.Include(p => p.Tracks).First(p => p.Id == item.Key).Tracks.Count;
+                        Assert.AreEqual(expected, actual);
+                    }
+                        
+                }
+            }
+        }
     }
 }

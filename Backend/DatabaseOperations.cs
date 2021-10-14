@@ -765,7 +765,7 @@ namespace Backend
             {
                 Constants.ALL_SONGS_PLAYLIST_ID => query.ToList(),
                 Constants.UNTAGGED_SONGS_PLAYLIST_ID => query.Where(t => t.Tags.Count == 0).ToList(),
-                Constants.LIKED_SONGS_PLAYLIST_ID => query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToList(),
+                Constants.LIKED_SONGS_PLAYLIST_ID => query.Where(t => t.IsLiked).ToList(),
                 _ => new()
             };
         }
@@ -945,32 +945,21 @@ namespace Backend
                 }
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // remove tracks that are no longer in the library and are not tagged
-                Logger.Information("Start removing untracked tracks from db");
-                var nonTaggedTracks = dbTracks.Values.Where(t => t.Tags.Count == 0);
-                foreach (var nonTaggedTrack in nonTaggedTracks)
-                {
-                    if (!spotifyTracks.ContainsKey(nonTaggedTrack.Id))
-                    {
-                        db.Tracks.Remove(nonTaggedTrack);
-                        Logger.Information($"Removed {nonTaggedTrack.Name} - {nonTaggedTrack.ArtistsString} " +
-                            $"from db (no longer in library & untagged)");
-                    }
-                }
-                db.SaveChanges();
-                Logger.Information("Finished removing untracked tracks from db");
-                cancellationToken.ThrowIfCancellationRequested();
 
                 // push spotify library to db
                 Logger.Information("Start pushing library to database");
+                var nonTrackedTrackIds = dbTracks.Select(kv => kv.Value.Id).ToList();
                 foreach (var track in spotifyTracks.Values)
                 {
+                    nonTrackedTrackIds.Remove(track.Id);
                     // replace spotify playlist objects with db playlist objects
                     ReplacePlaylistsWithDbPlaylists(db, dbPlaylists, track);
                     if (dbTracks.TryGetValue(track.Id, out var dbTrack))
                     {
                         // update the playlist sources in case the song has been added/removed from a playlist
                         dbTrack.Playlists = track.Playlists;
+                        // update IsLiked
+                        dbTrack.IsLiked = track.IsLiked;
                     }
                     else
                     {
@@ -987,6 +976,33 @@ namespace Backend
                 Logger.Information("Finished pushing library to database");
                 cancellationToken.ThrowIfCancellationRequested();
 
+                // update IsLiked of unliked tracks that have a tag
+                Logger.Information("Start removing unliked tracks with tag from LikedSongs");
+                var unlikedTracks = dbTracks.Values.Where(t => nonTrackedTrackIds.Contains(t.Id));
+                foreach (var dbTrack in unlikedTracks)
+                    dbTrack.IsLiked = false;
+                db.SaveChanges();
+                Logger.Information("Finished removing unliked tracks with tag from LikedSongs");
+                cancellationToken.ThrowIfCancellationRequested();
+
+
+                // remove tracks that are no longer in the library and are not tagged
+                Logger.Information("Start removing untracked tracks from db");
+                var nonTaggedTracks = dbTracks.Values.Where(t => nonTrackedTrackIds.Contains(t.Id) && t.Tags.Count == 0);
+                foreach (var nonTaggedTrack in nonTaggedTracks)
+                {
+                    if (!spotifyTracks.ContainsKey(nonTaggedTrack.Id))
+                    {
+                        db.Tracks.Remove(nonTaggedTrack);
+                        Logger.Information($"Removed {nonTaggedTrack.Name} - {nonTaggedTrack.ArtistsString} " +
+                            $"from db (no longer in library & untagged)");
+                    }
+                }
+                db.SaveChanges();
+                Logger.Information("Finished removing untracked tracks from db");
+                cancellationToken.ThrowIfCancellationRequested();
+
+
                 // remove unlikedplaylists
                 Logger.Information("Update remove unliked playlists");
                 var allPlaylists = db.Playlists.Include(p => p.Tracks).ToList();
@@ -1000,6 +1016,7 @@ namespace Backend
                 db.SaveChanges();
                 Logger.Information("Finished removing unliked playlists");
                 cancellationToken.ThrowIfCancellationRequested();
+
 
                 // update playlist names
                 Logger.Information("Update liked playlist names");

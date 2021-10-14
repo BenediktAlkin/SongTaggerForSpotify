@@ -45,9 +45,11 @@ namespace Backend
         {
             Logger.Information("Start fetching liked tracks");
             var page = await Spotify.Library.GetTracks(new LibraryTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country });
-            var allTracks = await GetAll(page);
+            var spotifyTracks = await GetAll(page);
             Logger.Information("Finished fetching liked tracks");
-            return allTracks.Where(t => TrackIsValid(t.Track)).Select(t => ToTrack(t.Track)).ToList();
+            var tracks = spotifyTracks.Where(t => TrackIsValid(t.Track)).Select(t => ToTrack(t.Track)).ToList();
+            tracks.ForEach(t => t.IsLiked = true);
+            return tracks;
         }
 
         private static async Task<List<Playlist>> PlaylistCurrentUsers()
@@ -174,10 +176,8 @@ namespace Backend
 
                 // add liked tracks to local mirror
                 var likedTracks = await likedTracksTask;
-                var likedTracksPlaylist = new Playlist { Id = Constants.LIKED_SONGS_PLAYLIST_ID, Name = Constants.LIKED_SONGS_PLAYLIST_ID };
-                foreach (var likedTrack in likedTracks)
-                    likedTrack.Playlists = new List<Playlist> { likedTracksPlaylist };
                 var tracks = likedTracks.ToDictionary(t => t.Id, t => t);
+
 
                 // add tracks from liked playlists
                 var playlists = (await playlistsTask).Where(pl => !generatedPlaylistIds.Contains(pl.Id)).ToList();
@@ -194,6 +194,8 @@ namespace Backend
                         {
                             // track is multiple times in library --> only add playlist name to track
                             addedTrack.Playlists.Add(playlist);
+                            // set IsLiked (should not be needed because likedTracks are added first)
+                            addedTrack.IsLiked = addedTrack.IsLiked || track.IsLiked;
                         }
                         else
                         {
