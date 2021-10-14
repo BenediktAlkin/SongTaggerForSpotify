@@ -213,19 +213,5 @@ namespace Backend
                 return (null, null);
             }
         }
-
-        public static async Task<List<Track>> GetTracks(List<string> trackIds)
-        {
-            try
-            {
-                var allTracks = await Spotify.Tracks.GetSeveral(new TracksRequest(trackIds.ToList()) { Market = DataContainer.Instance.User.Country });
-                return allTracks.Tracks.Where(t => TrackIsValid(t)).Select(track => ToTrack(track)).ToList();
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Error in GetTracks {e.Message} {e.InnerException?.Message}");
-                return new();
-            }
-        }
     }
 }
