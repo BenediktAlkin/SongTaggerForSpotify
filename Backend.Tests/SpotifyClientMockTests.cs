@@ -48,7 +48,7 @@ namespace Backend.Tests
             var allItems = new List<FullTrack>();
             await foreach (var item in Client.Paginate(page))
                 allItems.Add(item.Track);
-            Assert.AreEqual(nTracks, allItems.Count);
+            Assert.AreEqual(nLikedTracks, allItems.Count);
         }
         [Test]
         public async Task Playlists_CurrentUsers()
@@ -57,12 +57,12 @@ namespace Backend.Tests
             var allItems = new List<SimplePlaylist>();
             await foreach (var item in Client.Paginate(page))
                 allItems.Add(item);
-            Assert.AreEqual(nPlaylists, allItems.Count);
+            Assert.AreEqual(nLikedPlaylists, allItems.Count);
         }
         [Test]
         public async Task Playlists_GetItems()
         {
-            for(var i = 0; i < nPlaylists; i++)
+            for(var i = 0; i < nLikedPlaylists; i++)
             {
                 var page = await Client.Playlists.GetItems(LikedPlaylists[i].Id, new PlaylistGetItemsRequest { Limit = 100 });
                 var allItems = new List<FullTrack>();
