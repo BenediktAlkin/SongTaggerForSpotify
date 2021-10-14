@@ -1,18 +1,14 @@
-﻿using Backend;
-using MaterialDesignThemes.Wpf;
-using SpotifySongTagger.Utils;
+﻿using MaterialDesignThemes.Wpf;
 using SpotifySongTagger.Views;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows;
-using Util;
 
 namespace SpotifySongTagger.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        private ISnackbarMessageQueue MessageQueue{ get; set; }
+        private ISnackbarMessageQueue MessageQueue { get; set; }
         public MainWindowViewModel(ISnackbarMessageQueue messageQueue)
         {
             SelectedItem = MenuItems[0];

@@ -20,10 +20,10 @@ namespace Backend
             // additional properties which results in the "second" one being identified as 
             // graph node (e.g. AssignTagNode and FilterTagNode both have TagId as additional property
             // resulting in AssignTagNode being identified as GraphNode)
-            
-            void RegisterInheritedType<T>() where T: class =>
+
+            void RegisterInheritedType<T>() where T : class =>
                 builder.Entity<T>().HasDiscriminator<string>("Discriminator").HasValue(typeof(T).Name);
-                
+
 
             RegisterInheritedType<AssignTagNode>();
             RegisterInheritedType<ConcatNode>();
@@ -39,7 +39,7 @@ namespace Backend
             RegisterInheritedType<RemoveNode>();
 
             // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
-            foreach(var metaPlaylistId in Constants.META_PLAYLIST_IDS)
+            foreach (var metaPlaylistId in Constants.META_PLAYLIST_IDS)
                 builder.Entity<Playlist>().HasData(new Playlist { Id = metaPlaylistId, Name = metaPlaylistId });
 
             // requi

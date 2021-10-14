@@ -69,7 +69,8 @@ namespace SpotifySongTagger.ViewModels.Controls
                 {
                     foreach (var nodeVM in GraphNodeVMs)
                         nodeVM.GraphNode.CalculateInputResult();
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     Log.Error($"Error calculating InputResult {e.Message}");
                 }
@@ -207,7 +208,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             if (SelectedObject is GraphNodeArrowViewModel arrowVM)
             {
                 // remove from db
-                if(DatabaseOperations.DeleteGraphNodeConnection(arrowVM.FromNode, arrowVM.ToNode))
+                if (DatabaseOperations.DeleteGraphNodeConnection(arrowVM.FromNode, arrowVM.ToNode))
                 {
                     // update ui
                     GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == arrowVM.FromNode).GenerateArrows();
@@ -243,7 +244,7 @@ namespace SpotifySongTagger.ViewModels.Controls
 #pragma warning restore CA1822 // Mark members as static
         {
             // update in db
-            if(DatabaseOperations.EditPlaylistOutputNodeName(node, newName))
+            if (DatabaseOperations.EditPlaylistOutputNodeName(node, newName))
             {
                 // update in ui
                 //node.PlaylistName = newName; // not required as binding is directly to the node

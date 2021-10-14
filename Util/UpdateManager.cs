@@ -77,7 +77,7 @@ namespace Util
         public async Task UpdateToRelease(string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
         {
             var asset = release.Assets.FirstOrDefault(a => a.Name.ToLower().Contains("portable"));
-            if(asset == null)
+            if (asset == null)
             {
                 Log.Error($"Failed to download update (no asset contains 'portable')");
                 return;

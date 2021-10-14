@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 using Util;
 
 namespace Backend.Entities.GraphNodes
@@ -219,7 +218,7 @@ namespace Backend.Entities.GraphNodes
             if (OutputResult != null)
                 Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
         }
-            
+
 
 
         public virtual bool IsValid => true;

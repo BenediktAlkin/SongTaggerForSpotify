@@ -1,7 +1,4 @@
-﻿using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
 namespace SpotifySongTagger.Utils
@@ -11,7 +8,7 @@ namespace SpotifySongTagger.Utils
         public enum AnchorLocation
         {
             // integers are used for rotation of arrow
-            Bottom = 0, Left = 1, Top = 2, Right = 3, 
+            Bottom = 0, Left = 1, Top = 2, Right = 3,
         }
         public record Anchor(AnchorLocation Location, Point Point);
         public static AnchorLocation OppositeLocation(AnchorLocation loc) => loc switch
@@ -40,10 +37,10 @@ namespace SpotifySongTagger.Utils
             Point bestPoint;
             AnchorLocation bestAnchorType = AnchorLocation.Left;
             var bestDistance = double.PositiveInfinity;
-            foreach(var (anchorType, anchorPoint) in anchors)
+            foreach (var (anchorType, anchorPoint) in anchors)
             {
                 var distance = (point - anchorPoint).Length;
-                if(distance < bestDistance)
+                if (distance < bestDistance)
                 {
                     bestDistance = distance;
                     bestPoint = anchorPoint;
@@ -154,7 +151,7 @@ namespace SpotifySongTagger.Utils
             //var connectorGeometry = new LineGeometry();
             //connectorGeometry.StartPoint = start;
             //connectorGeometry.EndPoint = end;
-            
+
             lineGroup.Children.Add(connectorGeometry);
 
             return lineGroup;

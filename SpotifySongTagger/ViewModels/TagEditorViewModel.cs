@@ -4,19 +4,17 @@ using MaterialDesignThemes.Wpf;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Navigation;
 
 namespace SpotifySongTagger.ViewModels
 {
     public class TagEditorViewModel : BaseViewModel
     {
-        private ISnackbarMessageQueue MessageQueue{ get; set; }
+        private ISnackbarMessageQueue MessageQueue { get; set; }
         public TagEditorViewModel(ISnackbarMessageQueue messageQueue)
         {
             MessageQueue = messageQueue;
@@ -98,14 +96,14 @@ namespace SpotifySongTagger.ViewModels
             {
                 await LoadTagsTask;
                 // tags of tracks dont have the same reference to tag as they come from a different db context
-                foreach(var trackVM in newTrackVMs)
+                foreach (var trackVM in newTrackVMs)
                 {
                     var track = trackVM.Track;
                     for (var i = 0; i < track.Tags.Count; i++)
                     {
                         var vmTag = track.Tags[i];
                         var globalTag = DataContainer.Tags.FirstOrDefault(t => t.Id == vmTag.Id);
-                        if(globalTag == null)
+                        if (globalTag == null)
                         {
                             Log.Error($"tag {vmTag.Name} of track {track.Name} is not in database");
                             continue;
@@ -151,7 +149,7 @@ namespace SpotifySongTagger.ViewModels
             new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
         };
         private Playlist selectedPlaylist;
-        public Playlist SelectedPlaylist 
+        public Playlist SelectedPlaylist
         {
             get => selectedPlaylist;
             set => SetProperty(ref selectedPlaylist, value, nameof(SelectedPlaylist));
@@ -166,17 +164,17 @@ namespace SpotifySongTagger.ViewModels
         public static void AssignTag(Track track, string tagName)
         {
             var tag = DataContainer.Tags.FirstOrDefault(t => t.Name == tagName);
-            if(tag == null)
+            if (tag == null)
             {
                 Log.Error($"Could not find tagName {tagName} in db");
                 return;
             }
-            if(DatabaseOperations.AssignTag(track, tag))
+            if (DatabaseOperations.AssignTag(track, tag))
                 track.Tags.Add(tag);
         }
         public void RemoveAssignment(Tag tag)
         {
-            if(DatabaseOperations.DeleteAssignment(SelectedTrackVM.Track, tag))
+            if (DatabaseOperations.DeleteAssignment(SelectedTrackVM.Track, tag))
                 SelectedTrackVM.Track.Tags.Remove(tag);
         }
         public bool CanAddTag => DatabaseOperations.IsValidTag(NewTagName);
@@ -200,7 +198,7 @@ namespace SpotifySongTagger.ViewModels
             if (ClickedTag == null) return;
             if (DatabaseOperations.DeleteTag(ClickedTag))
             {
-                foreach(var trackVM in TrackVMs)
+                foreach (var trackVM in TrackVMs)
                 {
                     if (trackVM.Track.Tags.Contains(ClickedTag))
                         trackVM.Track.Tags.Remove(ClickedTag);

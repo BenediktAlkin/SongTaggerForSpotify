@@ -2,11 +2,7 @@
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
@@ -44,15 +40,15 @@ namespace Backend.Tests
         public void RemoveGraphNode_BaseSet_OnDeleteSetNull()
         {
             var ggp = new GraphGeneratorPage();
-            var input1 = new PlaylistInputLikedNode 
-            { 
-                Playlist = new Playlist { Id = "Playlist1", Name = "Playlist1" }, 
-                GraphGeneratorPage = ggp 
+            var input1 = new PlaylistInputLikedNode
+            {
+                Playlist = new Playlist { Id = "Playlist1", Name = "Playlist1" },
+                GraphGeneratorPage = ggp
             };
-            var input2 = new PlaylistInputLikedNode 
-            { 
-                Playlist = new Playlist { Id = "Playlist2", Name = "Playlist2" }, 
-                GraphGeneratorPage = ggp 
+            var input2 = new PlaylistInputLikedNode
+            {
+                Playlist = new Playlist { Id = "Playlist2", Name = "Playlist2" },
+                GraphGeneratorPage = ggp
             };
             var removeNode = new RemoveNode { BaseSet = input1, RemoveSet = input2, GraphGeneratorPage = ggp };
 
@@ -69,7 +65,7 @@ namespace Backend.Tests
                 Assert.IsNull(((RemoveNode)db.GraphNodes.First(gn => gn.Id == removeNode.Id)).BaseSetId);
                 Assert.IsNotNull(((RemoveNode)db.GraphNodes.First(gn => gn.Id == removeNode.Id)).RemoveSetId);
             }
-            
+
         }
         [Test]
         public void RemoveGraphNode_RemoveSet_OnDeleteSetNull()
@@ -85,7 +81,7 @@ namespace Backend.Tests
                 Playlist = new Playlist { Id = "Playlist2", Name = "Playlist2" },
                 GraphGeneratorPage = ggp
             };
-            var removeNode = new RemoveNode { BaseSet = input1, RemoveSet = input2, GraphGeneratorPage = ggp }; 
+            var removeNode = new RemoveNode { BaseSet = input1, RemoveSet = input2, GraphGeneratorPage = ggp };
             using (var db = ConnectionManager.NewContext())
             {
                 db.GraphNodes.Add(removeNode);

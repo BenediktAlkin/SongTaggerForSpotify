@@ -1,13 +1,10 @@
 ﻿using Backend;
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SpotifySongTagger.ViewModels

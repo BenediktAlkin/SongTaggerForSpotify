@@ -22,7 +22,7 @@ namespace Backend
         private ConnectionManager() { }
 
         #region Database
-        public static DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, Action<string> logTo = null) 
+        public static DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, Action<string> logTo = null)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
             if (logTo != null)
@@ -31,7 +31,7 @@ namespace Backend
             //optionsBuilder.EnableSensitiveDataLogging();
             return optionsBuilder;
         }
-        public static void InitDb(string dbName, Action<string> logTo = null) 
+        public static void InitDb(string dbName, Action<string> logTo = null)
             => OptionsBuilder = GetOptionsBuilder(dbName, logTo);
         private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
         public static DatabaseContext NewContext(bool dropDb = false)
@@ -154,7 +154,8 @@ namespace Backend
                 try
                 {
                     Server.Stop();
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     Log.Information($"Failed to stop server {e.Message}");
                 }

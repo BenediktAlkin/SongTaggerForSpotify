@@ -95,11 +95,11 @@ namespace SpotifySongTagger
             }
             finally
             {
-                if(tokenSource != null)
+                if (tokenSource != null)
                     tokenSource.Dispose();
             }
-            
-            if(SyncCancellationTokenSource == tokenSource)
+
+            if (SyncCancellationTokenSource == tokenSource)
             {
                 var dialogHost = sender as DialogHost;
                 dialogHost.IsOpen = false;
@@ -109,7 +109,7 @@ namespace SpotifySongTagger
 
         private void Cancel_Sync(object sender, RoutedEventArgs e)
         {
-            if(SyncCancellationTokenSource != null)
+            if (SyncCancellationTokenSource != null)
                 SyncCancellationTokenSource.Cancel();
         }
 

@@ -1,9 +1,7 @@
 ﻿using Backend;
 using Backend.Entities;
 using MaterialDesignThemes.Wpf;
-using Serilog;
 using SpotifySongTagger.Utils;
-using SpotifySongTagger.ValidationRules;
 using SpotifySongTagger.ViewModels;
 using System.Threading.Tasks;
 using System.Windows;

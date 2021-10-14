@@ -32,7 +32,7 @@ namespace Backend
                 Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
             };
         }
-        
+
         private static async Task<List<T>> GetAll<T>(Paging<T> page)
         {
             var all = new List<T>();
@@ -113,7 +113,7 @@ namespace Backend
                 var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName);
                 var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
 
-                if(DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(playlistOutputNode, createdPlaylist.Id))
+                if (DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(playlistOutputNode, createdPlaylist.Id))
                     playlistOutputNode.GeneratedPlaylistId = createdPlaylist.Id;
             }
             else
@@ -152,7 +152,7 @@ namespace Backend
             {
                 var request = new PlaylistAddItemsRequest(
                     Enumerable.Range(0, Math.Min(tracks.Count - i, BATCH_SIZE))
-                        .Select(j => $"spotify:track:{tracks[i+j].Id}")
+                        .Select(j => $"spotify:track:{tracks[i + j].Id}")
                         .ToList());
                 await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
             }

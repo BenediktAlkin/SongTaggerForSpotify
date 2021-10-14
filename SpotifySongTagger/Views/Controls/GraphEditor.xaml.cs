@@ -1,5 +1,4 @@
-﻿using Backend;
-using Backend.Entities.GraphNodes;
+﻿using Backend.Entities.GraphNodes;
 using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
@@ -23,7 +22,7 @@ namespace SpotifySongTagger.Views.Controls
         private async void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             UpdateCanvasSize();
-            if(ViewModel != null)
+            if (ViewModel != null)
             {
                 await ViewModel.LoadGraphNodes();
                 ViewModel.ClearAllInputResults();
@@ -139,7 +138,7 @@ namespace SpotifySongTagger.Views.Controls
         }
         private void UnselectAll(object sender, MouseButtonEventArgs e)
         {
-            if(ViewModel != null)
+            if (ViewModel != null)
                 ViewModel.SelectedObject = null;
             Canvas.Focus(); // removes focus from GraphNode editable fields
         }
@@ -217,7 +216,7 @@ namespace SpotifySongTagger.Views.Controls
         private async void YearFilterNode_YearChanged(object sender, TextChangedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
-            if(Validation.GetErrors(frameworkElement).Count == 0)
+            if (Validation.GetErrors(frameworkElement).Count == 0)
             {
                 var filterYearNode = frameworkElement.DataContext as FilterYearNode;
                 await ViewModel.FilterYearNode_Edit(filterYearNode, filterYearNode.YearFrom, filterYearNode.YearTo);

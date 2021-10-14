@@ -1,10 +1,7 @@
 using Backend.Entities;
-using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Backend.Tests
@@ -42,7 +39,7 @@ namespace Backend.Tests
             await DatabaseOperations.ExportTags("tagexport.tags");
 
             // connect to new db
-            var otherDbOptions = ConnectionManager.GetOptionsBuilder("OtherDb", 
+            var otherDbOptions = ConnectionManager.GetOptionsBuilder("OtherDb",
                 logTo: DatabaseQueryLogger.Instance.Information).Options;
             using (var otherDb = new DatabaseContext(otherDbOptions, dropDb: true))
             {

@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 using SpotifyAPI.Web;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Tests
@@ -36,7 +34,7 @@ namespace Backend.Tests
             LikedPlaylists = Playlists.Take(nLikedPlaylists).ToList();
             PlaylistTracks = Enumerable.Range(1, nPlaylists)
                 .ToDictionary(
-                i => $"Playlist{i}", 
+                i => $"Playlist{i}",
                 i => Enumerable.Range(1, i).Select(j => NewTrack(j)).ToList());
             Client = new SpotifyClientMock().SetUp(Tracks, LikedTracks, Playlists, LikedPlaylists, PlaylistTracks);
         }
@@ -53,7 +51,7 @@ namespace Backend.Tests
         [Test]
         public async Task Playlists_CurrentUsers()
         {
-            var page = await Client.Playlists.CurrentUsers(new PlaylistCurrentUsersRequest{ Limit = 50 });
+            var page = await Client.Playlists.CurrentUsers(new PlaylistCurrentUsersRequest { Limit = 50 });
             var allItems = new List<SimplePlaylist>();
             await foreach (var item in Client.Paginate(page))
                 allItems.Add(item);
@@ -62,7 +60,7 @@ namespace Backend.Tests
         [Test]
         public async Task Playlists_GetItems()
         {
-            for(var i = 0; i < nLikedPlaylists; i++)
+            for (var i = 0; i < nLikedPlaylists; i++)
             {
                 var page = await Client.Playlists.GetItems(LikedPlaylists[i].Id, new PlaylistGetItemsRequest { Limit = 100 });
                 var allItems = new List<FullTrack>();
@@ -82,7 +80,7 @@ namespace Backend.Tests
         [Test]
         public async Task Playlists_Get()
         {
-            for(var i = 0; i < nPlaylists; i++)
+            for (var i = 0; i < nPlaylists; i++)
             {
                 var details = await Client.Playlists.Get(Playlists[i].Id);
                 Assert.AreEqual(i + 1, details.Tracks.Total);
@@ -94,12 +92,12 @@ namespace Backend.Tests
         public async Task Follow_CheckPlaylist_FollowPlaylist()
         {
             var newPlaylist = await Client.Playlists.Create("someUserId", new PlaylistCreateRequest("somename"));
-            Assert.IsFalse((await Client.Follow.CheckPlaylist(newPlaylist.Id, 
+            Assert.IsFalse((await Client.Follow.CheckPlaylist(newPlaylist.Id,
                 new FollowCheckPlaylistRequest(new List<string> { "someUserId" })))[0]);
 
             await Client.Follow.FollowPlaylist(newPlaylist.Id);
 
-            Assert.IsTrue((await Client.Follow.CheckPlaylist(newPlaylist.Id, 
+            Assert.IsTrue((await Client.Follow.CheckPlaylist(newPlaylist.Id,
                 new FollowCheckPlaylistRequest(new List<string> { "someUserId" })))[0]);
         }
 

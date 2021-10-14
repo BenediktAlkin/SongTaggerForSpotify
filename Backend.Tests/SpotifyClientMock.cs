@@ -1,10 +1,8 @@
-﻿using Backend.Entities;
-using Moq;
+﻿using Moq;
 using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,14 +27,14 @@ namespace Backend.Tests
                 ret = $"{ret}.{param}";
             return ret;
         }
-            
+
         private static (string, string, int, int, string) FromPageUri(string uri)
         {
             var split = uri.Split('.');
             var param = split.Length == 5 ? split[4] : null;
             return (split[0], split[1], int.Parse(split[2]), int.Parse(split[3]), param);
         }
-        
+
         private void MockPaginate<T>(Mock<ISpotifyClient> mock)
         {
             mock.Setup(client => client.Paginate<T>(
@@ -127,7 +125,7 @@ namespace Backend.Tests
             MockPaginate<SimplePlaylist>(mock);
             MockPaginate<SimpleTrack>(mock);
             MockPaginate<PlaylistTrack<IPlayableItem>>(mock);
-            
+
 
             var libraryMock = new Mock<ILibraryClient>();
             libraryMock.Setup(library => library.GetTracks(It.IsAny<LibraryTracksRequest>()))
@@ -143,9 +141,9 @@ namespace Backend.Tests
                         .ToList();
                     if (offset + limit < LikedTracks.Count)
                         page.Next = ToPageUri(
-                            nameof(ISpotifyClient.Library), 
-                            nameof(ILibraryClient.GetTracks), 
-                            offset + limit, 
+                            nameof(ISpotifyClient.Library),
+                            nameof(ILibraryClient.GetTracks),
+                            offset + limit,
                             limit);
                     return Task.FromResult(page);
                 });
@@ -161,7 +159,7 @@ namespace Backend.Tests
                     page.Items = LikedPlaylists
                         .Skip(offset)
                         .Take(limit)
-                        .Select(p => new SimplePlaylist{ Id = p.Id, Name = p.Name })
+                        .Select(p => new SimplePlaylist { Id = p.Id, Name = p.Name })
                         .ToList();
                     if (offset + limit < LikedPlaylists.Count)
                         page.Next = ToPageUri(
@@ -240,7 +238,7 @@ namespace Backend.Tests
                  .Returns((string playlistId, PlaylistAddItemsRequest req) =>
                  {
                      var tracks = PlaylistTracks[playlistId];
-                     foreach(var trackUri in req.Uris)
+                     foreach (var trackUri in req.Uris)
                      {
                          var trackId = trackUri.Split(':')[2];
                          var track = Tracks.First(t => t.Id == trackId);

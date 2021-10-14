@@ -11,7 +11,7 @@ namespace SpotifySongTagger.ValidationRules
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             var valueStr = (value ?? "").ToString();
-            if (string.IsNullOrEmpty(valueStr)) 
+            if (string.IsNullOrEmpty(valueStr))
                 return AllowNull ? ValidationResult.ValidResult : new ValidationResult(false, ErrorText);
 
             if (int.TryParse(valueStr, out _))

@@ -1,11 +1,8 @@
 ﻿using Backend.Entities;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Threading.Tasks;
 using Util;
 
@@ -38,8 +35,8 @@ namespace Backend
         public delegate void PlaylistsUpdatedEvenHandler();
         public event PlaylistsUpdatedEvenHandler OnPlaylistsUpdated;
         private List<Playlist> metaPlaylists;
-        public List<Playlist> MetaPlaylists 
-        { 
+        public List<Playlist> MetaPlaylists
+        {
             get => metaPlaylists;
             set
             {
@@ -71,7 +68,7 @@ namespace Backend
         public Task LoadSourcePlaylists(bool forceReload = false)
         {
             // if liked changes --> force reload
-            var newLikedTask = MetaPlaylists == null || forceReload 
+            var newLikedTask = MetaPlaylists == null || forceReload
                 ? Task.Run(() => LikedPlaylists = DatabaseOperations.PlaylistsLiked())
                 : Task.CompletedTask;
             // meta does not change --> only require loading once

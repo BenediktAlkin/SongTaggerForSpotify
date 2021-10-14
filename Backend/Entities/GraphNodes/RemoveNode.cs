@@ -1,11 +1,10 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
     public class RemoveNode : GraphNode
     {
-        public int? BaseSetId{ get; set; }
+        public int? BaseSetId { get; set; }
         private GraphNode baseSet;
         public GraphNode BaseSet
         {
@@ -37,7 +36,7 @@ namespace Backend.Entities.GraphNodes
                 BaseSet = input;
                 return;
             }
-            if (RemoveSet == null) 
+            if (RemoveSet == null)
             {
                 RemoveSet = input;
                 return;
@@ -63,7 +62,7 @@ namespace Backend.Entities.GraphNodes
                 OutputResult = BaseSet.OutputResult;
                 return;
             }
-                
+
             OutputResult = BaseSet.OutputResult.Except(RemoveSet.OutputResult).ToList();
         }
     }

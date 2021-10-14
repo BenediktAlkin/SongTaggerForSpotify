@@ -53,11 +53,11 @@ namespace Backend.Tests
         protected static List<Artist> InsertArtist(int count)
         {
             using var db = ConnectionManager.NewContext();
-            var artists = Enumerable.Range(1, count).Select(i => 
+            var artists = Enumerable.Range(1, count).Select(i =>
             new Artist
-            { 
-                Id = $"artist{i}", 
-                Name = $"artist{i}" 
+            {
+                Id = $"artist{i}",
+                Name = $"artist{i}"
             }).ToList();
             db.Artists.AddRange(artists);
             db.SaveChanges();
@@ -67,11 +67,11 @@ namespace Backend.Tests
         protected static List<Album> InsertAlbums(int count)
         {
             using var db = ConnectionManager.NewContext();
-            var albums = Enumerable.Range(1, count).Select(i => 
-            new Album 
-            { 
-                Id = $"album{i}", 
-                Name = $"album{i}" 
+            var albums = Enumerable.Range(1, count).Select(i =>
+            new Album
+            {
+                Id = $"album{i}",
+                Name = $"album{i}"
             }).ToList();
             db.Albums.AddRange(albums);
             db.SaveChanges();
@@ -119,7 +119,7 @@ namespace Backend.Tests
             return ggps;
         }
         protected static List<ConcatNode> InsertGraphNodes(int count) => InsertGraphNodes<ConcatNode>(count);
-        protected static List<T> InsertGraphNodes<T>(int count, Action<T> onInit = null) where T: GraphNode
+        protected static List<T> InsertGraphNodes<T>(int count, Action<T> onInit = null) where T : GraphNode
         {
             using var db = ConnectionManager.NewContext();
             var nodes = Enumerable.Range(1, count).Select(i =>

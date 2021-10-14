@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Backend.Entities.GraphNodes
 {
@@ -31,7 +28,7 @@ namespace Backend.Entities.GraphNodes
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
         }
-        
+
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
 
         protected override void MapInputToOutput()

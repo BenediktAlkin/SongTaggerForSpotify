@@ -32,7 +32,7 @@ namespace Backend
         {
             if (!HasAlbumUrl)
                 AlbumUrl = isDarkTheme ? SPOTIFY_ICON_DARK : SPOTIFY_ICON_LIGHT;
-            SpotifyLogoUrl = isDarkTheme? SPOTIFY_ICON_DARK : SPOTIFY_ICON_LIGHT;
+            SpotifyLogoUrl = isDarkTheme ? SPOTIFY_ICON_DARK : SPOTIFY_ICON_LIGHT;
         }
 
         public static bool IsPremiumUser => DataContainer.Instance.User != null && DataContainer.Instance.User.Product == "premium";

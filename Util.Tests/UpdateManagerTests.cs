@@ -1,13 +1,4 @@
-﻿using NUnit.Framework;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Util.Tests
+﻿namespace Util.Tests
 {
     public class UpdateManagerTests : BaseTests
     {

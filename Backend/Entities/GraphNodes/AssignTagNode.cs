@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
@@ -28,7 +27,7 @@ namespace Backend.Entities.GraphNodes
 
         protected override void MapInputToOutput()
         {
-            if(InputResult != null && InputResult.Count > 0)
+            if (InputResult != null && InputResult.Count > 0)
                 OutputResult = InputResult[0];
         }
 

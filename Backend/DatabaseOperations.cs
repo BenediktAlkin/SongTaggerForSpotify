@@ -1,14 +1,12 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,12 +30,12 @@ namespace Backend
             tagName = tagName.ToLower();
 
             var needsDispose = false;
-            if(db == null)
+            if (db == null)
             {
                 db = ConnectionManager.NewContext();
                 needsDispose = true;
             }
-                
+
             var tagExists = db.Tags.FirstOrDefault(t => t.Name == tagName) != null;
             //Logger.Information($"tag {tagName} exists {tagExists}");
 
@@ -63,7 +61,7 @@ namespace Backend
         }
         public static bool AddTag(Tag tag)
         {
-            if(tag == null)
+            if (tag == null)
             {
                 Logger.Information("cannot add tag (is null)");
                 return false;
@@ -84,7 +82,7 @@ namespace Backend
         }
         public static bool EditTag(Tag tag, string newName)
         {
-            if(tag == null)
+            if (tag == null)
             {
                 Logger.Information("cannot edit tag null");
                 return false;
@@ -95,7 +93,7 @@ namespace Backend
 
 
             var dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
-            if(dbTag == null)
+            if (dbTag == null)
             {
                 Logger.Information($"cannot update tag {tag.Name} (not in db)");
                 return false;
@@ -120,7 +118,7 @@ namespace Backend
                 db.Tags.Remove(tag);
                 db.SaveChanges();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Logger.Information($"cannot delete tag {tag.Name} (does not exist)");
                 return false;
@@ -133,12 +131,12 @@ namespace Backend
         #region tracks
         public static bool AssignTag(Track track, Tag tag)
         {
-            if(track == null)
+            if (track == null)
             {
                 Logger.Information($"cannot assign tag {tag?.Name} to track null");
                 return false;
             }
-            if(tag == null)
+            if (tag == null)
             {
                 Logger.Information($"cannot assign tag null to track {track.Name}");
                 return false;
@@ -172,7 +170,8 @@ namespace Backend
             try
             {
                 db.SaveChanges();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Information($"cannot assign tag {tag.Name} to {track.Name}: " +
                     $"{e.Message} - {e.InnerException?.Message}");
@@ -184,7 +183,7 @@ namespace Backend
         }
         public static bool DeleteAssignment(Track track, Tag tag)
         {
-            if(track == null)
+            if (track == null)
             {
                 Logger.Information($"cannot delete track-tag assignment (track is null)");
                 return false;
@@ -243,7 +242,7 @@ namespace Backend
         }
         public static bool AddGraphGeneratorPage(GraphGeneratorPage page)
         {
-            if(page == null)
+            if (page == null)
             {
                 Logger.Information("cannot add GraphGeneratorPage (page is null)");
                 return false;
@@ -309,7 +308,7 @@ namespace Backend
             using var db = ConnectionManager.NewContext();
             var nodeIds = db.GraphNodes.Where(gn => gn.GraphGeneratorPageId == ggp.Id).Select(gn => gn.Id).ToList();
 
-            IQueryable<T> BaseQuery<T>(DbSet<T> set) where T: GraphNode
+            IQueryable<T> BaseQuery<T>(DbSet<T> set) where T : GraphNode
                 => set.Include(gn => gn.Outputs).Where(gn => nodeIds.Contains(gn.Id));
 
             nodes.AddRange(BaseQuery(db.AssignTagNodes).Include(gn => gn.Tag));
@@ -328,12 +327,12 @@ namespace Backend
         }
         public static bool AddGraphNode(GraphNode node, GraphGeneratorPage ggp)
         {
-            if(node == null)
+            if (node == null)
             {
                 Logger.Information("cannot add GraphNode (is null)");
                 return false;
             }
-            if(ggp == null)
+            if (ggp == null)
             {
                 Logger.Information("cannot add GraphNode (GraphGeneratorPage is null)");
                 return false;
@@ -354,7 +353,7 @@ namespace Backend
         }
         public static bool EditGraphNode(GraphNode node, double posX, double posY)
         {
-            if(node == null)
+            if (node == null)
             {
                 Logger.Information("cannot update GraphNode (is null)");
                 return false;
@@ -362,7 +361,7 @@ namespace Backend
 
             using var db = ConnectionManager.NewContext();
             var dbNode = db.GraphNodes.FirstOrDefault(n => n.Id == node.Id);
-            if(dbNode == null)
+            if (dbNode == null)
             {
                 Logger.Information($"cannot update GraphNode {node} (not in db)");
                 return false;
@@ -378,7 +377,7 @@ namespace Backend
         }
         public static bool DeleteGraphNode(GraphNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 Logger.Information("cannot delete graphNode (is null)");
                 return false;
@@ -457,7 +456,7 @@ namespace Backend
         }
         public static bool SwapRemoveNodeSets(RemoveNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 Logger.Information("cannot swap sets of RemoveNode (is null)");
                 return false;
@@ -468,7 +467,7 @@ namespace Backend
                 .Include(gn => gn.BaseSet)
                 .Include(gn => gn.RemoveSet)
                 .FirstOrDefault(gn => gn.Id == node.Id);
-            if(dbNode == null)
+            if (dbNode == null)
             {
                 Logger.Information("cannot swap sets of RemoveNode (not in db)");
                 return false;
@@ -1060,7 +1059,8 @@ namespace Backend
             try
             {
                 tracks = JsonConvert.DeserializeObject<List<Track>>(json);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Error($"Error deserializing tag dump {inPath}: {e.Message}");
                 return;
@@ -1069,7 +1069,7 @@ namespace Backend
 
             // merge with existing tags/tracks
             var needsDispose = false;
-            if(db == null)
+            if (db == null)
             {
                 db = ConnectionManager.NewContext();
                 needsDispose = true;

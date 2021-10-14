@@ -2,10 +2,8 @@ using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Backend.Tests
@@ -190,7 +188,7 @@ namespace Backend.Tests
         public void GraphGeneratorPage_Edit()
         {
             var pages = InsertGraphGeneratorPages(1);
-            
+
             using (var db = ConnectionManager.NewContext())
             {
                 Assert.IsFalse(DatabaseOperations.EditGraphGeneratorPage(null, "asdf"));
@@ -229,7 +227,7 @@ namespace Backend.Tests
             {
                 X = 0.5,
                 Y = 0.7,
-            }; 
+            };
             var newNode2 = new ConcatNode
             {
                 X = 0.5,
@@ -388,7 +386,7 @@ namespace Backend.Tests
             {
                 Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(null, artists[0]));
                 Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(new FilterArtistNode(), artists[0]));
-                Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(nodes[0], new Artist { Id="asdf", Name = "asdf" }));
+                Assert.IsFalse(DatabaseOperations.EditFilterArtistNode(nodes[0], new Artist { Id = "asdf", Name = "asdf" }));
 
                 Assert.IsTrue(DatabaseOperations.EditFilterArtistNode(nodes[0], artists[0]));
                 Assert.AreEqual(artists[0].Id, db.FilterArtistNodes.FirstOrDefault(gn => gn.Id == nodes[0].Id).ArtistId);
@@ -570,7 +568,7 @@ namespace Backend.Tests
                         var actual = db.Playlists.Include(p => p.Tracks).First(p => p.Id == item.Key).Tracks.Count;
                         Assert.AreEqual(expected, actual);
                     }
-                        
+
                 }
             }
         }
