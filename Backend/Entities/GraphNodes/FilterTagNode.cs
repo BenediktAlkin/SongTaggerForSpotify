@@ -14,7 +14,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref tagId, value, nameof(TagId));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
@@ -26,7 +25,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref tag, value, nameof(Tag));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }

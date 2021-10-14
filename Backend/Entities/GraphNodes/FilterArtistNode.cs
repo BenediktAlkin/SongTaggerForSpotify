@@ -13,7 +13,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref artistId, value, nameof(ArtistId));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
@@ -25,7 +24,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref artist, value, nameof(Artist));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }

@@ -202,17 +202,7 @@
                          SelectedItem="{Binding SelectedGraphGeneratorPage}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="0 0.5 0 0">
-                                    <TextBlock Text="{Binding Name}" 
-                                        VerticalAlignment="Center"/>
-                                    <!--<materialDesign:PackIcon 
-                                        Kind="Alert" 
-                                        Margin="8 0 0 0"
-                                        Visibility="{Binding IsValid, Converter={StaticResource InverseBoolToVisConverter}}"
-                                        Foreground="Red"
-                                        ToolTip="Contains invalid node"
-                                        VerticalAlignment="Center"/>-->
-                                </StackPanel>
+                                <TextBlock Margin="0 0.5 0 0" Text="{Binding Name}" VerticalAlignment="Center"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

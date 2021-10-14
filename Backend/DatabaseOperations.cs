@@ -339,7 +339,7 @@ namespace Backend
             }
 
             using var db = ConnectionManager.NewContext();
-            GraphGeneratorPage dbGgp = db.GraphGeneratorPages.FirstOrDefault(ggp => ggp.Id == ggp.Id);
+            var dbGgp = db.GraphGeneratorPages.FirstOrDefault(dbGgp => dbGgp.Id == ggp.Id);
             if (dbGgp == null)
             {
                 Logger.Information("cannot add GraphNode (GraphGeneratorPage does not exist)");

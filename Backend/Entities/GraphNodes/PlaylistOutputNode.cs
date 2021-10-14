@@ -8,11 +8,7 @@ namespace Backend.Entities.GraphNodes
         public string PlaylistName
         {
             get => playlistName;
-            set
-            {
-                SetProperty(ref playlistName, value, nameof(PlaylistName));
-                GraphGeneratorPage?.NotifyIsValidChanged();
-            }
+            set => SetProperty(ref playlistName, value, nameof(PlaylistName));
         }
         public string GeneratedPlaylistId { get; set; }
 

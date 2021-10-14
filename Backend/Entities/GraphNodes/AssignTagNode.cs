@@ -8,21 +8,13 @@ namespace Backend.Entities.GraphNodes
         public int? TagId
         {
             get => tagId;
-            set
-            {
-                SetProperty(ref tagId, value, nameof(TagId));
-                GraphGeneratorPage?.NotifyIsValidChanged();
-            }
+            set =>SetProperty(ref tagId, value, nameof(TagId));
         }
         private Tag tag;
         public Tag Tag
         {
             get => tag;
-            set
-            {
-                SetProperty(ref tag, value, nameof(Tag));
-                GraphGeneratorPage?.NotifyIsValidChanged();
-            }
+            set => SetProperty(ref tag, value, nameof(Tag));
         }
 
         protected override void MapInputToOutput()

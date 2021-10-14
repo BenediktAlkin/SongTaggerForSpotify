@@ -18,7 +18,7 @@ namespace Backend.Entities
         public Album Album { get; set; }
 
         public List<Artist> Artists { get; set; }
-        public List<Playlist> Playlists { get; set; } = new List<Playlist>();
+        public List<Playlist> Playlists { get; set; } = new();
 
 
         public IList<Tag> Tags { get; set; } = new ObservableCollection<Tag>();

@@ -11,7 +11,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref yearFrom, value, nameof(YearFrom));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }
@@ -23,7 +22,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref yearTo, value, nameof(YearTo));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
             }

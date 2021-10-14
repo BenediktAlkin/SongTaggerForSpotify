@@ -110,7 +110,10 @@ namespace Backend
             if (playlistOutputNode.GeneratedPlaylistId == null)
             {
                 // create playlist
-                var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName);
+                var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName) 
+                { 
+                    Description = "Automatically generated playlist by \"Song Tagger for Spotify\" (https://github.com/BenediktAlkin/SpotifySongTagger)"
+                };
                 var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
 
                 if (DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(playlistOutputNode, createdPlaylist.Id))

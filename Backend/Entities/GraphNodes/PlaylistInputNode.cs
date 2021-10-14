@@ -12,7 +12,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref playlistId, value, nameof(PlaylistId));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 PropagateForward(gn => gn.ClearResult());
             }
         }
@@ -23,7 +22,6 @@ namespace Backend.Entities.GraphNodes
             set
             {
                 SetProperty(ref playlist, value, nameof(Playlist));
-                GraphGeneratorPage?.NotifyIsValidChanged();
                 PropagateForward(gn => gn.ClearResult());
             }
         }
