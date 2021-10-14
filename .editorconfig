@@ -14,3 +14,6 @@ dotnet_diagnostic.CA1707.severity = none
 
 # CA1711: Identifiers should not have incorrect suffix
 dotnet_diagnostic.CA1711.severity = none
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none

@@ -92,13 +92,20 @@ namespace Backend.Tests
         public async Task Follow_CheckPlaylist_FollowPlaylist()
         {
             var newPlaylist = await Client.Playlists.Create("someUserId", new PlaylistCreateRequest("somename"));
-            Assert.IsFalse((await Client.Follow.CheckPlaylist(newPlaylist.Id,
-                new FollowCheckPlaylistRequest(new List<string> { "someUserId" })))[0]);
+            AssertIsFollowing(true);
+
+            await Client.Follow.UnfollowPlaylist(newPlaylist.Id);
+            AssertIsFollowing(false);
 
             await Client.Follow.FollowPlaylist(newPlaylist.Id);
+            AssertIsFollowing(true);
 
-            Assert.IsTrue((await Client.Follow.CheckPlaylist(newPlaylist.Id,
-                new FollowCheckPlaylistRequest(new List<string> { "someUserId" })))[0]);
+            void AssertIsFollowing(bool expected)
+            {
+                var req = new FollowCheckPlaylistRequest(new List<string> { "someUserId" });
+                var isFollowing = Client.Follow.CheckPlaylist(newPlaylist.Id, req).Result[0];
+                Assert.AreEqual(expected, isFollowing);
+            }
         }
 
         [Test]

@@ -12,7 +12,7 @@ namespace Backend.Tests
 {
     public class BaseTests
     {
-        protected ISpotifyClient SpotifyClient => ConnectionManager.Instance.Spotify;
+        protected static ISpotifyClient SpotifyClient => ConnectionManager.Instance.Spotify;
 
         // nodes require ids
         private int idCounter;

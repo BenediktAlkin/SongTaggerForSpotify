@@ -140,9 +140,7 @@ namespace SpotifySongTagger.ViewModels
         public Tag ClickedTag { get; set; }
 
         // for some reason this does not work when it is static
-#pragma warning disable CA1822 // Mark members as static
         public List<PlaylistCategory> PlaylistCategories => new()
-#pragma warning restore CA1822 // Mark members as static
         {
             new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
             new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),

@@ -239,9 +239,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         #endregion
 
         #region special GraphNode updates
-#pragma warning disable CA1822 // Mark members as static
         public void PlaylistOutputNode_SetName(PlaylistOutputNode node, string newName)
-#pragma warning restore CA1822 // Mark members as static
         {
             // update in db
             if (DatabaseOperations.EditPlaylistOutputNodeName(node, newName))
