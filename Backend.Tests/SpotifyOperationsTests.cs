@@ -1,4 +1,8 @@
+using Backend.Entities;
+using Backend.Entities.GraphNodes;
 using NUnit.Framework;
+using SpotifyAPI.Web;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +27,61 @@ namespace Backend.Tests
         [Test]
         public async Task SyncPlaylistOutput()
         {
-            // TODO test this with sync library
-            await Task.Delay(1);
+            // init spotify mock
+            var tracks = Enumerable.Range(1, 100).Select(i => NewTrack(i)).ToList();
+            var likedTrackIdxs = new[] { 5, 9, 12, 31, 23, 54, 67, 11, 8 };
+            var likedTracks = likedTrackIdxs.Select(i => tracks[i]).ToList();
+            InitSpotify(tracks, likedTracks, new(), new(), new());
+
+            // init PlaylistOutputNode
+            var ggp = new GraphGeneratorPage();
+            DatabaseOperations.AddGraphGeneratorPage(ggp);
+            var likedSongs = DatabaseOperations.PlaylistsMeta(Constants.LIKED_SONGS_PLAYLIST_ID);
+            var inputNode = new PlaylistInputMetaNode();
+            DatabaseOperations.AddGraphNode(inputNode, ggp);
+            DatabaseOperations.EditPlaylistInputNode(inputNode, likedSongs);
+            inputNode.Playlist = likedSongs;
+            var outputNode = new PlaylistOutputNode();
+            DatabaseOperations.AddGraphNode(outputNode, ggp);
+            const string initialName = "GenPL";
+            DatabaseOperations.EditPlaylistOutputNodeName(outputNode, initialName);
+            outputNode.PlaylistName = initialName;
+            DatabaseOperations.AddGraphNodeConnection(inputNode, outputNode);
+            inputNode.AddOutput(outputNode);
+
+            // sync library to get liked songs into db
+            await DatabaseOperations.SyncLibrary();
+
+            // create generated playlist and insert songs
+            await SpotifyOperations.SyncPlaylistOutputNode(outputNode);
+
+            var details = await SpotifyClient.Playlists.Get(outputNode.GeneratedPlaylistId);
+            Assert.AreEqual(initialName, details.Name);
+            var generatedPlaylist = await SpotifyOperations.PlaylistItems(outputNode.GeneratedPlaylistId);
+            Assert.AreEqual(likedTracks.Count, generatedPlaylist.Count);
+            AssertIsFollowing(true);
+
+            // unfollow generated playlist
+            await SpotifyClient.Follow.UnfollowPlaylist(outputNode.GeneratedPlaylistId);
+            AssertIsFollowing(false);
+            await SpotifyOperations.SyncPlaylistOutputNode(outputNode);
+            AssertIsFollowing(true);
+
+            // change name
+            const string newName = "newname";
+            DatabaseOperations.EditPlaylistOutputNodeName(outputNode, newName);
+            outputNode.PlaylistName = newName;
+            await SpotifyOperations.SyncPlaylistOutputNode(outputNode);
+            details = await SpotifyClient.Playlists.Get(outputNode.GeneratedPlaylistId);
+            Assert.AreEqual(newName, details.Name);
+
+
+            void AssertIsFollowing(bool expected)
+            {
+                var req = new FollowCheckPlaylistRequest(new List<string> { "someUserId" });
+                var isFollowing = SpotifyClient.Follow.CheckPlaylist(outputNode.GeneratedPlaylistId, req).Result[0];
+                Assert.AreEqual(expected, isFollowing);
+            }
         }
 
         [Test]

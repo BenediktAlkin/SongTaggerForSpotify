@@ -22,14 +22,11 @@ namespace Backend.Tests
         private static readonly IEnumerable<int> PlaylistIdxs = Enumerable.Range(0, N_PLAYLISTS);
         private static readonly IEnumerable<int> TagIdxs = Enumerable.Range(0, N_TAGS);
 
-        // nodes require ids
-        private int idCounter;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            idCounter = 1;
 
             Playlists = new();
             Artists = new();
@@ -40,7 +37,7 @@ namespace Backend.Tests
             for (var i = 0; i < N_ARTISTS; i++)
                 Artists.Add(new Artist { Id = $"Artist{i}", Name = $"Artist{i}" });
             for (var i = 0; i < N_TAGS; i++)
-                Tags.Add(new Tag { Id = idCounter++, Name = $"Tag{i}" });
+                Tags.Add(new Tag { Id = NewId(), Name = $"Tag{i}" });
 
             for (var i = 0; i < N_TRACKS; i++)
             {
@@ -66,8 +63,8 @@ namespace Backend.Tests
         [TestCaseSource(nameof(PlaylistIdxs))]
         public void Input_Output(int playlistIdx)
         {
-            var inputNode = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[playlistIdx] };
-            var outputNode = new PlaylistOutputNode { Id = idCounter++ };
+            var inputNode = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[playlistIdx] };
+            var outputNode = new PlaylistOutputNode { Id = NewId() };
             outputNode.AddInput(inputNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -83,9 +80,9 @@ namespace Backend.Tests
         [Test]
         public void ConcatNode()
         {
-            var concatNode = new ConcatNode { Id = idCounter++ };
+            var concatNode = new ConcatNode { Id = NewId() };
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputLikedNode { Id = idCounter++, Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
             concatNode.CalculateOutputResult();
             Assert.AreEqual(N_TRACKS, concatNode.OutputResult.Count);
         }
@@ -93,12 +90,12 @@ namespace Backend.Tests
         [Test]
         public void DeduplicateNode()
         {
-            var concatNode = new ConcatNode { Id = idCounter++ };
+            var concatNode = new ConcatNode { Id = NewId() };
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputLikedNode { Id = idCounter++, Playlist = playlist });
+                concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputLikedNode { Id = idCounter++, Playlist = playlist });
-            var deduplicateNode = new DeduplicateNode { Id = idCounter++ };
+                concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
+            var deduplicateNode = new DeduplicateNode { Id = NewId() };
             deduplicateNode.AddInput(concatNode);
             concatNode.CalculateOutputResult();
             Assert.AreEqual(N_TRACKS * 2, concatNode.OutputResult.Count);
@@ -110,12 +107,12 @@ namespace Backend.Tests
         [TestCaseSource(nameof(TagIdxs))]
         public void AllInputs_TagFilter_Output(int tagIdx)
         {
-            var concatNode = new ConcatNode { Id = idCounter++ };
+            var concatNode = new ConcatNode { Id = NewId() };
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputLikedNode { Id = idCounter++, Playlist = playlist });
-            var tagFilterNode = new FilterTagNode { Id = idCounter++, Tag = Tags[tagIdx] };
+                concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
+            var tagFilterNode = new FilterTagNode { Id = NewId(), Tag = Tags[tagIdx] };
             tagFilterNode.AddInput(concatNode);
-            var outputNode = new PlaylistOutputNode { Id = idCounter++ };
+            var outputNode = new PlaylistOutputNode { Id = NewId() };
             outputNode.AddInput(tagFilterNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -132,12 +129,12 @@ namespace Backend.Tests
         [TestCase(2005, 2010)]
         public void AllInputs_YearFilter_Output(int yearFrom, int yearTo)
         {
-            var concatNode = new ConcatNode() { Id = idCounter++ };
+            var concatNode = new ConcatNode() { Id = NewId() };
             foreach (var playlist in Playlists)
-                concatNode.AddInput(new PlaylistInputLikedNode { Id = idCounter++, Playlist = playlist });
-            var yearFilterNode = new FilterYearNode { Id = idCounter++, YearFrom = yearFrom, YearTo = yearTo };
+                concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
+            var yearFilterNode = new FilterYearNode { Id = NewId(), YearFrom = yearFrom, YearTo = yearTo };
             yearFilterNode.AddInput(concatNode);
-            var outputNode = new PlaylistOutputNode { Id = idCounter++ };
+            var outputNode = new PlaylistOutputNode { Id = NewId() };
             outputNode.AddInput(yearFilterNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -152,15 +149,15 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_NoInputs()
         {
-            var removeNode = new RemoveNode { Id = idCounter++ };
+            var removeNode = new RemoveNode { Id = NewId() };
             removeNode.CalculateOutputResult();
             Assert.AreEqual(0, removeNode.OutputResult.Count);
         }
         [Test]
         public void RemoveNode_NoInputSet()
         {
-            var playlist = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[0] };
-            var removeNode = new RemoveNode { Id = idCounter++ };
+            var playlist = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[0] };
+            var removeNode = new RemoveNode { Id = NewId() };
             removeNode.AddInput(playlist);
             removeNode.SwapSets();
             removeNode.CalculateOutputResult();
@@ -169,8 +166,8 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_NoRemoveSet()
         {
-            var playlist = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[0] };
-            var removeNode = new RemoveNode { Id = idCounter++ };
+            var playlist = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[0] };
+            var removeNode = new RemoveNode { Id = NewId() };
             removeNode.AddInput(playlist);
             removeNode.CalculateOutputResult();
             Assert.AreEqual(playlist.OutputResult.Count, removeNode.OutputResult.Count);
@@ -179,9 +176,9 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_RemoveSameNode()
         {
-            var playlist1 = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[0] };
-            var playlist2 = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[0] };
-            var removeNode = new RemoveNode { Id = idCounter++ };
+            var playlist1 = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[0] };
+            var playlist2 = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[0] };
+            var removeNode = new RemoveNode { Id = NewId() };
             removeNode.AddInput(playlist1);
             removeNode.AddInput(playlist2);
 
@@ -191,13 +188,13 @@ namespace Backend.Tests
         [Test]
         public void RemoveNode_UndoConcat()
         {
-            var playlist1 = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[0] };
-            var playlist2 = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[1] };
-            var concatNode = new ConcatNode { Id = idCounter++ };
+            var playlist1 = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[0] };
+            var playlist2 = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[1] };
+            var concatNode = new ConcatNode { Id = NewId() };
             concatNode.AddInput(playlist1);
             concatNode.AddInput(playlist2);
 
-            var removeNode = new RemoveNode { Id = idCounter++ };
+            var removeNode = new RemoveNode { Id = NewId() };
             removeNode.AddInput(concatNode);
             removeNode.AddInput(playlist2);
 
@@ -211,18 +208,18 @@ namespace Backend.Tests
         [Test]
         public void DetectCycles_SameSource_NoCycle()
         {
-            var input = new PlaylistInputLikedNode { Id = idCounter++, Playlist = Playlists[0] };
+            var input = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[0] };
             var allArtists = Playlists[0].Tracks.SelectMany(t => t.Artists).ToList();
-            var filter1 = new FilterArtistNode { Id = idCounter++, Artist = allArtists.First() };
+            var filter1 = new FilterArtistNode { Id = NewId(), Artist = allArtists.First() };
             filter1.AddInput(input);
-            var filter2 = new FilterArtistNode { Id = idCounter++, Artist = allArtists.Skip(1).First() };
+            var filter2 = new FilterArtistNode { Id = NewId(), Artist = allArtists.Skip(1).First() };
             filter2.AddInput(input);
 
-            var concatNode = new ConcatNode { Id = idCounter++ };
+            var concatNode = new ConcatNode { Id = NewId() };
             concatNode.AddInput(filter1);
             concatNode.AddInput(filter2);
 
-            var outputNode = new PlaylistOutputNode { Id = idCounter++, PlaylistName = "testplaylist" };
+            var outputNode = new PlaylistOutputNode { Id = NewId(), PlaylistName = "testplaylist" };
             outputNode.AddInput(concatNode);
 
             Assert.AreEqual(1, outputNode.Inputs.Count());
@@ -231,7 +228,7 @@ namespace Backend.Tests
         [Test]
         public void DetectCycles_CycleToSameNode()
         {
-            var concatNode = new ConcatNode { Id = idCounter++ };
+            var concatNode = new ConcatNode { Id = NewId() };
             concatNode.AddInput(concatNode);
             Assert.AreEqual(0, concatNode.Inputs.Count());
         }

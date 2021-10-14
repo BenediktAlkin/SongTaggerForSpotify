@@ -195,6 +195,7 @@ namespace Backend.Tests
                     var newId = Guid.NewGuid().ToString("N");
                     var playlist = new SimplePlaylist { Id = newId, Name = req.Name };
                     Playlists.Add(playlist);
+                    LikedPlaylists.Add(playlist);
                     PlaylistTracks[playlist.Id] = new List<FullTrack>();
                     return Task.FromResult(new FullPlaylist { Id = newId, Name = req.Name });
                 });
@@ -259,6 +260,14 @@ namespace Backend.Tests
                     LikedPlaylists.Add(playlist);
                     return Task.FromResult(true);
                 });
+            followMock.Setup(follow => follow.UnfollowPlaylist(It.IsAny<string>()))
+                            .Returns((string playlistId) =>
+                            {
+                                var playlist = Playlists.First(p => p.Id == playlistId);
+                                LikedPlaylists.Remove(playlist);
+                                return Task.FromResult(true);
+                            });
+
 
 
             mock.SetupGet(client => client.Library).Returns(libraryMock.Object);

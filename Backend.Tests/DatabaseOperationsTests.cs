@@ -483,7 +483,7 @@ namespace Backend.Tests
                 .ToDictionary(i => playlists[i].Id, i => playlistTrackIdxs[i].Select(j => tracks[j]).ToList());
             InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
 
-            // intiial sync
+            // intial sync
             await DatabaseOperations.SyncLibrary();
             AssertDbEqualsSpotify();
 

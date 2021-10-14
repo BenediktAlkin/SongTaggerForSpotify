@@ -12,6 +12,13 @@ namespace Backend.Tests
 {
     public class BaseTests
     {
+        protected ISpotifyClient SpotifyClient => ConnectionManager.Instance.Spotify;
+
+        // nodes require ids
+        private int idCounter;
+        protected int NewId() => idCounter++;
+
+
         [SetUp]
         public virtual void SetUp()
         {
@@ -21,6 +28,8 @@ namespace Backend.Tests
             ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
             // drop db
             using var _ = ConnectionManager.NewContext(dropDb: true);
+
+            idCounter = 1;
         }
         [TearDown]
         public virtual void TearDown()

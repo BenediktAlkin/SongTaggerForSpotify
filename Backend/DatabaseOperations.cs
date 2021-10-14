@@ -736,6 +736,12 @@ namespace Backend
                 .OrderBy(p => p.Name.ToLower())
                 .ToList();
         }
+        public static Playlist PlaylistsMeta(string id)
+        {
+            if (!Constants.META_PLAYLIST_IDS.Contains(id)) return null;
+            using var db = ConnectionManager.NewContext();
+            return db.Playlists.FirstOrDefault(p => p.Id == id);
+        }
         public static List<Playlist> PlaylistsMeta()
         {
             using var db = ConnectionManager.NewContext();
