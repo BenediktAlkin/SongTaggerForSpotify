@@ -1,6 +1,7 @@
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using NUnit.Framework;
+using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,139 +10,89 @@ namespace Backend.Tests
 {
     public class SpotifyOperationsTests : BaseTests
     {
-        //[Test]
-        //public void Sync_OutputNode()
-        //{
-        //    var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-        //    var output = new PlaylistOutputNode
-        //    {
-        //        PlaylistName = "ChilloutLoungeCopy",
-        //        Inputs = new List<GraphNode> { input },
-        //    };
+        [Test]
+        public async Task PlaylistItems()
+        {
+            Assert.AreEqual(0, (await SpotifyOperations.PlaylistItems(null)).Count);
+            Assert.AreEqual(0, (await SpotifyOperations.PlaylistItems("")).Count);
 
-        //    SpotifyOperations.SyncPlaylistOutputNode(output).Wait();
-        //    Assert.AreEqual(100, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
-        //}
+            var tracks = Enumerable.Range(1, 10).Select(i => NewTrack(i)).ToList();
+            var playlists = Enumerable.Range(1, 1).Select(i => NewPlaylist(i)).ToList();
+            var playlistTracks = Enumerable.Range(0, playlists.Count).ToDictionary(i => playlists[i].Id, i => tracks.ToList());
+            InitSpotify(tracks, new(), playlists, new(), playlistTracks);
 
-        //[Test]
-        //public async Task FilterNode_NewPlaylist()
-        //{
-        //    // sync library
-        //    await DatabaseOperations.SyncLibrary();
+            Assert.AreEqual(10, (await SpotifyOperations.PlaylistItems(playlists[0].Id)).Count);
+        }
 
-        //    // define graphs
-        //    var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-        //    var tag1 = new Tag { Name = "Tag1" };
-        //    var tag2 = new Tag { Name = "Tag2" };
-        //    var filter1 = new FilterTagNode { Tag = tag1, Inputs = new List<GraphNode> { input } };
-        //    var filter2 = new FilterTagNode { Tag = tag2, Inputs = new List<GraphNode> { input } };
-        //    var output1 = new PlaylistOutputNode
-        //    {
-        //        PlaylistName = "ChilloutLoungeFiltered1",
-        //        Inputs = new List<GraphNode> { filter1 },
-        //    };
-        //    var output2 = new PlaylistOutputNode
-        //    {
-        //        PlaylistName = "ChilloutLoungeFiltered2",
-        //        Inputs = new List<GraphNode> { filter2 },
-        //    };
-        //    Db.PlaylistOutputNodes.Add(output1);
-        //    Db.PlaylistOutputNodes.Add(output2);
+        [Test]
+        public async Task SyncPlaylistOutput()
+        {
+            // TODO test this with sync library
+            await Task.Delay(1);
+        }
 
-        //    // get tracks and add some tags
-        //    await input.CalculateOutputResult();
-        //    var tracks = input.OutputResult;
-        //    foreach (var i in new[] { 1, 5, 9, 13 })
-        //        Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag1);
-        //    foreach (var i in new[] { 5, 10, 15, 20, 30 })
-        //        Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag2);
-        //    Db.Tags.Add(tag1);
-        //    Db.Tags.Add(tag2);
-        //    Db.SaveChanges();
+        [Test]
+        public async Task GetFullLibrary_NoItems()
+        {
+            InitSpotify(new(), new(), new(), new(), new());
+            var (playlists, tracks) = await SpotifyOperations.GetFullLibrary(new());
+            Assert.AreEqual(0, playlists.Count);
+            Assert.AreEqual(0, tracks.Count);
+        }
+        [Test]
+        public async Task GetFullLibrary_OnlyLikedTracks()
+        {
+            var tracks = Enumerable.Range(1, 100).Select(i => NewTrack(i)).ToList();
+            var likedTracks = tracks.Take(50).ToList();
+            InitSpotify(tracks, likedTracks, new(), new(), new());
 
-        //    // create playlists
-        //    await SpotifyOperations.SyncPlaylistOutputNode(output1);
-        //    await SpotifyOperations.SyncPlaylistOutputNode(output2);
-        //    Assert.AreEqual(4, SpotifyOperations.PlaylistItems(output1.GeneratedPlaylistId).Result.Count);
-        //    Assert.AreEqual(5, SpotifyOperations.PlaylistItems(output2.GeneratedPlaylistId).Result.Count);
-        //}
-        //[Test]
-        //public async Task FilterNode_UpdatePlaylist()
-        //{
-        //    // sync library
-        //    await DatabaseOperations.SyncLibrary();
+            var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(new());
+            Assert.AreEqual(0, spotifyPlaylists.Count);
+            Assert.AreEqual(likedTracks.Count, spotifyTracks.Count);
+        }
+        [Test]
+        public async Task GetFullLibrary_OnlyLikedPlaylists()
+        {
+            var tracks = Enumerable.Range(1, 100).Select(i => NewTrack(i)).ToList();
+            var playlists = Enumerable.Range(1, 3).Select(i => NewPlaylist(i)).ToList();
+            var likedPlaylists = playlists.ToList();
+            var playlistTrackIdxs = new int[][]
+            {
+                new []{ 1, 2, 3 },
+                new []{ 1, 2, 3, 5 , 8 },
+                new []{ 10, 25, 62, 53, 23, 15, 15},
+            };
+            var uniqueTracks = playlistTrackIdxs.SelectMany(idxs => idxs).Distinct().Count();
+            var playlistTracks = Enumerable.Range(0, playlists.Count)
+                .ToDictionary(i => playlists[i].Id, i => playlistTrackIdxs[i].Select(j => tracks[j]).ToList());
+            InitSpotify(tracks, new(), playlists, likedPlaylists, playlistTracks);
 
-        //    // define graphs
-        //    var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-        //    var tag = new Tag { Name = "Tag" };
-        //    var filter = new FilterTagNode { Tag = tag, Inputs = new List<GraphNode> { input } };
-        //    var output = new PlaylistOutputNode
-        //    {
-        //        PlaylistName = "ChilloutLoungeFiltered",
-        //        Inputs = new List<GraphNode> { filter },
-        //    };
-        //    Db.PlaylistOutputNodes.Add(output);
+            var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(new());
+            Assert.AreEqual(likedPlaylists.Count, spotifyPlaylists.Count);
+            Assert.AreEqual(uniqueTracks, spotifyTracks.Count);
+        }
+        [Test]
+        public async Task GetFullLibrary()
+        {
+            var tracks = Enumerable.Range(1, 100).Select(i => NewTrack(i)).ToList();
+            var likedTrackIdxs = new[] { 5, 9, 12, 31, 23, 54, 67, 11, 8 };
+            var likedTracks = likedTrackIdxs.Select(i => tracks[i]).ToList();
+            var playlists = Enumerable.Range(1, 3).Select(i => NewPlaylist(i)).ToList();
+            var likedPlaylists = playlists.ToList();
+            var playlistTrackIdxs = new int[][]
+            {
+                new []{ 1, 2, 3 },
+                new []{ 1, 2, 3, 5 , 8 },
+                new []{ 10, 25, 62, 53, 23, 15, 15},
+            };
+            var uniqueTracks = playlistTrackIdxs.SelectMany(idxs => idxs).Concat(likedTrackIdxs).Distinct().Count();
+            var playlistTracks = Enumerable.Range(0, playlists.Count)
+                .ToDictionary(i => playlists[i].Id, i => playlistTrackIdxs[i].Select(j => tracks[j]).ToList());
+            InitSpotify(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
 
-        //    // get tracks and add some tags
-        //    await input.CalculateOutputResult();
-        //    var tracks = input.OutputResult;
-        //    foreach (var i in new[] { 1, 5, 9, 13 })
-        //        Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag);
-        //    Db.Tags.Add(tag);
-        //    Db.SaveChanges();
-
-        //    // create playlists
-        //    await SpotifyOperations.SyncPlaylistOutputNode(output);
-        //    Assert.AreEqual(4, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
-
-        //    // add some more tags
-        //    foreach (var i in new[] { 10, 20, 30 })
-        //        Db.Tracks.First(t => t.Id == tracks[i].Id).Tags.Add(tag);
-        //    Db.SaveChanges();
-        //    await SpotifyOperations.SyncPlaylistOutputNode(output);
-        //    Assert.AreEqual(7, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
-        //}
-
-        //[Test]
-        //public async Task ConcatNode()
-        //{
-        //    // sync library
-        //    await DatabaseOperations.SyncLibrary();
-
-        //    // define graphs
-        //    var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-        //    var concat = new ConcatNode { Inputs = new List<GraphNode> { input, input } };
-        //    var output = new PlaylistOutputNode
-        //    {
-        //        PlaylistName = "ChilloutLounge2x",
-        //        Inputs = new List<GraphNode> { concat },
-        //    };
-        //    Db.PlaylistOutputNodes.Add(output);
-
-        //    // create playlists
-        //    await SpotifyOperations.SyncPlaylistOutputNode(output);
-        //    Assert.AreEqual(200, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
-        //}
-        //[Test]
-        //public async Task DeduplicateNode()
-        //{
-        //    // sync library
-        //    await DatabaseOperations.SyncLibrary();
-
-        //    // define graphs
-        //    var input = new PlaylistInputNode { PlaylistId = "37i9dQZF1DWTvNyxOwkztu" }; // Chillout Lounge
-        //    var concat = new ConcatNode { Inputs = new List<GraphNode> { input, input } };
-        //    var deduplicate = new DeduplicateNode { Inputs = new List<GraphNode> { concat } };
-        //    var output = new PlaylistOutputNode
-        //    {
-        //        PlaylistName = "ChilloutLounge1x",
-        //        Inputs = new List<GraphNode> { deduplicate },
-        //    };
-        //    Db.PlaylistOutputNodes.Add(output);
-
-        //    // create playlists
-        //    await SpotifyOperations.SyncPlaylistOutputNode(output);
-        //    Assert.AreEqual(100, SpotifyOperations.PlaylistItems(output.GeneratedPlaylistId).Result.Count);
-        //}
+            var (spotifyPlaylists, spotifyTracks) = await SpotifyOperations.GetFullLibrary(new());
+            Assert.AreEqual(likedPlaylists.Count, spotifyPlaylists.Count);
+            Assert.AreEqual(uniqueTracks, spotifyTracks.Count);
+        }
     }
 }

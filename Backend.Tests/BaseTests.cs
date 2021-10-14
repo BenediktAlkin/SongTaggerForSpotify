@@ -2,6 +2,7 @@
 using Backend.Entities.GraphNodes;
 using NUnit.Framework;
 using Serilog;
+using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,25 @@ namespace Backend.Tests
             // drop db
             using var _ = ConnectionManager.NewContext(dropDb: true);
         }
+        [TearDown]
+        public virtual void TearDown()
+        {
+            Log.CloseAndFlush();
+        }
+        protected static void InitSpotify(
+            List<FullTrack> tracks,
+            List<FullTrack> likedTracks,
+            List<SimplePlaylist> playlists,
+            List<SimplePlaylist> likedPlaylists,
+            Dictionary<string, List<FullTrack>> playlistTracks)
+        {
+            var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            ConnectionManager.InitSpotify(client);
+            DataContainer.Instance.User = new PrivateUser { Id = "TestId", Country = "TestCountry", Product = "TestProduct" };
+        }
 
+
+        #region db inserts tagging
         protected static List<Tag> InsertTags(int count)
         {
             using var db = ConnectionManager.NewContext();
@@ -76,6 +95,19 @@ namespace Backend.Tests
             db.SaveChanges();
             return tracks;
         }
+        protected static List<Playlist> InsertPlaylists(int count)
+        {
+            using var db = ConnectionManager.NewContext();
+            var playlists = Enumerable.Range(1, count).Select(i =>
+            new Playlist { Id = $"playlist{i}", Name = $"playlist{i}" }).ToList();
+            db.Playlists.AddRange(playlists);
+            db.SaveChanges();
+
+            return playlists;
+        }
+        #endregion
+
+        #region db inserts generator
         protected static List<GraphGeneratorPage> InsertGraphGeneratorPages(int count)
         {
             using var db = ConnectionManager.NewContext();
@@ -86,8 +118,6 @@ namespace Backend.Tests
 
             return ggps;
         }
-
-
         protected static List<ConcatNode> InsertGraphNodes(int count) => InsertGraphNodes<ConcatNode>(count);
         protected static List<T> InsertGraphNodes<T>(int count, Action<T> onInit = null) where T: GraphNode
         {
@@ -105,22 +135,43 @@ namespace Backend.Tests
             db.SaveChanges();
             return nodes;
         }
+        #endregion
 
-        protected static List<Playlist> InsertPlaylists(int count)
+        #region create spotify objects
+        protected static FullTrack NewTrack(int i)
         {
-            using var db = ConnectionManager.NewContext();
-            var playlists = Enumerable.Range(1, count).Select(i =>
-            new Playlist { Id=$"playlist{i}", Name = $"playlist{i}" }).ToList();
-            db.Playlists.AddRange(playlists);
-            db.SaveChanges();
-
-            return playlists;
+            return new FullTrack
+            {
+                Id = $"Track{i}",
+                Name = $"Track{i}",
+                DurationMs = i,
+                Album = new SimpleAlbum
+                {
+                    Id = $"Album{i}",
+                    Name = $"Album{i}",
+                    ReleaseDate = "2021",
+                    ReleaseDatePrecision = "year",
+                },
+                Artists = new List<SimpleArtist>
+                    {
+                        new SimpleArtist
+                        {
+                            Id = $"Artist{i}",
+                            Name = $"Artist{i}",
+                        }
+                    },
+                IsLocal = false,
+                IsPlayable = true,
+            };
         }
-
-        [TearDown]
-        public virtual void TearDown()
+        protected static SimplePlaylist NewPlaylist(int i)
         {
-            Log.CloseAndFlush();
+            return new SimplePlaylist
+            {
+                Id = $"Playlist{i}",
+                Name = $"Playlist{i}",
+            };
         }
+        #endregion
     }
 }

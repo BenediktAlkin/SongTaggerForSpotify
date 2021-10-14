@@ -12,7 +12,7 @@ namespace Backend
     public static class SpotifyOperations
     {
         private static ILogger Logger { get; } = Log.ForContext("SourceContext", "SP");
-        private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
+        private static ISpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
         private static Func<object, bool> TrackIsValid { get; } = t => t is FullTrack ft && !ft.IsLocal && ft.IsPlayable;
         private static Track ToTrack(FullTrack track)
@@ -47,7 +47,6 @@ namespace Backend
             var page = await Spotify.Library.GetTracks(new LibraryTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country });
             var allTracks = await GetAll(page);
             Logger.Information("Finished fetching liked tracks");
-            var testTrack = allTracks.FirstOrDefault(t => t.Track.Name.Contains("OMG What's"));
             return allTracks.Where(t => TrackIsValid(t.Track)).Select(t => ToTrack(t.Track)).ToList();
         }
 

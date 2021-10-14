@@ -50,10 +50,11 @@ namespace Backend
 
 
         #region Spotify
-        private HttpListener Server { get; set; }
+        public ISpotifyClient Spotify { get; private set; }
 
-        public SpotifyClient Spotify { get; private set; }
 
+        // option to set spotifyClient from outside (mostly for testing with mocked spotify client)
+        public static void InitSpotify(ISpotifyClient spotifyClient) => Instance.Spotify = spotifyClient;
         public static async Task TryInitFromSavedToken()
         {
             var tokenData = GetSavedToken();
@@ -89,7 +90,7 @@ namespace Backend
             File.WriteAllText(TOKEN_FILE, tokenStr);
         }
 
-        private static SpotifyClient CreateSpotifyClient(PKCETokenResponse tokenData)
+        private static ISpotifyClient CreateSpotifyClient(PKCETokenResponse tokenData)
         {
             if (tokenData == null) return null;
 
@@ -101,7 +102,6 @@ namespace Backend
                 .WithRetryHandler(new SimpleRetryHandler());
             return new SpotifyClient(config);
         }
-
         private static async Task<bool> InitSpotify(PKCETokenResponse tokenData)
         {
             var client = CreateSpotifyClient(tokenData);
@@ -119,7 +119,11 @@ namespace Backend
             }
             return true;
         }
+        #endregion
 
+
+        #region Spotify login server
+        private HttpListener Server { get; set; }
         public static void Logout()
         {
             if (File.Exists(TOKEN_FILE))

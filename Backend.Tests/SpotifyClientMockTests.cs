@@ -18,42 +18,6 @@ namespace Backend.Tests
         private const int nPlaylists = 1000;
         private const int nLikedPlaylists = 500;
 
-        private static FullTrack NewTrack(int i)
-        {
-            return new FullTrack
-            {
-                Id = $"Track{i}",
-                Name = $"Track{i}",
-                DurationMs = i,
-                Album = new SimpleAlbum
-                {
-                    Id = $"Album{i}",
-                    Name = $"Album{i}",
-                    ReleaseDate = "2021",
-                    ReleaseDatePrecision = "year",
-                },
-                Artists = new List<SimpleArtist>
-                    {
-                        new SimpleArtist
-                        {
-                            Id = $"Artist{i}",
-                            Name = $"Artist{i}",
-                        }
-                    },
-                IsLocal = false,
-                IsPlayable = true,
-            };
-        }
-        public static SimplePlaylist NewPlaylist(int i)
-        {
-            return new SimplePlaylist
-            {
-                Id = $"Playlist{i}",
-                Name = $"Playlist{i}",
-            };
-        }
-
-
         private List<FullTrack> Tracks;
         private List<FullTrack> LikedTracks;
         private List<SimplePlaylist> Playlists;

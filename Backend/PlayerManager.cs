@@ -18,7 +18,7 @@ namespace Backend
         public static PlayerManager Instance { get; } = new();
         private PlayerManager() { }
 
-        private static SpotifyClient Spotify => ConnectionManager.Instance.Spotify;
+        private static ISpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
         public enum PlayerError
         {
