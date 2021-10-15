@@ -325,6 +325,11 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
             return nodes;
         }
+        public static List<IRunnableGraphNode> GetRunnableGraphNodes(GraphGeneratorPage ggp)
+        {
+            var dbGraphNodes = DatabaseOperations.GetGraphNodes(ggp);
+            return dbGraphNodes.Where(gn => gn is IRunnableGraphNode).Cast<IRunnableGraphNode>().ToList();
+        }
         public static bool AddGraphNode(GraphNode node, GraphGeneratorPage ggp)
         {
             if (node == null)
@@ -812,12 +817,12 @@ namespace Backend
 
 
         #region AssignTagNode
-        public static async Task AssignTags(AssignTagNode assignTagNode)
+        public static async Task<bool> AssignTags(AssignTagNode assignTagNode)
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid))
             {
                 Logger.Information("cannot run AssignTagNode (graph contains invalid node)");
-                return;
+                return false;
             }
 
             await Task.Run(() =>
@@ -829,6 +834,7 @@ namespace Backend
                     AssignTag(track, assignTagNode.Tag);
                 Logger.Information($"assigned tag {assignTagNode.Tag.Name} to {tracks.Count} tracks");
             });
+            return true;
         }
         #endregion
 

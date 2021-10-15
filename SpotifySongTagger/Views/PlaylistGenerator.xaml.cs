@@ -11,10 +11,10 @@ namespace SpotifySongTagger.Views
     public partial class PlaylistGenerator : UserControl
     {
         private PlaylistGeneratorViewModel ViewModel { get; }
-        public PlaylistGenerator()
+        public PlaylistGenerator(ISnackbarMessageQueue messageQueue)
         {
             InitializeComponent();
-            ViewModel = new PlaylistGeneratorViewModel();
+            ViewModel = new PlaylistGeneratorViewModel(messageQueue);
             DataContext = ViewModel;
         }
         private void UserControl_Loaded(object sender, RoutedEventArgs e) => ViewModel.Init();
@@ -105,9 +105,9 @@ namespace SpotifySongTagger.Views
             var listBox = sender as ListBox;
             if (listBox.SelectedItem == null) return;
 
-            var pageVM = listBox.SelectedItem as GraphGeneratorPage;
-            await pageVM.Run();
+            var ggp = listBox.SelectedItem as GraphGeneratorPage;
             listBox.SelectedItem = null;
+            await ViewModel.Run(ggp);
         }
 
         private async void RunAll(object sender, RoutedEventArgs e) => await ViewModel.RunAll();

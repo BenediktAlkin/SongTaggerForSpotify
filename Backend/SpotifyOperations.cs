@@ -98,12 +98,12 @@ namespace Backend
             }
         }
 
-        public static async Task SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
+        public static async Task<bool> SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
         {
             if (playlistOutputNode.AnyBackward(gn => !gn.IsValid))
             {
                 Logger.Information($"cannot run PlaylistOutputNode Id={playlistOutputNode.Id} (encountered invalid graphNode)");
-                return;
+                return false;
             }
             Logger.Information($"synchronizing PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
 
@@ -160,6 +160,7 @@ namespace Backend
                 await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
             }
             Logger.Information($"synchronized PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
+            return true;
         }
 
         public static async Task<(List<Playlist>, Dictionary<string, Track>)> GetFullLibrary(List<string> generatedPlaylistIds)

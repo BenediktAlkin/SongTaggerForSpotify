@@ -1,16 +1,27 @@
 ﻿using Backend;
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using MaterialDesignThemes.Wpf;
 using Serilog;
+using SpotifySongTagger.Converters;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace SpotifySongTagger.ViewModels
 {
     public class PlaylistGeneratorViewModel : BaseViewModel
     {
+        private ISnackbarMessageQueue MessageQueue { get; set; }
+        public PlaylistGeneratorViewModel(ISnackbarMessageQueue messageQueue)
+        {
+            MessageQueue = messageQueue;
+        }
+
         public void Init()
         {
             var loadSourcePlaylistsTask = DataContainer.LoadSourcePlaylists();
@@ -57,34 +68,55 @@ namespace SpotifySongTagger.ViewModels
         };
         #endregion
 
-        #region GraphGeneratorPages
+        #region GraphGeneratorPages header
         private bool isRunningAll;
         public bool IsRunningAll
         {
             get => isRunningAll;
             set => SetProperty(ref isRunningAll, value, nameof(IsRunningAll));
         }
-        private GraphGeneratorPage selectedGraphGeneratorPage;
-        public GraphGeneratorPage SelectedGraphGeneratorPage
+        public async Task RunAll()
         {
-            get => selectedGraphGeneratorPage;
-            set
-            {
-                SetProperty(ref selectedGraphGeneratorPage, value, nameof(SelectedGraphGeneratorPage));
+            if (IsRunningAll) return;
 
-                if (value == null)
-                    GraphEditorVM = null;
-                else
-                    GraphEditorVM = new GraphEditorViewModel(value);
-                NotifyPropertyChanged(nameof(GraphEditorVM));
-            }
+            Log.Information("RunAll GraphGeneratorPages");
+            IsRunningAll = true;
+            foreach (var ggp in BaseViewModel.DataContainer.GraphGeneratorPages)
+                ggp.IsRunning = true;
+
+            foreach (var ggp in BaseViewModel.DataContainer.GraphGeneratorPages)
+                await Run(ggp);
+                
+            IsRunningAll = false;
+            Log.Information("Finished RunAll GraphGeneratorPages");
         }
-        private GraphEditorViewModel graphEditorVM;
-        public GraphEditorViewModel GraphEditorVM
+        public async Task Run(GraphGeneratorPage ggp)
         {
-            get => graphEditorVM;
-            set => SetProperty(ref graphEditorVM, value, nameof(GraphEditorVM));
+            ggp.IsRunning = true;
+            Log.Information($"Run page {ggp.Name}");
+            var runnableNodes = await Task.Run(() => DatabaseOperations.GetRunnableGraphNodes(ggp));
+
+            foreach (var runnableNode in runnableNodes)
+            {
+                var success = await runnableNode.Run();
+                if (!success)
+                {
+                    var converter = new GraphNodeToNameConverter();
+                    var text1 = new TextBlock { Text = "can't run " };
+                    var nodeStr = (string)converter.Convert(runnableNode, typeof(string), null, CultureInfo.CurrentUICulture);
+                    var text2 = new TextBlock { Text = nodeStr, FontWeight = FontWeights.Bold };
+                    var text3 = new TextBlock { Text = " (graph contains invalid node)" };
+                    text1.Inlines.Add(text2);
+                    text1.Inlines.Add(text3);
+                    MessageQueue.Enqueue(text1);
+                }
+            }
+
+            ggp.IsRunning = false;
+            Log.Information($"Finished page {ggp.Name}");
         }
+
+
         private string newGraphGeneratorPageName;
         public string NewGraphGeneratorPageName
         {
@@ -107,6 +139,31 @@ namespace SpotifySongTagger.ViewModels
             BaseViewModel.DataContainer.GraphGeneratorPages.Add(page);
             NewGraphGeneratorPageName = null;
         }
+        #endregion
+
+
+        #region GraphGeneratorPages
+        private GraphGeneratorPage selectedGraphGeneratorPage;
+        public GraphGeneratorPage SelectedGraphGeneratorPage
+        {
+            get => selectedGraphGeneratorPage;
+            set
+            {
+                SetProperty(ref selectedGraphGeneratorPage, value, nameof(SelectedGraphGeneratorPage));
+
+                if (value == null)
+                    GraphEditorVM = null;
+                else
+                    GraphEditorVM = new GraphEditorViewModel(value);
+                NotifyPropertyChanged(nameof(GraphEditorVM));
+            }
+        }
+        private GraphEditorViewModel graphEditorVM;
+        public GraphEditorViewModel GraphEditorVM
+        {
+            get => graphEditorVM;
+            set => SetProperty(ref graphEditorVM, value, nameof(GraphEditorVM));
+        }
         public void RemoveGraphGeneratorPage(GraphGeneratorPage page)
         {
             if (SelectedGraphGeneratorPage == null) return;
@@ -117,28 +174,12 @@ namespace SpotifySongTagger.ViewModels
             // update ui
             BaseViewModel.DataContainer.GraphGeneratorPages.Remove(page);
         }
-
-        public async Task RunAll()
-        {
-            if (IsRunningAll) return;
-
-            Log.Information("RunAll GraphGeneratorPages");
-            IsRunningAll = true;
-            foreach (var ggpVM in BaseViewModel.DataContainer.GraphGeneratorPages)
-                ggpVM.IsRunning = true;
-            foreach (var ggpVM in BaseViewModel.DataContainer.GraphGeneratorPages)
-                await ggpVM.Run();
-            IsRunningAll = false;
-            Log.Information("Finished RunAll GraphGeneratorPages");
-        }
-
         public void EditGraphGeneratorPageName(GraphGeneratorPage page)
         {
             if (DatabaseOperations.EditGraphGeneratorPage(page, NewGraphGeneratorPageName))
                 page.Name = NewGraphGeneratorPageName;
             NewGraphGeneratorPageName = null;
         }
-
         #endregion
     }
 

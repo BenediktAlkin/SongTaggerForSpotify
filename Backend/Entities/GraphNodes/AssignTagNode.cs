@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class AssignTagNode : GraphNode
+    public class AssignTagNode : GraphNode, IRunnableGraphNode
     {
         private int? tagId;
         public int? TagId
@@ -28,5 +29,7 @@ namespace Backend.Entities.GraphNodes
 
         public override bool IsValid => TagId != null || Tag != null;
         public override bool RequiresTags => true;
+
+        public async Task<bool> Run() => await DatabaseOperations.AssignTags(this);
     }
 }

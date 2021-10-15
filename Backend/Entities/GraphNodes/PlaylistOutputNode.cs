@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
 {
-    public class PlaylistOutputNode : GraphNode
+    public class PlaylistOutputNode : GraphNode, IRunnableGraphNode
     {
         private string playlistName;
         public string PlaylistName
@@ -21,5 +22,7 @@ namespace Backend.Entities.GraphNodes
         }
 
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistName);
+
+        public async Task<bool> Run() => await SpotifyOperations.SyncPlaylistOutputNode(this);
     }
 }

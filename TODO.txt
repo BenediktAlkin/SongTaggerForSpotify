@@ -1,5 +1,6 @@
-invalid --> error message
 maybe make invalid nodes red
+
+buymeacoffee
 
 tutorial
 - login
@@ -10,12 +11,11 @@ minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
 - playlists binding error in tageditor (not initially but after sync)
 - newtag datacontext bugs sometimes (validator not working; NewTagText set null but not updated in ui) --> ugly workaround was implemented
-
+- IsRunning does not belong into GraphGeneratorPage (should be in a seperate viewmodel)
 
 future
 - search function (search for track and tag it)
 - audio features viewer/filter
 - top tracks
-- check if everything that is cancelable has cancellationtokens
 - settings for treeview expansions
 - import/export (current version has some bugs: sometimes it crashes the app; calling db.SaveChanges() after export deleted all artist/tag associations)
