@@ -48,5 +48,7 @@ Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are
 
 ## Donate
 Song Tagger for Spotify is free and open source! 
+
 If you like this project, please consider supporting it.
+
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=9RBNSGWNNQ57C)
