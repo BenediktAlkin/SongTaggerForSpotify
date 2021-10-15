@@ -44,3 +44,8 @@ Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are
 * Only Spotify Premium users can play songs from the song tagger application (the currently playing song is still displayed for non-premium users)
 * [local files](https://support.spotify.com/us/article/local-files/) are [not supported](https://developer.spotify.com/documentation/general/guides/local-files-spotify-playlists/#limitations)
 * [unavailable songs](https://community.spotify.com/t5/iOS-iPhone-iPad/Song-unavailable/td-p/4816227#:~:text=The%20greyed%20out%20tracks%20just,to%20the%20individual%20music%20companies.) are currently not supported
+
+
+## Donate
+Song Tagger for Spotify is free and open source! If you want to support my work please consider donating:
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?hosted_button_id=9RBNSGWNNQ57C)
