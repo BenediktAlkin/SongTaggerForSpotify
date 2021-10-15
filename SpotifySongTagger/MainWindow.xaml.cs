@@ -149,5 +149,14 @@ namespace SpotifySongTagger
                 UseShellExecute = true
             });
         }
+
+        private void OpenDonate(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://www.paypal.com/donate/?hosted_button_id=9RBNSGWNNQ57C",
+                UseShellExecute = true
+            });
+        }
     }
 }
