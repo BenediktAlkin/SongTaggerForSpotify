@@ -7,7 +7,7 @@ on:
 
 env:
   main_project_name: SpotifySongTagger
-  application_name: Song Tagger for Spotify
+  application_name: SongTaggerForSpotify
   updater_name: Updater
   build_config: Release
   MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
@@ -72,7 +72,7 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
         files: "${{ env.application_name }}/${{ env.build_config }}"
-        dest: "Releases/${{ env.application_name }} Portable.zip"
+        dest: "Releases/${{ env.application_name }}-Portable.zip"
         recursive: false
     # rename Setup.msi
     - name: Rename setup
@@ -85,5 +85,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          Releases/${{ env.application_name }} Portable.zip
+          Releases/${{ env.application_name }}-Portable.zip
           Setup/${{ env.build_config }}/${{ env.application_name }}-Installer.msi

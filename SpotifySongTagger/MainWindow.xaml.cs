@@ -11,9 +11,6 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Util;
-#if !DEBUG
-using Util;
-#endif
 
 namespace SpotifySongTagger
 {
@@ -46,7 +43,7 @@ namespace SpotifySongTagger
                 Close();
                 Application.Current.Shutdown();
             };
-            await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SpotifySongTagger", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
+            await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SongTaggerForSpotify", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
 #endif
 
             await ConnectionManager.TryInitFromSavedToken();
