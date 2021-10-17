@@ -8,6 +8,7 @@ minor bugs:
 - playlists binding error in tageditor (not initially but after sync)
 - newtag datacontext bugs sometimes (validator not working; NewTagText set null but not updated in ui) --> ugly workaround was implemented
 - IsRunning does not belong into GraphGeneratorPage (should be in a seperate viewmodel)
+- set progress/volume fires twice (when not dragged)
 
 future
 - search function (search for track and tag it)

@@ -20,6 +20,7 @@ namespace SpotifySongTagger.ViewModels
             MessageQueue = messageQueue;
         }
 
+        #region load/unload
         private Task LoadTagsTask { get; set; }
         public void OnLoaded()
         {
@@ -29,6 +30,7 @@ namespace SpotifySongTagger.ViewModels
             // register player updates
             BaseViewModel.PlayerManager.OnTrackChanged += UpdatePlayingTrack;
             BaseViewModel.PlayerManager.OnProgressChanged += SetProgressSpotify;
+            BaseViewModel.PlayerManager.OnVolumeChanged += SetVolumeSpotify;
 
             // start updates for player
             BaseViewModel.PlayerManager.StartUpdateTrackInfoTimer();
@@ -47,16 +49,16 @@ namespace SpotifySongTagger.ViewModels
             // load tags
             LoadTagsTask = BaseViewModel.DataContainer.LoadTags();
         }
-
         public void OnUnloaded()
         {
             BaseViewModel.PlayerManager.OnPlayerError -= OnPlayerError;
             BaseViewModel.PlayerManager.OnTrackChanged -= UpdatePlayingTrack;
             BaseViewModel.PlayerManager.OnProgressChanged -= SetProgressSpotify;
+            BaseViewModel.PlayerManager.OnVolumeChanged -= SetVolumeSpotify;
             BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
             BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
         }
-
+        #endregion
 
         #region track
         private bool isLoadingTracks;
@@ -127,19 +129,8 @@ namespace SpotifySongTagger.ViewModels
         }
         #endregion
 
-        private string newTagName;
-        public string NewTagName
-        {
-            get => newTagName;
-            set
-            {
-                SetProperty(ref newTagName, value, nameof(NewTagName));
-                NotifyPropertyChanged(nameof(CanAddTag));
-                NotifyPropertyChanged(nameof(CanEditTag));
-            }
-        }
-        public Tag ClickedTag { get; set; }
 
+        #region playlist selection
         // for some reason this does not work when it is static
         public List<PlaylistCategory> PlaylistCategories => new()
         {
@@ -159,7 +150,10 @@ namespace SpotifySongTagger.ViewModels
             get => loadedPlaylists;
             set => SetProperty(ref loadedPlaylists, value, nameof(LoadedPlaylists));
         }
+        #endregion
 
+
+        #region assign/unassign tag
         public static void AssignTag(Track track, string tagName)
         {
             var tag = DataContainer.Tags.FirstOrDefault(t => t.Name == tagName);
@@ -176,6 +170,23 @@ namespace SpotifySongTagger.ViewModels
             if (DatabaseOperations.DeleteAssignment(SelectedTrackVM.Track, tag))
                 SelectedTrackVM.Track.Tags.Remove(tag);
         }
+        #endregion
+
+        #region add/edit/delete tag
+
+        private string newTagName;
+        public string NewTagName
+        {
+            get => newTagName;
+            set
+            {
+                SetProperty(ref newTagName, value, nameof(NewTagName));
+                NotifyPropertyChanged(nameof(CanAddTag));
+                NotifyPropertyChanged(nameof(CanEditTag));
+            }
+        }
+        public Tag ClickedTag { get; set; }
+
         public bool CanAddTag => DatabaseOperations.IsValidTag(NewTagName);
         public void AddTag()
         {
@@ -205,6 +216,7 @@ namespace SpotifySongTagger.ViewModels
                 DataContainer.Instance.Tags.Remove(ClickedTag);
             }
         }
+        #endregion
 
         #region edit/delete icons for tags
         private bool isTagEditMode;
@@ -237,33 +249,51 @@ namespace SpotifySongTagger.ViewModels
         public bool IsTagEditOrDeleteMode => IsTagDeleteMode || IsTagEditMode;
         #endregion
 
-        #region Player
-        public bool DisableVolumeUpdates { get; set; }
-        public bool DisableSpotifyProgressUpdates { get; set; }
-        public enum ProgressUpdateSource
+
+        public enum UpdateSource
         {
             Spotify,
             User,
         }
-        private void SetProgressSpotify(int newProgress) => SetProgress(newProgress, ProgressUpdateSource.Spotify);
-
-        public void SetProgress(int newProgress, ProgressUpdateSource source)
+        #region Player volume
+        public bool IsDraggingVolume { get; set; }
+        private void SetVolumeSpotify(int newVolume) => SetVolume(newVolume, UpdateSource.Spotify);
+        public void SetVolume(int newVolume, UpdateSource source)
         {
-            if (DisableSpotifyProgressUpdates && source == ProgressUpdateSource.Spotify)
-                return;
+            if (IsDraggingVolume && source == UpdateSource.Spotify) return;
+
+            volume = newVolume;
+            VolumeSource = source;
+            NotifyPropertyChanged(nameof(Volume));
+        }
+        public UpdateSource VolumeSource { get; private set; }
+        private int volume;
+        public int Volume
+        {
+            get => volume;
+            set => SetVolume(value, UpdateSource.User);
+        }
+        #endregion
+
+        #region Player progress
+        public bool IsDraggingProgress { get; set; }
+        private void SetProgressSpotify(int newProgress) => SetProgress(newProgress, UpdateSource.Spotify);
+        public void SetProgress(int newProgress, UpdateSource source)
+        {
+            if (IsDraggingProgress && source == UpdateSource.Spotify) return;
 
             progress = newProgress;
             ProgressSource = source;
             NotifyPropertyChanged(nameof(Progress));
         }
-        public ProgressUpdateSource ProgressSource { get; private set; }
+        public UpdateSource ProgressSource { get; private set; }
         private int progress;
         public int Progress
         {
             get => progress;
-            set => SetProgress(value, ProgressUpdateSource.User);
+            set => SetProgress(value, UpdateSource.User);
         }
-
+        #endregion
         private void OnPlayerError(PlayerManager.PlayerError error)
         {
             object msg;
@@ -287,7 +317,6 @@ namespace SpotifySongTagger.ViewModels
             }
             MessageQueue.Enqueue(msg);
         }
-        #endregion
     }
     public record PlaylistCategory(string Name, bool IsExpanded, IEnumerable<Playlist> Playlists);
 }

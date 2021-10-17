@@ -51,6 +51,8 @@ namespace Backend
         public event TrackChangedEventHandler OnTrackChanged;
         public delegate void ProgressChangedEventHandler(int newProgress);
         public event ProgressChangedEventHandler OnProgressChanged;
+        public delegate void VolumeChangedEventHandler(int newVolume);
+        public event VolumeChangedEventHandler OnVolumeChanged;
 
         private bool hasAlbumUrl;
         public bool HasAlbumUrl
@@ -112,7 +114,11 @@ namespace Backend
         public int Volume
         {
             get => volume;
-            set => SetProperty(ref volume, value, nameof(Volume));
+            set
+            {
+                SetProperty(ref volume, value, nameof(Volume));
+                OnVolumeChanged?.Invoke(value);
+            }
         }
         private bool isPlaying;
         public bool IsPlaying

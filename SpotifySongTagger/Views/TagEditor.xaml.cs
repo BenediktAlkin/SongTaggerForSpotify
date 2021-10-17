@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Backend.Entities;
 using MaterialDesignThemes.Wpf;
+using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
 using System.Threading.Tasks;
@@ -170,7 +171,8 @@ namespace SpotifySongTagger.Views
         }
         #endregion
 
-        #region player
+
+        #region play/pause
         private async void Play_Click(object sender, RoutedEventArgs e) => await PlayerManager.Instance.Play();
         private async void Pause_Click(object sender, RoutedEventArgs e) => await PlayerManager.Instance.Pause();
 
@@ -179,17 +181,37 @@ namespace SpotifySongTagger.Views
             if (ViewModel.SelectedTrackVM == null) return;
             await BaseViewModel.PlayerManager.SetTrack(ViewModel.SelectedTrackVM.Track);
         }
+        #endregion
 
-        private void DisableVolumeUpdates(object sender, DragStartedEventArgs e) => ViewModel.DisableVolumeUpdates = true;
-        private async void SetVolume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        #region volume
+        private void SetVolume_DragStarted(object sender, DragStartedEventArgs e)
         {
-            if (ViewModel.DisableVolumeUpdates) return;
-            await SetVolume(sender);
+            //Log.Information("volume drag start");
+            ViewModel.IsDraggingVolume = true;
         }
         private async void SetVolume_DragCompleted(object sender, DragCompletedEventArgs e)
         {
+            //Log.Information("volume drag completed");
             await SetVolume(sender);
-            ViewModel.DisableVolumeUpdates = false;
+            ViewModel.IsDraggingVolume = false;
+        }
+        private async void SetVolume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            // avoid firing an event when the progress bar is updated from spotify
+            if (ViewModel.VolumeSource == UpdateSource.Spotify)
+            {
+                //Log.Information("avoided volume value changed (updated by spotify)");
+                return;
+            }
+            // avoid firing when volume bar is currently dragged
+            if (ViewModel.IsDraggingVolume)
+            {
+                //Log.Information("avoided volume value changed (is dragging slider)");
+                return;
+            }
+
+            //Log.Information("volume value changed");
+            await SetVolume(sender);
         }
         private static async Task SetVolume(object sender)
         {
@@ -197,19 +219,37 @@ namespace SpotifySongTagger.Views
             var newVolume = (int)slider.Value;
             await BaseViewModel.PlayerManager.SetVolume(newVolume);
         }
+        #endregion
 
-        private void DisableProgressUpdates(object sender, DragStartedEventArgs e)
+        #region progress
+        private void SetProgress_DragStarted(object sender, DragStartedEventArgs e)
         {
-            ViewModel.DisableSpotifyProgressUpdates = true;
+            //Log.Information("progress drag start");
+            ViewModel.IsDraggingProgress = true;
         }
         private async void SetProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
+            //Log.Information("progress drag completed");
             await SetProgress(sender);
-            ViewModel.DisableSpotifyProgressUpdates = false;
+            ViewModel.IsDraggingProgress = false;
         }
         private async void SetProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (ViewModel.ProgressSource == ProgressUpdateSource.Spotify) return;
+            // avoid firing an event when the progress bar is updated from spotify
+            if (ViewModel.ProgressSource == UpdateSource.Spotify)
+            {
+                //Log.Information("avoided volume value changed (updated by spotify)");
+                return;
+            }
+            // avoid firing when progress bar is currently dragged
+            if (ViewModel.IsDraggingProgress)
+            {
+                //Log.Information("avoided volume value changed (is dragging slider)");
+                return;
+            }
+
+            // this event is fired if the progress bar is set by just clicking somewhere (not dragging it there)
+            //Log.Information("progress value changed");
             await SetProgress(sender);
         }
         private static async Task SetProgress(object sender)

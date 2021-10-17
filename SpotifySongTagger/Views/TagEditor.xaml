@@ -523,7 +523,7 @@
                             Grid.Column="1" 
                             Value="{Binding Progress}" 
                             Minimum="0" Maximum="{Binding PlayerManager.ProgressMax}" TickFrequency="10"
-                            Thumb.DragStarted="DisableProgressUpdates"
+                            Thumb.DragStarted="SetProgress_DragStarted"
                             Thumb.DragCompleted="SetProgress_DragCompleted"
                             ValueChanged="SetProgress_ValueChanged"
                             ToolTip="{Binding PlayerManager.IsPremiumUser, Converter={StaticResource IsPremiumEmptyToolTipConverter}}"
@@ -556,11 +556,11 @@
                         Height="{StaticResource SpotifyControlSize}" Width="{StaticResource SpotifyControlSize}"/>
                     <Slider 
                         Grid.Column="1" 
-                        Value="{Binding PlayerManager.Volume}" 
+                        Value="{Binding Volume}" 
                         Name="VolumeSlider" 
                         Minimum="0" Maximum="100" TickFrequency="1"
                         VerticalAlignment="Center"
-                        Thumb.DragStarted="DisableVolumeUpdates"
+                        Thumb.DragStarted="SetVolume_DragStarted"
                         Thumb.DragCompleted="SetVolume_DragCompleted"
                         ValueChanged="SetVolume_ValueChanged"
                         ToolTip="{Binding PlayerManager.IsPremiumUser, Converter={StaticResource IsPremiumEmptyToolTipConverter}}"
