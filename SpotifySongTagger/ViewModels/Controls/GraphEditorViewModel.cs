@@ -21,13 +21,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             GraphGeneratorPage = ggp;
         }
 
-        private bool isUpdatingInputResults;
-        public bool IsUpdatingInputResults
-        {
-            get => isUpdatingInputResults;
-            set => SetProperty(ref isUpdatingInputResults, value, nameof(IsUpdatingInputResults));
-        }
-
+        #region load GraphNodes
         private bool isLoading;
         public bool IsLoading
         {
@@ -49,8 +43,9 @@ namespace SpotifySongTagger.ViewModels.Controls
             }
             IsLoading = false;
         }
+        #endregion
 
-
+        #region GraphNode calculations
         public void ClearAllInputResults()
         {
             foreach (var nodeVM in GraphNodeVMs)
@@ -64,7 +59,6 @@ namespace SpotifySongTagger.ViewModels.Controls
 
             RefreshInputResultsTask = Task.Run(() =>
             {
-                IsUpdatingInputResults = true;
                 try
                 {
                     foreach (var nodeVM in GraphNodeVMs)
@@ -75,10 +69,11 @@ namespace SpotifySongTagger.ViewModels.Controls
                     Log.Error($"Error calculating InputResult {e.Message}");
                 }
                 Log.Information("Updated InputResults");
-                IsUpdatingInputResults = false;
             });
             await RefreshInputResultsTask;
         }
+        #endregion
+
 
         private GraphGeneratorPage graphGeneratorPage;
         public GraphGeneratorPage GraphGeneratorPage
@@ -124,6 +119,8 @@ namespace SpotifySongTagger.ViewModels.Controls
                 nodeVM.CanvasWidth = CanvasWidth;
                 nodeVM.CanvasHeight = CanvasHeight;
                 GraphNodeVMs.Add(nodeVM);
+                // calculate input result
+                newNode.CalculateInputResult();
             }
         }
 
@@ -160,6 +157,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             if (DatabaseOperations.AddGraphNodeConnection(ClickedNodeViewModel.GraphNode, to.GraphNode))
             {
                 // update in ui
+                ClickedNodeViewModel.GraphNode.AddOutput(to.GraphNode);
                 ClickedNodeViewModel.GenerateArrows();
                 ClickedNodeViewModel.UpdateArrows(false);
 
@@ -190,18 +188,25 @@ namespace SpotifySongTagger.ViewModels.Controls
 
             if (SelectedObject is GraphNodeViewModel nodeVM)
             {
-                var successorNodes = nodeVM.GraphNode.Outputs;
                 // remove from db
                 if (DatabaseOperations.DeleteGraphNode(nodeVM.GraphNode))
                 {
+                    // update graphNode
+                    var inputs = nodeVM.GraphNode.Inputs.ToList();
+                    var outputs = nodeVM.GraphNode.Outputs.ToList();
+                    foreach (var input in inputs)
+                        nodeVM.GraphNode.RemoveInput(input);
+                    foreach (var output in outputs)
+                        nodeVM.GraphNode.RemoveOutput(output);
+
                     // update ui
                     GraphNodeVMs.Remove(nodeVM);
-                    foreach (var prevNode in nodeVM.GraphNode.Inputs)
-                        GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == prevNode).GenerateArrows();
+                    foreach (var input in inputs)
+                        GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == input).GenerateArrows();
 
                     // update input results
-                    foreach (var successorNode in successorNodes)
-                        successorNode.PropagateForward(gn => gn.ClearResult());
+                    foreach (var output in outputs)
+                        output.PropagateForward(gn => gn.ClearResult());
                     await RefreshInputResults();
                 }
             }
@@ -211,6 +216,7 @@ namespace SpotifySongTagger.ViewModels.Controls
                 if (DatabaseOperations.DeleteGraphNodeConnection(arrowVM.FromNode, arrowVM.ToNode))
                 {
                     // update ui
+                    arrowVM.FromNode.RemoveOutput(arrowVM.ToNode);
                     GraphNodeVMs.First(nodeVM => nodeVM.GraphNode == arrowVM.FromNode).GenerateArrows();
 
                     // update input results
@@ -272,6 +278,7 @@ namespace SpotifySongTagger.ViewModels.Controls
 
         public async Task AssignTagNode_TagChanged(AssignTagNode node, Tag tag)
         {
+            if (tag == null) return;
             // update in db
             if (DatabaseOperations.EditAssignTagNode(node, tag))
             {
@@ -282,6 +289,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public async Task FilterTagNode_TagChanged(FilterTagNode node, Tag tag)
         {
+            if (tag == null) return;
             // update in db
             if (DatabaseOperations.EditFilterTagNode(node, tag))
             {
@@ -292,6 +300,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public async Task FilterArtistNode_ArtistChanged(FilterArtistNode node, Artist artist)
         {
+            if (artist == null) return;
             // update in db
             if (DatabaseOperations.EditFilterArtistNode(node, artist))
             {
@@ -302,6 +311,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public async Task PlaylistInputNode_PlaylistChanged(PlaylistInputNode node, Playlist playlist)
         {
+            if (playlist == null) return;
             // update in db
             if (DatabaseOperations.EditPlaylistInputNode(node, playlist))
             {

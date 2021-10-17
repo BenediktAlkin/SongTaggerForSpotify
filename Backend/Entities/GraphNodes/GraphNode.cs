@@ -102,11 +102,13 @@ namespace Backend.Entities.GraphNodes
         public void RemoveInput(GraphNode input)
         {
             ((List<GraphNode>)Inputs).Remove(input);
+            ((List<GraphNode>)input.Outputs).Remove(this);
             OnRemoveInput(input);
         }
         public void RemoveOutput(GraphNode output)
         {
             ((List<GraphNode>)Outputs).Remove(output);
+            ((List<GraphNode>)output.Inputs).Remove(this);
             output.OnRemoveInput(this);
         }
 
@@ -175,9 +177,8 @@ namespace Backend.Entities.GraphNodes
         protected virtual void OnInputResultChanged() { }
         public void ClearResult()
         {
-            // use private methods to not throw OnInputResultChanged()
-            inputResult = null;
-            outputResult = null;
+            InputResult = null;
+            OutputResult = null;
         }
         public void CalculateInputResult()
         {
