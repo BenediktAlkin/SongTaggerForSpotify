@@ -14,7 +14,16 @@ namespace Backend
     {
         private const string SPOTIFY_ICON_LIGHT = "/Res/Spotify_Icon_RGB_Green.png";
         private const string SPOTIFY_ICON_DARK = "/Res/Spotify_Icon_RGB_White.png";
-        protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "PM");
+        private static ILogger logger;
+        protected static ILogger Logger 
+        {
+            get
+            {
+                if (logger == null)
+                    logger = Log.ForContext("SourceContext", "PM");
+                return logger;
+            }
+        }
 
         public static PlayerManager Instance { get; } = new();
         private PlayerManager() { }
@@ -125,8 +134,13 @@ namespace Backend
             };
             UpdateTrackInfoTimer.Elapsed += async (sender, e) => await UpdateTrackInfo();
             UpdateTrackInfoTimer.Enabled = true;
+            Logger.Information("started updating TrackInfo");
         }
-        public void StopUpdateTrackInfoTimer() => UpdateTrackInfoTimer.Enabled = false;
+        public void StopUpdateTrackInfoTimer()
+        {
+            UpdateTrackInfoTimer.Enabled = false;
+            Logger.Information("stopped updating TrackInfo");
+        }
         private Timer UpdatePlaybackInfoTimer { get; set; }
         public void StartUpdatePlaybackInfoTimer()
         {
@@ -140,8 +154,13 @@ namespace Backend
             };
             UpdatePlaybackInfoTimer.Elapsed += async (sender, e) => { try { await UpdatePlaybackInfo(); } catch (Exception ex) { Logger.Error($"UpdatePlaybackInfo error: {ex.Message}"); } };
             UpdatePlaybackInfoTimer.Enabled = true;
+            Logger.Information("started updating PlaybackInfo");
         }
-        public void StopUpdatePlaybackInfoTimer() => UpdatePlaybackInfoTimer.Enabled = false;
+        public void StopUpdatePlaybackInfoTimer()
+        {
+            UpdatePlaybackInfoTimer.Enabled = false;
+            Logger.Information("stopped updating PlaybackInfo");
+        }
 
         private void UpdateTrackInfo(FullTrack track)
         {
@@ -193,6 +212,7 @@ namespace Backend
         {
             if (!IsPremiumUser)
             {
+                Logger.Information("can't resume playback (no spotify premium)");
                 OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
                 return;
             }
@@ -202,18 +222,21 @@ namespace Backend
             {
                 var success = await Spotify.Player.ResumePlayback();
                 if (success)
+                {
                     IsPlaying = true;
+                    Logger.Information("resumed playback");
+                }
             }
             catch (Exception e)
             {
                 Logger.Error($"Error in PlayerManager.Play {e.Message}");
             }
-
         }
         public async Task Pause()
         {
             if (!IsPremiumUser)
             {
+                Logger.Information("can't pause playback (no spotify premium)");
                 OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
                 return;
             }
@@ -223,7 +246,10 @@ namespace Backend
             {
                 var success = await Spotify.Player.PausePlayback();
                 if (success)
+                {
                     IsPlaying = false;
+                    Logger.Information("paused playback");
+                }
             }
             catch (Exception e)
             {
@@ -234,6 +260,7 @@ namespace Backend
         {
             if (!IsPremiumUser)
             {
+                Logger.Information("can't update volume (no spotify premium)");
                 OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
                 return;
             }
@@ -242,7 +269,11 @@ namespace Backend
             {
                 var success = await Spotify.Player.SetVolume(new PlayerVolumeRequest(newVolume));
                 if (success)
+                {
+                    Logger.Information($"updated volume to {newVolume}");
                     Volume = newVolume;
+                }
+                    
             }
             catch (Exception e)
             {
@@ -253,6 +284,7 @@ namespace Backend
         {
             if (!IsPremiumUser)
             {
+                Logger.Information("can't update progress (no spotify premium)");
                 OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
                 return;
             }
@@ -261,7 +293,11 @@ namespace Backend
             {
                 var success = await Spotify.Player.SeekTo(new PlayerSeekToRequest(newProgress));
                 if (success)
+                {
+                    Logger.Information($"updated progress to {newProgress}");
                     Progress = newProgress;
+                }
+                    
             }
             catch (Exception e)
             {
@@ -272,6 +308,7 @@ namespace Backend
         {
             if (!IsPremiumUser)
             {
+                Logger.Information("can't update playing track (no spotify premium)");
                 OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
                 return;
             }
@@ -280,7 +317,10 @@ namespace Backend
             {
                 var success = await Spotify.Player.ResumePlayback(new PlayerResumePlaybackRequest { Uris = new List<string> { $"spotify:track:{t.Id}" } });
                 if (success)
+                {
+                    Logger.Information($"updated playing track to {t.Name}");
                     await UpdateTrackInfo();
+                }
             }
             catch (Exception e)
             {
@@ -288,7 +328,7 @@ namespace Backend
                 var availableDevicesResponse = await Spotify.Player.GetAvailableDevices();
                 if (availableDevicesResponse.Devices.Count == 0)
                 {
-                    Logger.Error($"No device is available");
+                    Logger.Error($"can't update playing track (no device is available)");
                     return;
                 }
 

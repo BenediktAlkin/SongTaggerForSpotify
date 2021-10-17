@@ -19,9 +19,10 @@ namespace Backend
         #region tags
         public static List<Tag> GetTags()
         {
+            Logger.Information($"loading tags");
             using var db = ConnectionManager.NewContext();
             var tags = db.Tags.ToList();
-            Logger.Information($"fetched {tags.Count} tags");
+            Logger.Information($"loaded {tags.Count} tags");
             return tags;
         }
         public static bool TagExists(string tagName, DatabaseContext db = null)
@@ -237,9 +238,10 @@ namespace Backend
         #region graphNodePages
         public static List<GraphGeneratorPage> GetGraphGeneratorPages()
         {
+            Logger.Information("loading pages");
             using var db = ConnectionManager.NewContext();
             var pages = db.GraphGeneratorPages.ToList();
-            Logger.Information($"fetched {pages.Count} pages");
+            Logger.Information($"loaded {pages.Count} pages");
             return pages;
         }
         public static bool AddGraphGeneratorPage(GraphGeneratorPage page)
@@ -929,7 +931,7 @@ namespace Backend
                 Logger.Information($"Finished waiting for currently running SyncLibrary to finish");
             }
 
-
+            if (DataContainer.Instance.User == null) return;
             SyncLibraryTask = Task.Run(async () =>
             {
                 Logger.Information("Syncing library");
@@ -944,8 +946,10 @@ namespace Backend
 
                 // get db data
                 var dbTracks = db.Tracks.Include(t => t.Tags).Include(t => t.Playlists).ToDictionary(t => t.Id, t => t);
+                cancellationToken.ThrowIfCancellationRequested();
                 var dbPlaylists = db.Playlists.ToDictionary(pl => pl.Id, pl => pl);
                 var dbArtists = db.Artists.ToDictionary(a => a.Id, a => a);
+                cancellationToken.ThrowIfCancellationRequested();
                 var dbAlbums = db.Albums.ToDictionary(a => a.Id, a => a);
                 cancellationToken.ThrowIfCancellationRequested();
 

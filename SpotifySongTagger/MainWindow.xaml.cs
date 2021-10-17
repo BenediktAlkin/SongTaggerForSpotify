@@ -34,13 +34,14 @@ namespace SpotifySongTagger
             var logConfig = new LoggerConfiguration()
                 .WriteTo.File(formatter: new LogFormatter("UI"), @"frontend.log");
 #if DEBUG
-            logConfig = logConfig.WriteTo.Trace(formatter: new LogFormatter("??"));
+            logConfig = logConfig.WriteTo.Trace(formatter: new LogFormatter("UI"));
 #endif
             Log.Logger = logConfig.CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 
             if(!ViewModel.CheckedForUpdates)
             {
+                Log.Information("checking for updates");
 #if !DEBUG
                 // check for update and update
                 Action shutdownAction = () =>
@@ -50,14 +51,15 @@ namespace SpotifySongTagger
                 };
                 await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SongTaggerForSpotify", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
 #endif
-                Log.Information("checking for updates");
                 ViewModel.CheckedForUpdates = true;
+                Log.Information("checked for updates");
             }
 
-            Log.Information("logging in");
+            Log.Information("trying logging in from saved token");
             ViewModel.IsLoggingIn = true;
             await ConnectionManager.TryInitFromSavedToken();
             ViewModel.IsLoggingIn = false;
+            Log.Information("tried logging in from saved token");
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -92,6 +94,11 @@ namespace SpotifySongTagger
                 await DatabaseOperations.SyncLibrary(tokenSource.Token);
             }
             catch (TaskCanceledException)
+            {
+                Log.Information("Cancelled sync library");
+                tokenSource.Dispose();
+            }
+            catch (OperationCanceledException)
             {
                 Log.Information("Cancelled sync library");
                 tokenSource.Dispose();
@@ -144,7 +151,7 @@ namespace SpotifySongTagger
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = "https://github.com/BenediktAlkin/SpotifySongTagger",
+                FileName = "https://github.com/BenediktAlkin/SongTaggerForSpotify",
                 UseShellExecute = true
             });
         }

@@ -80,6 +80,7 @@ namespace SpotifySongTagger.ViewModels
         }
         public async Task LoadTracks(Playlist playlist)
         {
+            Log.Information($"loading tracks from playlist {playlist.Name}");
             IsLoadingTracks = true;
             TrackVMs = null;
             List<Track> tracks;
@@ -115,7 +116,7 @@ namespace SpotifySongTagger.ViewModels
 
                 TrackVMs = newTrackVMs;
                 IsLoadingTracks = false;
-                Log.Information($"Selected playlist {playlist.Name} with {TrackVMs.Count} songs");
+                Log.Information($"loaded {TrackVMs.Count} tracks from playlist {playlist.Name}");
             }
         }
         private void UpdatePlayingTrack(string newId)

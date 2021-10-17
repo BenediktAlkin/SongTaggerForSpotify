@@ -47,16 +47,24 @@
 
 
                 <!-- logout button -->
-                <Button Click="LoginButton_Click" Margin="8"
+                <Button Click="LogoutButton_Click" Margin="8"
                     Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
                     Width="128"
                     Content="Logout"/>
 
             </StackPanel>
-            
 
+
+            <!-- remember me checkbox -->
+            <StackPanel Margin="8" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding RememberMe}" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>
+                <TextBlock 
+                    Margin="5 0 0 0" 
+                    Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}" 
+                    Text="Remember me" 
+                    VerticalAlignment="Center"/>
+            </StackPanel>
             <!-- login button -->
-            <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>
             <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                 Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"
                 materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"

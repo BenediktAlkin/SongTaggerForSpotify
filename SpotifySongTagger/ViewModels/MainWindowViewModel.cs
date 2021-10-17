@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+using Serilog;
 using SpotifySongTagger.Views;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,11 @@ namespace SpotifySongTagger.ViewModels
         public MenuItem SelectedItem
         {
             get => selectedItem;
-            set => SetProperty(ref selectedItem, value, nameof(SelectedItem));
+            set
+            {
+                SetProperty(ref selectedItem, value, nameof(SelectedItem));
+                Log.Information($"change view to {value.Name}");
+            }
         }
         private FrameworkElement view;
         public FrameworkElement View

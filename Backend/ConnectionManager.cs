@@ -88,7 +88,15 @@ namespace Backend
                 tokenData.Scope,
                 $"{tokenData.CreatedAt.Ticks}",
             });
-            File.WriteAllText(TOKEN_FILE, tokenStr);
+            try
+            {
+                File.WriteAllText(TOKEN_FILE, tokenStr);
+                Logger.Information("saved token to file");
+            }
+            catch (Exception)
+            {
+                Logger.Warning("failed to save token to file");
+            }
         }
 
         private static ISpotifyClient CreateSpotifyClient(PKCETokenResponse tokenData)
@@ -127,6 +135,7 @@ namespace Backend
         private HttpListener Server { get; set; }
         public static void Logout()
         {
+            Log.Information("logging out");
             if (File.Exists(TOKEN_FILE))
             {
                 try
@@ -141,6 +150,7 @@ namespace Backend
 
             DataContainer.Instance.Clear();
             Instance.Spotify = null;
+            Log.Information("logged out");
         }
         public void CancelLogin()
         {

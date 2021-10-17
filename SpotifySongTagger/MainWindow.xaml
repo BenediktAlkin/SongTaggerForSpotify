@@ -100,6 +100,7 @@
                                 Margin="16,0,0,0"
                                 ToolTip="Sync Library"
                                 Visibility="{Binding SelectedItem.CanSyncLibrary, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                IsEnabled="{Binding DataContainer.User, Converter={StaticResource IsNotNullToBooleanConverter}}"
                                 materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
                                 Content="{materialDesign:PackIcon Kind=Sync, Size=24}"
                                 Style="{DynamicResource MaterialDesignToolButton}"
