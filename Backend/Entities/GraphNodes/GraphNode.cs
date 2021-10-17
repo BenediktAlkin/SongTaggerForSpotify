@@ -10,6 +10,8 @@ namespace Backend.Entities.GraphNodes
 {
     public abstract class GraphNode : NotifyPropertyChangedBase, IEquatable<GraphNode>
     {
+        protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "GN");
+
         #region navigation properties
         // only needed to change on delete behaviour
         public List<RemoveNode> RemoveNodeBaseSets { get; set; }
@@ -45,12 +47,12 @@ namespace Backend.Entities.GraphNodes
         {
             if (!CanAddInput(input) || !input.CanAddOutput(this))
             {
-                Log.Information($"Connection {input} to {this} is invalid");
+                Logger.Information($"Connection {input} to {this} is invalid");
                 return;
             }
             if (Inputs.Contains(input) || input.Outputs.Contains(this))
             {
-                Log.Information($"Connection {input} to {this} already exists");
+                Logger.Information($"Connection {input} to {this} already exists");
                 return;
             }
             ((List<GraphNode>)Inputs).Add(input);
@@ -58,12 +60,12 @@ namespace Backend.Entities.GraphNodes
 
             if (HasCycles(this))
             {
-                Log.Information($"Connection {input} to {this} would introduce cycle");
+                Logger.Information($"Connection {input} to {this} would introduce cycle");
                 RemoveInput(input);
                 input.RemoveOutput(this);
                 return;
             }
-            Log.Information($"Connected {input} to {this}");
+            Logger.Information($"Connected {input} to {this}");
             PropagateBackward(gn => gn.OnConnectionAdded(input, this));
             PropagateForward(gn => gn.ClearResult());
             OnAddInput(input);
@@ -72,12 +74,12 @@ namespace Backend.Entities.GraphNodes
         {
             if (!CanAddOutput(output) || !output.CanAddInput(this))
             {
-                Log.Information($"Connection {this} to {output} is invalid");
+                Logger.Information($"Connection {this} to {output} is invalid");
                 return;
             }
             if (Outputs.Contains(output) || output.Inputs.Contains(this))
             {
-                Log.Information($"Connection {this} to {output} already exists");
+                Logger.Information($"Connection {this} to {output} already exists");
                 return;
             }
             ((List<GraphNode>)Outputs).Add(output);
@@ -85,12 +87,12 @@ namespace Backend.Entities.GraphNodes
 
             if (HasCycles(this))
             {
-                Log.Information($"Connection {this} to {output} would introduce cycle");
+                Logger.Information($"Connection {this} to {output} would introduce cycle");
                 RemoveOutput(output);
                 output.RemoveInput(this);
                 return;
             }
-            Log.Information($"Connected {this} to {output}");
+            Logger.Information($"Connected {this} to {output}");
             PropagateBackward(gn => gn.OnConnectionAdded(this, output));
             output.PropagateForward(gn => gn.ClearResult());
             output.OnAddInput(this);
@@ -203,12 +205,12 @@ namespace Backend.Entities.GraphNodes
             if (hasValidInput)
             {
                 var inputResultCounts = string.Join(',', newInputResults.Select(ir => $"{ir.Count}"));
-                Log.Information($"Calculated InputResult for {this} (counts={inputResultCounts})");
+                Logger.Information($"Calculated InputResult for {this} (counts={inputResultCounts})");
                 InputResult = newInputResults;
             }
             else
             {
-                Log.Information($"{this} has no valid Inputs --> InputResult = empty list");
+                Logger.Information($"{this} has no valid Inputs --> InputResult = empty list");
                 InputResult = new() { new() };
             }
         }
@@ -223,12 +225,12 @@ namespace Backend.Entities.GraphNodes
             if (InputResult.Count > 0 && IsValid)
             {
                 MapInputToOutput();
-                Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
+                Logger.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
             }
             else
             {
                 OutputResult = new();
-                Log.Information($"{this} is invalid --> OutputResult = empty list");
+                Logger.Information($"{this} is invalid --> OutputResult = empty list");
             }
         }
 

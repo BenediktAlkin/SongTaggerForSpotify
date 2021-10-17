@@ -238,7 +238,9 @@ namespace Backend
         public static List<GraphGeneratorPage> GetGraphGeneratorPages()
         {
             using var db = ConnectionManager.NewContext();
-            return db.GraphGeneratorPages.ToList();
+            var pages = db.GraphGeneratorPages.ToList();
+            Logger.Information($"fetched {pages.Count} pages");
+            return pages;
         }
         public static bool AddGraphGeneratorPage(GraphGeneratorPage page)
         {

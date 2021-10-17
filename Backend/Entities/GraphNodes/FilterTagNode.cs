@@ -43,7 +43,7 @@ namespace Backend.Entities.GraphNodes
                 ValidTags = null;
             else
                 ValidTags = InputResult[0].SelectMany(track => track.Tags).Distinct().OrderBy(tag => tag.Name).ToList();
-            Log.Information($"OnInputResultChanged for {this} (validTagsCount={ValidTags?.Count})");
+            Logger.Information($"OnInputResultChanged for {this} (validTagsCount={ValidTags?.Count})");
         }
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();

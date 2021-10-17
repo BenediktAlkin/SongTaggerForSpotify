@@ -32,7 +32,7 @@ namespace SpotifySongTagger
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var logConfig = new LoggerConfiguration()
-                .WriteTo.File(formatter: new LogFormatter("??"), @"frontend.log");
+                .WriteTo.File(formatter: new LogFormatter("UI"), @"frontend.log");
 #if DEBUG
             logConfig = logConfig.WriteTo.Trace(formatter: new LogFormatter("??"));
 #endif
@@ -50,13 +50,13 @@ namespace SpotifySongTagger
                 };
                 await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SongTaggerForSpotify", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
 #endif
-                await Task.Delay(1000);
+                Log.Information("checking for updates");
                 ViewModel.CheckedForUpdates = true;
             }
 
+            Log.Information("logging in");
             ViewModel.IsLoggingIn = true;
             await ConnectionManager.TryInitFromSavedToken();
-            await Task.Delay(1000);
             ViewModel.IsLoggingIn = false;
         }
 

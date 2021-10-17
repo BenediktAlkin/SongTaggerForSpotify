@@ -11,6 +11,8 @@ namespace Util
 
     public static class Github
     {
+        private static ILogger Logger { get; } = Log.ForContext("SourceContext", "GH");
+
         private static JsonSerializerSettings SerializerOptions { get; } = new()
         {
             ContractResolver = new DefaultContractResolver
@@ -24,21 +26,21 @@ namespace Util
         {
             try
             {
-                Log.Information($"Checking for updates (current={version})");
+                Logger.Information($"Checking for updates (current={version})");
                 var latest = await GetLatestRelease(user, repo);
                 if (latest.Assets.Count > 0)
                 {
                     if (latest.Version?.CompareTo(version) > 0)
                     {
-                        Log.Information($"New version available {latest.TagName}");
+                        Logger.Information($"New version available {latest.TagName}");
                         return latest;
                     }
-                    Log.Information($"No updates available");
+                    Logger.Information($"No updates available");
                 }
             }
             catch (Exception e)
             {
-                Log.Error($"Failed to check for updates: {e.Message}");
+                Logger.Error($"Failed to check for updates: {e.Message}");
             }
             return null;
         }
@@ -57,7 +59,7 @@ namespace Util
             }
             catch (Exception e)
             {
-                Log.Error($"Failed to make api call to {url}: {e.Message}");
+                Logger.Error($"Failed to make api call to {url}: {e.Message}");
                 return default(T);
             }
         }

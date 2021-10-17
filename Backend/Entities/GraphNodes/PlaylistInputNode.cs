@@ -45,7 +45,7 @@ namespace Backend.Entities.GraphNodes
         {
             if (!IsValid)
             {
-                Log.Information($"{this} is invalid --> InputResult = empty list");
+                Logger.Information($"{this} is invalid --> InputResult = empty list");
                 InputResult = new() { new() };
                 return;
             }
@@ -55,7 +55,7 @@ namespace Backend.Entities.GraphNodes
 
             var tracks = GetTracks();
             InputResult = new List<List<Track>> { tracks };
-            Log.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} " +
+            Logger.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} " +
                 $"IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={IncludedAlbums})");
         }
         protected abstract List<Track> GetTracks();

@@ -83,6 +83,7 @@ namespace SpotifySongTagger.Utils
         private void SetValue(SettingKey key, string value)
         {
             Dict[key.ToString()] = value;
+            Log.Information($"changed setting {key} to {value}");
             try
             {
                 var json = JsonConvert.SerializeObject(Dict);

@@ -18,6 +18,7 @@ namespace Backend
         private static readonly string SERVER_URL = $"http://localhost:{PORT}/";
         private static readonly string CALLBACK_URL = $"{SERVER_URL}callback/";
 
+        protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "CM");
         public static ConnectionManager Instance { get; } = new();
         private ConnectionManager() { }
 
@@ -27,7 +28,7 @@ namespace Backend
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
             if (logTo != null)
                 optionsBuilder.LogTo(logTo, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
-            //optionsBuilder.LogTo(Log.Information, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
+            //optionsBuilder.LogTo(Logger.Information, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.EnableSensitiveDataLogging();
             return optionsBuilder;
         }
@@ -42,7 +43,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Failed to initialize Database {e.Message}");
+                Logger.Error($"Failed to initialize Database {e.Message}");
                 throw;
             }
         }
@@ -114,7 +115,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Information($"Failed to initialize spotify client {e.Message}");
+                Logger.Information($"Failed to initialize spotify client {e.Message}");
                 return false;
             }
             return true;
@@ -157,7 +158,7 @@ namespace Backend
                 }
                 catch (Exception e)
                 {
-                    Log.Information($"Failed to stop server {e.Message}");
+                    Logger.Information($"Failed to stop server {e.Message}");
                 }
             }
 
@@ -165,7 +166,7 @@ namespace Backend
             Server = new HttpListener();
             Server.Prefixes.Add(SERVER_URL);
             Server.Start();
-            Log.Information($"Listening for connections on {PORT}");
+            Logger.Information($"Listening for connections on {PORT}");
 
             // create code
             var (verifier, challenge) = PKCEUtil.GenerateCodes();
@@ -201,7 +202,7 @@ namespace Backend
             });
 
             // listen for request
-            Log.Information("opened login url in browser --> waiting for token");
+            Logger.Information("opened login url in browser --> waiting for token");
             HttpListenerContext ctx;
             try
             {
@@ -209,13 +210,13 @@ namespace Backend
             }
             catch (Exception)
             {
-                Log.Information("failed to get login response");
+                Logger.Information("failed to get login response");
                 return;
             }
 
             // extract token
             var code = ctx.Request.Url.ToString().Replace($"{CALLBACK_URL}?code=", "");
-            Log.Information("got token");
+            Logger.Information("got token");
 
             // create spotify client
             var tokenRequest = new PKCETokenRequest(CLIENT_ID, code, new Uri(CALLBACK_URL), verifier);

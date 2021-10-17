@@ -95,7 +95,6 @@ namespace Backend
         {
             if (Tags != null) return;
 
-            Log.Information("Loading tags");
             Tags = null;
             await Task.Run(() =>
             {
@@ -116,7 +115,6 @@ namespace Backend
         {
             if (GraphGeneratorPages != null) return;
 
-            Log.Information("Loading pages");
             await Task.Run(() =>
             {
                 var dbPages = DatabaseOperations.GetGraphGeneratorPages();

@@ -14,6 +14,7 @@ namespace Backend
     {
         private const string SPOTIFY_ICON_LIGHT = "/Res/Spotify_Icon_RGB_Green.png";
         private const string SPOTIFY_ICON_DARK = "/Res/Spotify_Icon_RGB_White.png";
+        protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "PM");
 
         public static PlayerManager Instance { get; } = new();
         private PlayerManager() { }
@@ -137,7 +138,7 @@ namespace Backend
                 AutoReset = true,
                 Interval = 5000,
             };
-            UpdatePlaybackInfoTimer.Elapsed += async (sender, e) => { try { await UpdatePlaybackInfo(); } catch (Exception ex) { Log.Error($"UpdatePlaybackInfo error: {ex.Message}"); } };
+            UpdatePlaybackInfoTimer.Elapsed += async (sender, e) => { try { await UpdatePlaybackInfo(); } catch (Exception ex) { Logger.Error($"UpdatePlaybackInfo error: {ex.Message}"); } };
             UpdatePlaybackInfoTimer.Enabled = true;
         }
         public void StopUpdatePlaybackInfoTimer() => UpdatePlaybackInfoTimer.Enabled = false;
@@ -167,7 +168,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in UpdatePlaybackInfo {e.Message}");
+                Logger.Error($"Error in UpdatePlaybackInfo {e.Message}");
             }
         }
         public async Task UpdateTrackInfo()
@@ -185,7 +186,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in UpdateTrackInfo {e.Message}");
+                Logger.Error($"Error in UpdateTrackInfo {e.Message}");
             }
         }
         public async Task Play()
@@ -205,7 +206,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in PlayerManager.Play {e.Message}");
+                Logger.Error($"Error in PlayerManager.Play {e.Message}");
             }
 
         }
@@ -226,7 +227,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in PlayerManager.Pause {e.Message}");
+                Logger.Error($"Error in PlayerManager.Pause {e.Message}");
             }
         }
         public async Task SetVolume(int newVolume)
@@ -245,7 +246,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in SetVolume {e.Message}");
+                Logger.Error($"Error in SetVolume {e.Message}");
             }
         }
         public async Task SetProgress(int newProgress)
@@ -264,7 +265,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Error($"Error in SetProgress {e.Message}");
+                Logger.Error($"Error in SetProgress {e.Message}");
             }
         }
         public async Task SetTrack(Track t)
@@ -287,7 +288,7 @@ namespace Backend
                 var availableDevicesResponse = await Spotify.Player.GetAvailableDevices();
                 if (availableDevicesResponse.Devices.Count == 0)
                 {
-                    Log.Error($"No device is available");
+                    Logger.Error($"No device is available");
                     return;
                 }
 
@@ -295,7 +296,7 @@ namespace Backend
                 var playbackInfo = await Spotify.Player.GetCurrentPlayback();
                 if (playbackInfo == null)
                 {
-                    Log.Information($"No active device found --> using first device");
+                    Logger.Information($"No active device found --> using first device");
                     await Spotify.Player.TransferPlayback(new PlayerTransferPlaybackRequest(new List<string> { availableDevicesResponse.Devices[0].Id }) { Play = false });
                     // wait for playback to transfer
                     await Task.Delay(1000);
@@ -307,11 +308,11 @@ namespace Backend
                     }
                     catch (Exception e2)
                     {
-                        Log.Error($"Error in SetTrack could not ResumePlayback after using first available device {e2.Message}");
+                        Logger.Error($"Error in SetTrack could not ResumePlayback after using first available device {e2.Message}");
                     }
                     return;
                 }
-                Log.Error($"Error in SetTrack {e.Message}");
+                Logger.Error($"Error in SetTrack {e.Message}");
             }
         }
     }

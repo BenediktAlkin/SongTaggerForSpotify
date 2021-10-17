@@ -13,7 +13,7 @@ namespace Util
     {
         public const string TEMP_DIR = "temp";
         public const string ZIP_DEFAULT_NAME = "temp.zip";
-
+        private static ILogger Logger { get; } = Log.ForContext("SourceContext", "UM");
         public static UpdateManager Instance { get; } = new();
         private UpdateManager() { }
 
@@ -79,7 +79,7 @@ namespace Util
             var asset = release.Assets.FirstOrDefault(a => a.Name.ToLower().Contains(".zip"));
             if (asset == null)
             {
-                Log.Error($"Failed to download update (no asset contains 'portable')");
+                Logger.Error($"Failed to download update (no asset contains 'portable')");
                 return;
             }
             var url = asset.BrowserDownloadUrl;
@@ -96,7 +96,7 @@ namespace Util
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Error starting updater: {e.Message}");
+                    Logger.Error($"Error starting updater: {e.Message}");
                 }
             }
             shutdownAction?.Invoke();
@@ -109,14 +109,14 @@ namespace Util
             var zipFilePath = Path.Combine(TEMP_DIR, zipFileName);
             try
             {
-                Log.Information("Creating temp directory");
+                Logger.Information("Creating temp directory");
                 if (Directory.Exists(TEMP_DIR))
                     Directory.Delete(TEMP_DIR, true);
                 Directory.CreateDirectory(TEMP_DIR);
             }
             catch (Exception e)
             {
-                Log.Error($"Failed to create/clear the temp directory: {e.Message}");
+                Logger.Error($"Failed to create/clear the temp directory: {e.Message}");
                 return (null, null);
             }
             return (zipFileName, zipFilePath);
@@ -129,7 +129,7 @@ namespace Util
             {
                 using (var wc = new WebClient())
                 {
-                    Log.Information("Downloading latest version");
+                    Logger.Information("Downloading latest version");
                     wc.DownloadProgressChanged += (sender, e) =>
                     {
                         UpdateSizeMb = (double)e.TotalBytesToReceive / 1024 / 1024;
@@ -141,7 +141,7 @@ namespace Util
             }
             catch (Exception e)
             {
-                Log.Error($"Failed update download: {e.Message}");
+                Logger.Error($"Failed update download: {e.Message}");
             }
         }
         private void ExtractUpdate(string zipFilePath, string updaterName, string applicationName)
@@ -151,7 +151,7 @@ namespace Util
             {
                 // extract zip
                 File.Move(zipFilePath, zipFilePath.Replace("rar", "zip"));
-                Log.Information("Extracting files...");
+                Logger.Information("Extracting files...");
                 ZipFile.ExtractToDirectory(zipFilePath, TEMP_DIR);
 
                 // update updater (copy all files starting with updaterName [e.g. Updater.exe, Updater.dll, ...])
@@ -168,7 +168,7 @@ namespace Util
             }
             catch (Exception e)
             {
-                Log.Error($"Failed to extract update: {e.Message}");
+                Logger.Error($"Failed to extract update: {e.Message}");
                 return;
             }
         }
