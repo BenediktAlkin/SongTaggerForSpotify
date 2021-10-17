@@ -87,7 +87,7 @@ namespace Backend.Tests
 
             return albums;
         }
-        protected static List<Track> InsertTracks(int count, List<Artist> artists, List<Album> albums)
+        protected static List<Track> InsertTracks(int count, List<Artist> artists, List<Album> albums, bool isLiked=false)
         {
             using var db = ConnectionManager.NewContext();
             var tracks = Enumerable.Range(1, count).Select(i =>
@@ -97,6 +97,7 @@ namespace Backend.Tests
                 Name = $"track{i}",
                 //Album = albums[i % albums.Count],
                 Artists = new List<Artist> { artists[i % artists.Count] },
+                IsLiked = isLiked,
             }).ToList();
             db.AttachRange(artists);
             db.AttachRange(albums);

@@ -31,14 +31,14 @@ namespace Backend.Entities.GraphNodes
 
         protected override void MapInputToOutput()
         {
-            if (InputResult == null || InputResult.Count == 0) return;
-
             if (YearFrom != null && YearTo != null)
                 OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear && t.Album.ReleaseYear <= YearTo).ToList();
             else if (YearFrom != null)
                 OutputResult = InputResult[0].Where(t => YearFrom <= t.Album.ReleaseYear).ToList();
             else if (YearTo != null)
                 OutputResult = InputResult[0].Where(t => t.Album.ReleaseYear <= YearTo).ToList();
+            else
+                OutputResult = InputResult[0];
         }
 
         public override bool IsValid => true;

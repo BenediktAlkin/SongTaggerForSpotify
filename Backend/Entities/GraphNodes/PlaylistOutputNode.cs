@@ -15,11 +15,7 @@ namespace Backend.Entities.GraphNodes
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
         protected override bool CanAddOutput(GraphNode output) => false;
-        protected override void MapInputToOutput()
-        {
-            if (InputResult != null && InputResult.Count > 0)
-                OutputResult = InputResult[0];
-        }
+        protected override void MapInputToOutput() => OutputResult = InputResult[0];
 
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistName);
 

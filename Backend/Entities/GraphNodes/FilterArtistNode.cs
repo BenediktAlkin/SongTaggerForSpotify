@@ -46,11 +46,8 @@ namespace Backend.Entities.GraphNodes
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
 
-        protected override void MapInputToOutput()
-        {
-            if (Artist != null && InputResult != null && InputResult.Count > 0)
-                OutputResult = InputResult[0].Where(t => t.Artists.Contains(Artist)).ToList();
-        }
+        protected override void MapInputToOutput() 
+            => OutputResult = InputResult[0].Where(t => t.Artists.Contains(Artist)).ToList();
 
         public override bool IsValid => ArtistId != null || Artist != null;
         public override bool RequiresArtists => true;

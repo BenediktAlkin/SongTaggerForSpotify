@@ -47,11 +47,8 @@ namespace Backend.Entities.GraphNodes
         }
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
-        protected override void MapInputToOutput()
-        {
-            if (Tag != null && InputResult != null && InputResult.Count > 0)
-                OutputResult = InputResult[0].Where(t => t.Tags.Contains(Tag)).ToList();
-        }
+        protected override void MapInputToOutput() 
+            => OutputResult = InputResult[0].Where(t => t.Tags.Contains(Tag)).ToList();
 
         public override bool IsValid => TagId != null || Tag != null;
         public override bool RequiresTags => true;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Threading;
 using Util;
 
 namespace Backend.Entities.GraphNodes
@@ -178,31 +179,36 @@ namespace Backend.Entities.GraphNodes
             inputResult = null;
             outputResult = null;
         }
-        public virtual void CalculateInputResult()
+        public void CalculateInputResult()
         {
             if (InputResult != null) return;
 
-            if (Inputs == null || !Inputs.Any())
-                InputResult = new();
+            CalculateInputResultImpl();
+                
+        }
+        protected virtual void CalculateInputResultImpl()
+        {
+            var newInputResults = new List<List<Track>>();
+            var hasValidInput = false;
+            foreach (var input in Inputs ?? Enumerable.Empty<GraphNode>())
+            {
+                input.CalculateOutputResult();
+                if (input.OutputResult != null)
+                {
+                    newInputResults.Add(input.OutputResult);
+                    hasValidInput = true;
+                }
+            }
+            if (hasValidInput)
+            {
+                var inputResultCounts = string.Join(',', newInputResults.Select(ir => $"{ir.Count}"));
+                Log.Information($"Calculated InputResult for {this} (counts={inputResultCounts})");
+                InputResult = newInputResults;
+            }
             else
             {
-                var newInputResults = new List<List<Track>>();
-                var hasValidInput = false;
-                foreach (var input in Inputs)
-                {
-                    input.CalculateOutputResult();
-                    if (input.OutputResult != null)
-                    {
-                        newInputResults.Add(input.OutputResult);
-                        hasValidInput = true;
-                    }
-                }
-                if (hasValidInput)
-                {
-                    var inputResultCounts = string.Join(',', newInputResults.Select(ir => $"{ir.Count}"));
-                    Log.Information($"Calculated InputResult for {this} (counts={inputResultCounts})");
-                    InputResult = newInputResults;
-                }
+                Log.Information($"{this} has no valid Inputs --> InputResult = empty list");
+                InputResult = new() { new() };
             }
         }
         protected virtual void MapInputToOutput() { }
@@ -212,11 +218,17 @@ namespace Backend.Entities.GraphNodes
 
             if (InputResult == null)
                 CalculateInputResult();
-            // input node is invalid --> InputResult stays null
-            if (InputResult != null)
+
+            if (InputResult.Count > 0 && IsValid)
+            {
                 MapInputToOutput();
-            if (OutputResult != null)
                 Log.Information($"Calculated OutputResult for {this} (count={OutputResult.Count})");
+            }
+            else
+            {
+                OutputResult = new();
+                Log.Information($"{this} is invalid --> OutputResult = empty list");
+            }
         }
 
 

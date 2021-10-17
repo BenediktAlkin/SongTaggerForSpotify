@@ -179,6 +179,7 @@ namespace SpotifySongTagger.Views.Controls
             if (ViewModel == null) return;
             var frameworkElement = sender as FrameworkElement;
             var node = frameworkElement.DataContext as AssignTagNode;
+            if (node == null) return;
 
             await ViewModel.AssignTagNode_TagChanged(node, node.Tag);
         }
@@ -187,6 +188,7 @@ namespace SpotifySongTagger.Views.Controls
             if (ViewModel == null) return;
             var frameworkElement = sender as FrameworkElement;
             var node = frameworkElement.DataContext as FilterTagNode;
+            if (node == null) return;
 
             await ViewModel.FilterTagNode_TagChanged(node, node.Tag);
         }
@@ -195,6 +197,7 @@ namespace SpotifySongTagger.Views.Controls
             if (ViewModel == null) return;
             var frameworkElement = sender as FrameworkElement;
             var node = frameworkElement.DataContext as FilterArtistNode;
+            if (node == null) return;
 
             await ViewModel.FilterArtistNode_ArtistChanged(node, node.Artist);
         }
@@ -203,6 +206,7 @@ namespace SpotifySongTagger.Views.Controls
             if (ViewModel == null) return;
             var frameworkElement = sender as FrameworkElement;
             var node = frameworkElement.DataContext as PlaylistInputNode;
+            if (node == null) return;
 
             await ViewModel.PlaylistInputNode_PlaylistChanged(node, node.Playlist);
         }
@@ -219,6 +223,7 @@ namespace SpotifySongTagger.Views.Controls
             if (Validation.GetErrors(frameworkElement).Count == 0)
             {
                 var filterYearNode = frameworkElement.DataContext as FilterYearNode;
+                if (filterYearNode == null) return;
                 await ViewModel.FilterYearNode_Edit(filterYearNode, filterYearNode.YearFrom, filterYearNode.YearTo);
             }
         }

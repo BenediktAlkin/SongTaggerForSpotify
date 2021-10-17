@@ -19,6 +19,7 @@
         <converters:ObjectToTypeNameConverter x:Key="ObjectToTypeNameConverter"/>
         <converters:ObjectToStringConverter x:Key="ObjectToStringConverter"/>
         <converters:IntToTextConverter x:Key="IntToTextConverter"/>
+        <materialDesign:NullableToVisibilityConverter x:Key="InvertedNullVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed" />
     </UserControl.Resources>
 
     <Grid>
@@ -226,9 +227,30 @@
                                 CornerRadius="6"
                                 Loaded="Node_Loaded"
                                 SizeChanged="Node_SizeChanged">
-                                <StackPanel Margin="8 8 8 8">
-                                    <TextBlock FontWeight="Bold" TextAlignment="Center" Text="{Binding GraphNode, Converter={StaticResource GraphNodeToNameConverter}}"/>
-                                    <ContentControl Content="{Binding GraphNode}">
+                                <Grid Margin="8 8 8 8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <ProgressBar 
+                                        Grid.Column="0"
+                                        Grid.Row="0"
+                                        Width="15"
+                                        Height="15"
+                                        Margin="0 0 5 0"
+                                        Visibility="{Binding GraphNode.InputResult, Converter={StaticResource InvertedNullVisibilityConverter}}"
+                                        Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        IsIndeterminate="True"
+                                        Value="0"
+                                        ToolTip="Updating node input"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding GraphNode, Converter={StaticResource GraphNodeToNameConverter}}"/>
+                                    <ContentControl Content="{Binding GraphNode}" Grid.Row="1" Grid.ColumnSpan="3">
                                         <ContentControl.Style>
                                             <Style TargetType="ContentControl">
                                                 <Style.Triggers>
@@ -272,7 +294,7 @@
                                             </Style>
                                         </ContentControl.Style>
                                     </ContentControl>
-                                </StackPanel>
+                                </Grid>
                             </Border>
                             <!-- border for selection -->
                             <Border 

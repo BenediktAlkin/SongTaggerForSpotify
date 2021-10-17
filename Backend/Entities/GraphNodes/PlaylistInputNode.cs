@@ -41,10 +41,14 @@ namespace Backend.Entities.GraphNodes
         protected bool IncludedAlbums { get; set; }
 
         protected override void MapInputToOutput() => OutputResult = InputResult[0];
-        public override void CalculateInputResult()
+        protected override void CalculateInputResultImpl()
         {
-            if (InputResult != null || Playlist == null) return;
-
+            if (!IsValid)
+            {
+                Log.Information($"{this} is invalid --> InputResult = empty list");
+                InputResult = new() { new() };
+                return;
+            }
             IncludedArtists = AnyForward(gn => gn.RequiresArtists);
             IncludedTags = AnyForward(gn => gn.RequiresTags);
             IncludedAlbums = AnyForward(gn => gn.RequiresAlbums);
