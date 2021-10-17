@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Util;
@@ -30,24 +31,33 @@ namespace SpotifySongTagger
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(formatter: new LogFormatter("??"), @"frontend.log")
-                .WriteTo.Trace(formatter: new LogFormatter("??"))
-                .CreateLogger();
+            var logConfig = new LoggerConfiguration()
+                .WriteTo.File(formatter: new LogFormatter("??"), @"frontend.log");
+#if DEBUG
+            logConfig = logConfig.WriteTo.Trace(formatter: new LogFormatter("??"));
+#endif
+            Log.Logger = logConfig.CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 
-#if !DEBUG
-            // check for update and update
-            Action shutdownAction = () =>
+            if(!ViewModel.CheckedForUpdates)
             {
-                Close();
-                Application.Current.Shutdown();
-            };
-            await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SongTaggerForSpotify", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
+#if !DEBUG
+                // check for update and update
+                Action shutdownAction = () =>
+                {
+                    Close();
+                    Application.Current.Shutdown();
+                };
+                await UpdateManager.Instance.UpdateToLatestRelease("BenediktAlkin", "SongTaggerForSpotify", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
 #endif
+                await Task.Delay(1000);
+                ViewModel.CheckedForUpdates = true;
+            }
 
+            ViewModel.IsLoggingIn = true;
             await ConnectionManager.TryInitFromSavedToken();
-            ViewModel.CheckedForUpdates = true;
+            await Task.Delay(1000);
+            ViewModel.IsLoggingIn = false;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -110,10 +120,10 @@ namespace SpotifySongTagger
                 SyncCancellationTokenSource.Cancel();
         }
 
-        private void MenuDarkModeButton_Click(object sender, RoutedEventArgs e)
+        private void MenuDarkModeCheckBox_Changed(object sender, RoutedEventArgs e)
         {
-            var toggleButton = sender as ToggleButton;
-            var isDarkTheme = toggleButton.IsChecked.Value;
+            var checkBox = sender as CheckBox;
+            var isDarkTheme = checkBox.IsChecked.Value;
 
             SetTheme(isDarkTheme);
         }

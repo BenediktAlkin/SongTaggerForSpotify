@@ -3,11 +3,14 @@ using SpotifySongTagger.Views;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using Util;
 
 namespace SpotifySongTagger.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
+        public static UpdateManager UpdateManager => UpdateManager.Instance;
+
         private ISnackbarMessageQueue MessageQueue { get; set; }
         public MainWindowViewModel(ISnackbarMessageQueue messageQueue)
         {
@@ -15,14 +18,28 @@ namespace SpotifySongTagger.ViewModels
             MessageQueue = messageQueue;
         }
 
+        private bool isLoggingIn;
+        public bool IsLoggingIn
+        {
+            get => isLoggingIn;
+            set
+            {
+                SetProperty(ref isLoggingIn, value, nameof(IsLoggingIn));
+                NotifyPropertyChanged(nameof(IsReady));
+            }
+        }
 
-
-        private bool checkedForUpdates;
+        private bool checkedForUpdates = !Settings.AutoUpdate;
         public bool CheckedForUpdates
         {
             get => checkedForUpdates;
-            set => SetProperty(ref checkedForUpdates, value, nameof(CheckedForUpdates));
+            set
+            {
+                SetProperty(ref checkedForUpdates, value, nameof(CheckedForUpdates));
+                NotifyPropertyChanged(nameof(IsReady));
+            }
         }
+        public bool IsReady => !IsLoggingIn && CheckedForUpdates;
 
         public List<MenuItem> MenuItems { get; } = new()
         {

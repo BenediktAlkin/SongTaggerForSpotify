@@ -27,6 +27,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
+            <converters:DoubleToTextConverter x:Key="MbToTextConverter" Format="N2" Suffix=" MB"/>
+            <converters:UpdatingStateToTextConverter x:Key="UpdatingStateToTextConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -164,20 +166,20 @@
                                 PlacementMode="BottomAndAlignRightEdges"
                                 StaysOpen="False">
                                 <StackPanel>
-                                    <StackPanel
-                                        Orientation="Horizontal"
-                                        HorizontalAlignment="Center"
-                                        Margin="10">
-                                        <TextBlock Text="Light" Margin="0 0 10 0"/>
-                                        <ToggleButton IsChecked="{Binding Settings.IsDarkTheme}" Click="MenuDarkModeButton_Click"/>
-                                        <TextBlock Text="Dark" Margin="10 0 0 0"/>
+                                    <StackPanel Margin="10" Orientation="Horizontal">
+                                        <CheckBox 
+                                            IsChecked="{Binding Settings.IsDarkTheme}" 
+                                            Checked="MenuDarkModeCheckBox_Changed" Unchecked="MenuDarkModeCheckBox_Changed" 
+                                            Style="{StaticResource MaterialDesignLightCheckBox}" />
+                                        <TextBlock Text="Dark Theme" Margin="5 0 0 0" ToolTip="use dark theme" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <StackPanel
-                                        Orientation="Horizontal"
-                                        HorizontalAlignment="Center"
-                                        Margin="10">
-                                        <TextBlock Text="Hide Player" Margin="0 0 10 0"/>
-                                        <ToggleButton IsChecked="{Binding Settings.HidePlayer}"/>
+                                    <StackPanel Margin="10" Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding Settings.HidePlayer}" Style="{StaticResource MaterialDesignLightCheckBox}"/>
+                                        <TextBlock Text="Hide Player" Margin="5 0 10 0" ToolTip="hide the spotify player controls in the tag editor" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="10" Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding Settings.AutoUpdate}" Style="{StaticResource MaterialDesignLightCheckBox}"/>
+                                        <TextBlock Text="Auto Update" Margin="5 0 0 0" ToolTip="automatically update on startup" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
                             </materialDesign:PopupBox>
@@ -185,18 +187,77 @@
                     </Grid>
                 </materialDesign:ColorZone>
 
-                <!-- page content -->
+                <!-- content -->
                 <Grid>
-                    <!-- update view -->
-                    <views:UpdateView
-                        Visibility="{Binding DataContext.CheckedForUpdates, ElementName=MainWindowWindow, Converter={StaticResource InverseBoolToVisConverter}}"
-                        Margin="0 8 0 0"/>
+                    <!-- indeterminate progress -->
+                    <Grid 
+                        VerticalAlignment="Center" 
+                        Visibility="{Binding DataContext.IsReady, ElementName=MainWindowWindow, Converter={StaticResource InverseBoolToVisConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ProgressBar
+                            Margin="12"
+                            Height="75"
+                            Width="75"
+                            Grid.Row="0"
+                            Style="{StaticResource MaterialDesignCircularProgressBar}"
+                            Value="0" IsIndeterminate="True"/>
+                        <!-- updater status text -->
+                        <TextBlock
+                            Grid.Row="1"
+                            Visibility="{Binding DataContext.CheckedForUpdates, ElementName=MainWindowWindow, Converter={StaticResource InverseBoolToVisConverter}}"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Text="{Binding UpdateManager.State, Converter={StaticResource UpdatingStateToTextConverter}}"/>
+                        <TextBlock
+                            Grid.Row="1"
+                            Visibility="{Binding DataContext.IsLoggingIn, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Text="Logging in"/>
+                    </Grid>
 
+                    <!-- updater download progress -->
+                    <Grid 
+                        VerticalAlignment="Center" 
+                        Visibility="{Binding UpdateManager.IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        Margin="0 8 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock 
+                            Grid.Row="0" Grid.Column="0" 
+                            Text="{Binding UpdateManager.UpdateProgressMb, Converter={StaticResource MbToTextConverter}}" 
+                            Margin="0 0 6 0" 
+                            TextAlignment="Right" 
+                            VerticalAlignment="Center"/>
+                        <ProgressBar
+                            Grid.Row="0" Grid.Column="1" 
+                            materialDesign:TransitionAssist.DisableTransitions="True"
+                            Value="{Binding UpdateManager.UpdateProgressPercent}"/>
+                        <TextBlock 
+                            Grid.Row="0" Grid.Column="2" 
+                            Text="{Binding UpdateManager.UpdateSizeMb, Converter={StaticResource MbToTextConverter}}" 
+                            Margin="6 0 0 0" 
+                            VerticalAlignment="Center" />
+                        <TextBlock 
+                            Grid.Row="1" Grid.ColumnSpan="3" 
+                            Text="{Binding UpdateManager.State, Converter={StaticResource UpdatingStateToTextConverter}}"
+                            Margin="6 0 0 0" 
+                            HorizontalAlignment="Center" />
+                    </Grid>
+                    
                     <!-- content -->
                     <ContentControl 
                         DataContext="{Binding SelectedItem}"
                         Content="{Binding DataContext.View, ElementName=MainWindowWindow, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
-                        Visibility="{Binding DataContext.CheckedForUpdates, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Visibility="{Binding DataContext.IsReady, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Margin="0 8 0 0"/>
                     
                     <!-- snackbar -->
