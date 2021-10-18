@@ -28,7 +28,6 @@ namespace SpotifySongTagger.Views.Controls
                 ViewModel.ClearAllInputResults();
                 await ViewModel.RefreshInputResults();
             }
-            await BaseViewModel.DataContainer.LoadTags();
         }
 
 
@@ -59,7 +58,7 @@ namespace SpotifySongTagger.Views.Controls
             }
 
             e.Handled = true;
-            Log.Information($"MouseDown {sender.GetType()} {ViewModel.PressedMouseButton} {curPos.X:N2}/{curPos.Y:N2}");
+            //Log.Information($"MouseDown {sender.GetType()} {ViewModel.PressedMouseButton} {curPos.X:N2}/{curPos.Y:N2}");
         }
         private async void FrameworkElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -68,7 +67,7 @@ namespace SpotifySongTagger.Views.Controls
             if (ViewModel.PressedMouseButton == MouseButton.Left)
             {
                 // stop moving node
-                Log.Information($"StopMovingNode {sender.GetType()}");
+                //Log.Information($"StopMovingNode {sender.GetType()}");
                 if (ViewModel.ClickedNodeViewModel == null) return;
 
                 ViewModel.SaveMovedGraphNodePosition();

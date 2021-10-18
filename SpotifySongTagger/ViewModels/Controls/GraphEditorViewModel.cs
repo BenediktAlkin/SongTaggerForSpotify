@@ -30,7 +30,11 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public async Task LoadGraphNodes()
         {
+            Log.Information($"loading GraphNodes from {GraphGeneratorPage?.Name}");
             IsLoading = true;
+
+            var loadTagsTask = BaseViewModel.DataContainer.LoadTags();
+            var loadSourcePlaylistsTask = DataContainer.LoadSourcePlaylists();
 
             var nodes = await Task.Run(() => DatabaseOperations.GetGraphNodes(GraphGeneratorPage));
             var nodeViewModels = nodes.Select(gn => new GraphNodeViewModel(gn, GraphNodeVMs));
@@ -41,7 +45,10 @@ namespace SpotifySongTagger.ViewModels.Controls
                 nodeVM.CanvasWidth = CanvasWidth;
                 nodeVM.CanvasHeight = CanvasHeight;
             }
+
+            await Task.WhenAll(loadTagsTask, loadSourcePlaylistsTask);
             IsLoading = false;
+            Log.Information($"loaded {GraphNodeVMs.Count} GraphNodes from {GraphGeneratorPage?.Name}");
         }
         #endregion
 

@@ -737,13 +737,15 @@ namespace Backend
         #region get playlists
         public static List<Playlist> PlaylistsLiked()
         {
+            Logger.Information("loading liked playlists");
             using var db = ConnectionManager.NewContext();
-            var playlists = db.Playlists;
             var generatedPlaylistIds = db.PlaylistOutputNodes.Select(p => p.GeneratedPlaylistId);
-            return playlists
+            var playlists = db.Playlists
                 .Where(p => !generatedPlaylistIds.Contains(p.Id) && !Constants.META_PLAYLIST_IDS.Contains(p.Id))
                 .OrderBy(p => p.Name.ToLower())
                 .ToList();
+            Logger.Information($"loaded {playlists.Count} liked playlists");
+            return playlists;
         }
         public static Playlist PlaylistsMeta(string id)
         {
@@ -753,20 +755,26 @@ namespace Backend
         }
         public static List<Playlist> PlaylistsMeta()
         {
+            Logger.Information("loading meta playlists");
             using var db = ConnectionManager.NewContext();
-            return db.Playlists
+            var playlists = db.Playlists
                 .Where(p => Constants.META_PLAYLIST_IDS.Contains(p.Id))
                 .OrderBy(p => p.Name)
                 .ToList();
+            Logger.Information($"loaded {playlists.Count} meta playlists");
+            return playlists;
         }
         public static List<Playlist> PlaylistsGenerated()
         {
+            Logger.Information("loading generated playlists");
             using var db = ConnectionManager.NewContext();
             var playlistOutputNodes = db.PlaylistOutputNodes.ToList();
-            return playlistOutputNodes
+            var playlists = playlistOutputNodes
                 .Where(node => node.GeneratedPlaylistId != null)
                 .Select(node => new Playlist { Id = node.GeneratedPlaylistId, Name = node.PlaylistName })
                 .OrderBy(p => p.Name).ToList();
+            Logger.Information($"loaded {playlists.Count} generated playlists");
+            return playlists;
         }
         #endregion
 

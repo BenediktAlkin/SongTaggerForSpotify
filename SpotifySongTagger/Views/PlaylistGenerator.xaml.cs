@@ -17,7 +17,7 @@ namespace SpotifySongTagger.Views
             ViewModel = new PlaylistGeneratorViewModel(messageQueue);
             DataContext = ViewModel;
         }
-        private void UserControl_Loaded(object sender, RoutedEventArgs e) => ViewModel.Init();
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e) => await ViewModel.Init();
 
 
         #region drag & drop new nodes
@@ -32,7 +32,7 @@ namespace SpotifySongTagger.Views
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 DragDrop.DoDragDrop(frameworkElement, nodeType, DragDropEffects.Copy);
-                Log.Information("NodeType_PreviewMouseDown");
+                //Log.Information("NodeType_PreviewMouseDown");
             }
         }
         private void GraphEditor_Drop(object sender, DragEventArgs e)
@@ -43,7 +43,7 @@ namespace SpotifySongTagger.Views
             var pos = e.GetPosition(GraphEditor);
             ViewModel.GraphEditorVM.AddGraphNode(nodeType, pos);
 
-            Log.Information($"Drop nodeType={nodeType.Name}");
+            //Log.Information($"drop nodeType={nodeType.Name}");
             e.Handled = true;
         }
         #endregion

@@ -22,11 +22,10 @@ namespace SpotifySongTagger.ViewModels
             MessageQueue = messageQueue;
         }
 
-        public void Init()
+        public async Task Init()
         {
-            var loadSourcePlaylistsTask = DataContainer.LoadSourcePlaylists();
-            var loadSourcePagesTask = DataContainer.LoadGraphGeneratorPages();
-            Task.WhenAll(loadSourcePlaylistsTask, loadSourcePagesTask).ContinueWith(result => IsReady = true);
+            await DataContainer.LoadGraphGeneratorPages();
+            IsReady = true;
         }
 
         // PlaylistGenerator is ready when GraphGeneratorPages and SourcePlaylists are loaded
@@ -166,18 +165,23 @@ namespace SpotifySongTagger.ViewModels
         }
         public void RemoveGraphGeneratorPage(GraphGeneratorPage page)
         {
-            if (SelectedGraphGeneratorPage == null) return;
-
             // remove in db
-            DatabaseOperations.DeleteGraphGeneratorPage(page);
-
-            // update ui
-            BaseViewModel.DataContainer.GraphGeneratorPages.Remove(page);
+            if (DatabaseOperations.DeleteGraphGeneratorPage(page))
+            {
+                // update ui
+                BaseViewModel.DataContainer.GraphGeneratorPages.Remove(page);
+            }
+                
         }
         public void EditGraphGeneratorPageName(GraphGeneratorPage page)
         {
+            // edit in db
             if (DatabaseOperations.EditGraphGeneratorPage(page, NewGraphGeneratorPageName))
+            {
+                // update ui
                 page.Name = NewGraphGeneratorPageName;
+            }
+                
             NewGraphGeneratorPageName = null;
         }
         #endregion
