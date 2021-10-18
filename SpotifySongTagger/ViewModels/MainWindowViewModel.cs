@@ -17,6 +17,7 @@ namespace SpotifySongTagger.ViewModels
         {
             SelectedItem = MenuItems[0];
             MessageQueue = messageQueue;
+            UpdateManager.Instance.OnUpdatingStateChanged += newState => NotifyPropertyChanged(nameof(ShowSpinner));
         }
 
         private bool isLoggingIn;
@@ -26,7 +27,8 @@ namespace SpotifySongTagger.ViewModels
             set
             {
                 SetProperty(ref isLoggingIn, value, nameof(IsLoggingIn));
-                NotifyPropertyChanged(nameof(IsReady));
+                NotifyPropertyChanged(nameof(ShowSpinner));
+                NotifyPropertyChanged(nameof(ShowContent));
             }
         }
 
@@ -37,10 +39,12 @@ namespace SpotifySongTagger.ViewModels
             set
             {
                 SetProperty(ref checkedForUpdates, value, nameof(CheckedForUpdates));
-                NotifyPropertyChanged(nameof(IsReady));
+                NotifyPropertyChanged(nameof(ShowSpinner));
+                NotifyPropertyChanged(nameof(ShowContent));
             }
         }
-        public bool IsReady => !IsLoggingIn && CheckedForUpdates;
+        public bool ShowSpinner => IsLoggingIn || (!CheckedForUpdates && !UpdateManager.Instance.IsDownloading);
+        public bool ShowContent => !IsLoggingIn && CheckedForUpdates;
 
         public List<MenuItem> MenuItems { get; } = new()
         {

@@ -23,6 +23,8 @@ namespace Util
         public bool IsExtracting => State == UpdatingState.Extracting;
         public bool IsRestarting => State == UpdatingState.Restarting;
 
+        public delegate void UpdatingStateChangedEventHandler(UpdatingState newValue);
+        public event UpdatingStateChangedEventHandler OnUpdatingStateChanged;
         private UpdatingState state;
         public UpdatingState State
         {
@@ -35,6 +37,7 @@ namespace Util
                 NotifyPropertyChanged(nameof(IsDownloading));
                 NotifyPropertyChanged(nameof(IsExtracting));
                 NotifyPropertyChanged(nameof(IsRestarting));
+                OnUpdatingStateChanged?.Invoke(value);
             }
         }
         public enum UpdatingState
@@ -45,6 +48,7 @@ namespace Util
             Extracting,
             Restarting
         }
+
         private double updateSizeMb;
         public double UpdateSizeMb
         {

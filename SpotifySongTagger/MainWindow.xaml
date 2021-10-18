@@ -193,7 +193,7 @@
                     <!-- indeterminate progress -->
                     <Grid 
                         VerticalAlignment="Center" 
-                        Visibility="{Binding DataContext.IsReady, ElementName=MainWindowWindow, Converter={StaticResource InverseBoolToVisConverter}}">
+                        Visibility="{Binding DataContext.ShowSpinner, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -258,7 +258,7 @@
                     <ContentControl 
                         DataContext="{Binding SelectedItem}"
                         Content="{Binding DataContext.View, ElementName=MainWindowWindow, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
-                        Visibility="{Binding DataContext.IsReady, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Visibility="{Binding DataContext.ShowContent, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Margin="0 8 0 0"/>
                     
                     <!-- snackbar -->
