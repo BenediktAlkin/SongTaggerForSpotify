@@ -33,17 +33,24 @@ namespace Backend
             return optionsBuilder;
         }
         public static void InitDb(string dbName, Action<string> logTo = null)
-            => OptionsBuilder = GetOptionsBuilder(dbName, logTo);
+        {
+            OptionsBuilder = GetOptionsBuilder(dbName, logTo);
+            // create database if it doesn't exist yet
+            Log.Information("initializing database");
+            using var _ = ConnectionManager.NewContext(ensureCreated: true);
+            Log.Information("initialized database");
+        }
+            
         private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
-        public static DatabaseContext NewContext(bool dropDb = false)
+        public static DatabaseContext NewContext(bool ensureCreated = false, bool dropDb = false)
         {
             try
             {
-                return new DatabaseContext(OptionsBuilder.Options, dropDb);
+                return new DatabaseContext(OptionsBuilder.Options, ensureCreated: ensureCreated, dropDb: dropDb);
             }
             catch (Exception e)
             {
-                Logger.Error($"Failed to initialize Database {e.Message}");
+                Logger.Error($"failed to connect to database {e.Message}");
                 throw;
             }
         }

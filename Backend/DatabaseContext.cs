@@ -6,11 +6,12 @@ namespace Backend
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext(DbContextOptions<DatabaseContext> options, bool dropDb = false) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options, bool ensureCreated = false, bool dropDb = false) : base(options)
         {
             if (dropDb)
                 Database.EnsureDeleted();
-            Database.EnsureCreated();
+            if(ensureCreated)
+                Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

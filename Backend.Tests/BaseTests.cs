@@ -27,7 +27,7 @@ namespace Backend.Tests
                 .CreateLogger();
             ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
             // drop db
-            using var _ = ConnectionManager.NewContext(dropDb: true);
+            using var _ = ConnectionManager.NewContext(ensureCreated: true,  dropDb: true);
 
             idCounter = 1;
         }

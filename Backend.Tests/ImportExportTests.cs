@@ -41,7 +41,7 @@ namespace Backend.Tests
             // connect to new db
             var otherDbOptions = ConnectionManager.GetOptionsBuilder("OtherDb",
                 logTo: DatabaseQueryLogger.Instance.Information).Options;
-            using (var otherDb = new DatabaseContext(otherDbOptions, dropDb: true))
+            using (var otherDb = new DatabaseContext(otherDbOptions, ensureCreated: true, dropDb: true))
             {
                 await DatabaseOperations.ImportTags("tagexport.tags", otherDb);
 
