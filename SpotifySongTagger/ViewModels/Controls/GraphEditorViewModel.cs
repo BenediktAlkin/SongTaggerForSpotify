@@ -160,6 +160,7 @@ namespace SpotifySongTagger.ViewModels.Controls
         }
         public async Task AddConnection(GraphNodeViewModel to)
         {
+            if (to == null) return;
             // store in db
             if (DatabaseOperations.AddGraphNodeConnection(ClickedNodeViewModel.GraphNode, to.GraphNode))
             {

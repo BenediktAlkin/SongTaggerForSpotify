@@ -181,6 +181,7 @@ namespace Backend.Entities.GraphNodes
         {
             InputResult = null;
             OutputResult = null;
+            Logger.Information($"{this} cleared Input-/OutputResult");
         }
         public void CalculateInputResult()
         {

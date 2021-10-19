@@ -9,6 +9,8 @@ minor bugs:
 - newtag datacontext bugs sometimes (validator not working; NewTagText set null but not updated in ui) --> ugly workaround was implemented
 - IsRunning does not belong into GraphGeneratorPage (should be in a seperate viewmodel)
 - set progress/volume fires twice (when not dragged)
+- RemoveNode had strange case where output result of input nodes was null that could not be reproduced
+- RemoveNode had strange case where upon deleting input the input node would still be displayed as input (not sure if it was stored in db also)
 
 future
 - search function (search for track and tag it)

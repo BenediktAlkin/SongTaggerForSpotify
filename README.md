@@ -2,6 +2,11 @@
 
 [![Release](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml/badge.svg)](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml)
 
+## Setup instructions
+Download either the installer (SongTaggerForSpotify-Installer.msi) or the portable version (SongTaggerForSpotify-Portable.zip) from [latest release](https://github.com/BenediktAlkin/SongTaggerForSpotify/releases).
+* Installer: allow unknown publisher --> click through the setup program
+* Portable: extract the zip folder --> run SongTaggerForSpotify.exe
+
 
 ## What is song tagging?
 Attaching a tag to a song allows you more flexibility when managing songs you like. A tag can be anything you'd like it to be: music genres, language of the lyrics, the event/movie where you discovered a song or how much you like a song. 
