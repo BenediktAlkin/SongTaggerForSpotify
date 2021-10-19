@@ -41,7 +41,7 @@ Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are
 ![Combine charts example](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/combine%20charts.png)
 
 ## Backup/Restore/Delete your Tags/PlaylistGenerators
-All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which is located either in "C:\Users\<WINDOWS_USER>\AppData\Roaming\Song Tagger for Spotify" (if you installed the program) or in the directory where your portable version was extracted. 
+All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which is located either in "C:\Users\<WINDOWS_USER>\AppData\Roaming\Song Tagger for Spotify" (if you installed the program) or in the directory of your portable version. 
 * Backup by copying this file somewhere (cloud, external storage, ...)
 * Restore your data by copying this file into the same directory on a new machine
 * Delete all your data by simply deleting this file
