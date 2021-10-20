@@ -7,7 +7,7 @@ Download either the installer (SongTaggerForSpotify-Installer.msi) or the portab
 * Installer: allow unknown publisher --> click through the setup program --> run "Song Tagger for Spotify" from your desktop or start menu
 * Portable: extract the zip folder --> run SongTaggerForSpotify.exe
 
-If you don't have a .NET 5 runtime you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
+If you don't have a .NET 5 runtime installed you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
 
 
 ## What is song tagging?
