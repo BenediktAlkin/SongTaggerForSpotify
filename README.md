@@ -3,9 +3,10 @@
 [![Release](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml/badge.svg)](https://github.com/BenediktAlkin/SpotifySongTagger/actions/workflows/release.yaml)
 
 ## Setup instructions
-Download either the installer (SongTaggerForSpotify-Installer.msi) or the portable version (SongTaggerForSpotify-Portable.zip) from [latest release](https://github.com/BenediktAlkin/SongTaggerForSpotify/releases). If you don't have a .NET 5 runtime you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
+Download either the installer (SongTaggerForSpotify-Installer.msi) or the portable version (SongTaggerForSpotify-Portable.zip) from [latest release](https://github.com/BenediktAlkin/SongTaggerForSpotify/releases). 
 * Installer: allow unknown publisher --> click through the setup program
 * Portable: extract the zip folder --> run SongTaggerForSpotify.exe
+If you don't have a .NET 5 runtime you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
 
 
 ## What is song tagging?
