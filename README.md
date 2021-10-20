@@ -4,7 +4,7 @@
 
 ## Setup instructions
 Download either the installer (SongTaggerForSpotify-Installer.msi) or the portable version (SongTaggerForSpotify-Portable.zip) from [latest release](https://github.com/BenediktAlkin/SongTaggerForSpotify/releases). 
-* Installer: allow unknown publisher --> click through the setup program
+* Installer: allow unknown publisher --> click through the setup program --> run "Song Tagger for Spotify" from your desktop or start menu
 * Portable: extract the zip folder --> run SongTaggerForSpotify.exe
 
 If you don't have a .NET 5 runtime you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
