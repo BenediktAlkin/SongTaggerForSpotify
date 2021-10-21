@@ -83,7 +83,7 @@ namespace Util
             var asset = release.Assets.FirstOrDefault(a => a.Name.ToLower().Contains(".zip"));
             if (asset == null)
             {
-                Logger.Error($"Failed to download update (no asset contains 'portable')");
+                Logger.Error($"Failed to download update (no asset contains 'zip')");
                 return;
             }
             var url = asset.BrowserDownloadUrl;

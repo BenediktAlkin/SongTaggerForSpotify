@@ -5,14 +5,14 @@
 ## Setup instructions
 Download either the installer (SongTaggerForSpotify-Installer.msi) or the portable version (SongTaggerForSpotify-Portable.zip) from [latest release](https://github.com/BenediktAlkin/SongTaggerForSpotify/releases). 
 * Installer: allow unknown publisher --> click through the setup program --> run "Song Tagger for Spotify" from your desktop or start menu
-* Portable: extract the zip folder --> run SongTaggerForSpotify.exe
+* Portable: extract the zip folder --> run SpotifySongTagger.exe
 
 If you don't have a .NET 5 runtime installed you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
 
 
 ## What is song tagging?
 Attaching a tag to a song allows you more flexibility when managing songs you like. A tag can be anything you'd like it to be: music genres, language of the lyrics, the event/movie where you discovered a song or how much you like a song. 
-For example my music library looks like [this](https://raw.githubusercontent.com/BenediktAlkin/SongTaggerForSpotify/main/QuotaExtensionApplication/SongTagger.png).
+For example my music library looks like [this](https://raw.githubusercontent.com/BenediktAlkin/SongTaggerForSpotify/main/Examples/QuotaExtensionApplication/SongTagger.png).
 
 ## What is the benefit?
 Adding tags to songs allows you to organize your library better. With Song Tagger for Spotify you can create "Playlist Generators" which lets you to combine songs/playlists from your library and modify them based on tags or other metadata (e.g. release date, artist) as you like.
@@ -51,8 +51,10 @@ All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which 
 
 ## Limitations
 * Playlist folders are [not supported](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)
-  * Existing playlists can only be viewed unorganized
+  * Liked playlists can only be viewed unorganized. They can still be tagged normally but do not appear in any folder structure (e.g. if you have a folder called "Discover" with the playlist "Discover Weekly" it will be shown only as "Discover Weekly" instead of "Discover/Discover Weekly")
   * Generated playlists have to be moved manually to a folder if desired (only required once)
+    * The first run of a playlist generator will always create the playlist in the root directory of your Spotify library
+    * When you move it to a folder, subsequent runs of a playlist generator will update the playlist normally but will not change the location.
 * Playing songs from the song tagger application requires an active Spotify player (e.g. [Spotify Player](https://www.spotify.com/us/download/other/) or [Spotify Web Player](https://open.spotify.com/))
 * Only Spotify Premium users can play songs from the song tagger application (the currently playing song is still displayed for non-premium users)
 * [local files](https://support.spotify.com/us/article/local-files/) are [not supported](https://developer.spotify.com/documentation/general/guides/local-files-spotify-playlists/#limitations)
