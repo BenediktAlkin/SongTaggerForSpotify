@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Tests.Util;
 
 namespace Util.Tests
 {

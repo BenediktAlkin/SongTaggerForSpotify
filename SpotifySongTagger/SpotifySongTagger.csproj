@@ -22,7 +22,6 @@
 		<PackageReference Include="Serilog" Version="2.10.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="Serilog.Sinks.Trace" Version="3.0.0" />
-		<PackageReference Include="SpotifyAPI.Web" Version="6.2.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Backend\Backend.csproj" />

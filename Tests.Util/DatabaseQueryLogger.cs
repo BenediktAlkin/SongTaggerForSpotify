@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using System;
 
-namespace Backend.Tests
+namespace Tests.Util
 {
     public class DatabaseQueryLogger
     {

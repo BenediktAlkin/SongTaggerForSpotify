@@ -1,4 +1,5 @@
-﻿using Backend.Entities;
+﻿using Backend;
+using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using NUnit.Framework;
 using Serilog;
@@ -8,11 +9,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Util;
 
-namespace Backend.Tests
+namespace Tests.Util
 {
     public class BaseTests
     {
+        protected bool REQUIRES_DB { get; set; } = true;
+        protected bool LOG_DB_QUERIES { get; set; } = false;
+
+
+        // convenience getters
         protected static ISpotifyClient SpotifyClient => ConnectionManager.Instance.Spotify;
+
 
         // nodes require ids
         private int idCounter;
@@ -25,9 +32,14 @@ namespace Backend.Tests
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(formatter: new LogFormatter("??"))
                 .CreateLogger();
-            ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
-            // drop db
-            using var _ = ConnectionManager.NewContext(ensureCreated: true, dropDb: true);
+
+            if (REQUIRES_DB)
+            {
+                Action<string> logTo = LOG_DB_QUERIES ? DatabaseQueryLogger.Instance.Information : null;
+                ConnectionManager.InitDb("TestDb", logTo: logTo);
+                // drop db
+                using var _ = ConnectionManager.NewContext(ensureCreated: true, dropDb: true);
+            }
 
             idCounter = 1;
         }
@@ -36,6 +48,7 @@ namespace Backend.Tests
         {
             Log.CloseAndFlush();
         }
+
         protected static void InitSpotify(
             List<FullTrack> tracks,
             List<FullTrack> likedTracks,
@@ -47,6 +60,8 @@ namespace Backend.Tests
             ConnectionManager.InitSpotify(client);
             DataContainer.Instance.User = new PrivateUser { Id = "TestId", Country = "TestCountry", Product = "TestProduct" };
         }
+
+
 
 
         #region db inserts tagging
@@ -183,5 +198,6 @@ namespace Backend.Tests
             };
         }
         #endregion
+
     }
 }

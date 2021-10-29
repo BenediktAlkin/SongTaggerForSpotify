@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tests.Util;
 
 namespace Backend.Tests.Spotify
 {
@@ -102,24 +103,24 @@ namespace Backend.Tests.Spotify
             Assert.AreEqual(0, (await SpotifyOperations.GetAlbumTracks("asdf")).Count);
         }
 
-        public static readonly List<TestCaseData> GetPlaylistTracksTestCases = new()
-        {
-            new(
-                "5SaUvAgJ689IhvIsJvuewf",
-                new TrackValues[]{
-                    new("3FAclTFfvUuQYnEsptbK8w", "Back To Black", 4*60+01, "Back To Black (Deluxe Edition)", new[]{"Amy Winehouse" }),
-                    new("6OK5fKp0CGJJAu2sGegPui", "La Receta", 3*60+44, "Aquí Y Ahora", new[]{"Los Aslándticos" }),
-                    new("4TsmezEQVSZNNPv5RJ65Ov", "Pon de Replay", 4*60+06, "Music Of The Sun", new[]{"Rihanna" }),
-                    new("2VOomzT6VavJOGBeySqaMc", "Disturbia", 3*60+58, "Good Girl Gone Bad: Reloaded", new[]{"Rihanna" }),
-                    new("0qqUNsGRZVT9dlru6Wzphn", "Drikkestopp", 3*60+06, "Drikkestopp", new[]{"Kevin Boine" }),
-                    new("0JiY190vktuhSGN6aqJdrt", "So What", 3*60+35, "Funhouse (Expanded Edition)", new[]{"P!nk" }),
-                }
-            ),
-        };
         [Test]
-        [TestCaseSource(nameof(GetPlaylistTracksTestCases))]
-        public async Task GetPlaylistTracks(string id, TrackValues[] tracksValues)
+        public async Task GetPlaylistTracks()
         {
+            // for some reason doing this test with TestCaseSource resulted in the Test Explorer
+            // bugging out (it showed just a plain GetPlaylistTracks test that was unable to run
+            // and prevented all other tests from running as well when using run all tests)
+            const string id = "5SaUvAgJ689IhvIsJvuewf";
+            var tracksValues = new TrackValues[]
+            {
+                new("3FAclTFfvUuQYnEsptbK8w", "Back To Black", 4*60+01, "Back To Black (Deluxe Edition)", new[]{"Amy Winehouse" }),
+                new("6OK5fKp0CGJJAu2sGegPui", "La Receta", 3*60+44, "Aquí Y Ahora", new[]{"Los Aslándticos" }),
+                new("4TsmezEQVSZNNPv5RJ65Ov", "Pon de Replay", 4*60+06, "Music Of The Sun", new[]{"Rihanna" }),
+                new("2VOomzT6VavJOGBeySqaMc", "Disturbia", 3*60+58, "Good Girl Gone Bad: Reloaded", new[]{"Rihanna" }),
+                new("0qqUNsGRZVT9dlru6Wzphn", "Drikkestopp", 3*60+06, "Drikkestopp", new[]{"Kevin Boine" }),
+                new("0JiY190vktuhSGN6aqJdrt", "So What", 3*60+35, "Funhouse (Expanded Edition)", new[]{"P!nk" }),
+            };
+
+
             var tracks = await SpotifyOperations.GetPlaylistTracks(id);
             Assert.AreEqual(tracksValues.Length, tracks.Count);
             foreach (var track in tracks)

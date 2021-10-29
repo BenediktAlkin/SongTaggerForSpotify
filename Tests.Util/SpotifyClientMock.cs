@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Backend.Tests
+namespace Tests.Util
 {
     public class SpotifyClientMock
     {

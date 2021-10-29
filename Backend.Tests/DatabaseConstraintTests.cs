@@ -3,11 +3,19 @@ using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Linq;
+using Tests.Util;
 
 namespace Backend.Tests
 {
     public class DatabaseConstraintTests : BaseTests
     {
+        [SetUp]
+        public override void SetUp()
+        {
+            REQUIRES_DB = true;
+            base.SetUp();
+        }
+
 
         [Test]
         public void Playlist_GraphNode_OnDeleteSetNull()
