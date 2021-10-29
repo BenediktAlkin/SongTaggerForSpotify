@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 
 namespace Backend.Tests
 {
-    public class SpotifyOperationsTests : BaseTests
+    public class SpotifyOperationsMockTests : BaseTests
     {
         [Test]
-        public async Task PlaylistItems()
+        public async Task GetPlaylistItems()
         {
-            Assert.AreEqual(0, (await SpotifyOperations.PlaylistItems(null)).Count);
-            Assert.AreEqual(0, (await SpotifyOperations.PlaylistItems("")).Count);
+            Assert.AreEqual(0, (await SpotifyOperations.GetPlaylistTracks(null)).Count);
+            Assert.AreEqual(0, (await SpotifyOperations.GetPlaylistTracks("")).Count);
 
             var tracks = Enumerable.Range(1, 10).Select(i => NewTrack(i)).ToList();
             var playlists = Enumerable.Range(1, 1).Select(i => NewPlaylist(i)).ToList();
             var playlistTracks = Enumerable.Range(0, playlists.Count).ToDictionary(i => playlists[i].Id, i => tracks.ToList());
             InitSpotify(tracks, new(), playlists, new(), playlistTracks);
 
-            Assert.AreEqual(10, (await SpotifyOperations.PlaylistItems(playlists[0].Id)).Count);
+            Assert.AreEqual(10, (await SpotifyOperations.GetPlaylistTracks(playlists[0].Id)).Count);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Backend.Tests
 
             var details = await SpotifyClient.Playlists.Get(outputNode.GeneratedPlaylistId);
             Assert.AreEqual(initialName, details.Name);
-            var generatedPlaylist = await SpotifyOperations.PlaylistItems(outputNode.GeneratedPlaylistId);
+            var generatedPlaylist = await SpotifyOperations.GetPlaylistTracks(outputNode.GeneratedPlaylistId);
             Assert.AreEqual(likedTracks.Count, generatedPlaylist.Count);
             AssertIsFollowing(true);
 

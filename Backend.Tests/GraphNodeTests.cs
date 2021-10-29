@@ -64,7 +64,7 @@ namespace Backend.Tests
         public void Input_Output(int playlistIdx)
         {
             var inputNode = new PlaylistInputLikedNode { Id = NewId(), Playlist = Playlists[playlistIdx] };
-            var outputNode = new PlaylistOutputNode { Id = NewId() };
+            var outputNode = new PlaylistOutputNode { Id = NewId(), PlaylistName = "somename" };
             outputNode.AddInput(inputNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -112,7 +112,7 @@ namespace Backend.Tests
                 concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
             var tagFilterNode = new FilterTagNode { Id = NewId(), Tag = Tags[tagIdx] };
             tagFilterNode.AddInput(concatNode);
-            var outputNode = new PlaylistOutputNode { Id = NewId() };
+            var outputNode = new PlaylistOutputNode { Id = NewId(), PlaylistName = "somename" };
             outputNode.AddInput(tagFilterNode);
 
             using (new DatabaseQueryLogger.Context())
@@ -134,16 +134,13 @@ namespace Backend.Tests
                 concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
             var yearFilterNode = new FilterYearNode { Id = NewId(), YearFrom = yearFrom, YearTo = yearTo };
             yearFilterNode.AddInput(concatNode);
-            var outputNode = new PlaylistOutputNode { Id = NewId() };
+            var outputNode = new PlaylistOutputNode { Id = NewId(), PlaylistName = "somename" };
             outputNode.AddInput(yearFilterNode);
 
-            using (new DatabaseQueryLogger.Context())
-            {
-                outputNode.CalculateOutputResult();
-                Assert.AreEqual(yearTo - yearFrom + 1, outputNode.OutputResult.Count);
-                foreach (var track in outputNode.OutputResult)
-                    Assert.IsTrue(yearFrom <= track.Album.ReleaseYear && track.Album.ReleaseYear <= yearTo);
-            }
+            outputNode.CalculateOutputResult();
+            Assert.AreEqual(yearTo - yearFrom + 1, outputNode.OutputResult.Count);
+            foreach (var track in outputNode.OutputResult)
+                Assert.IsTrue(yearFrom <= track.Album.ReleaseYear && track.Album.ReleaseYear <= yearTo);
         }
 
         [Test]

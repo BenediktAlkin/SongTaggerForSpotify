@@ -50,14 +50,14 @@ All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which 
 * Delete all your data by simply deleting this file
 
 ## Limitations
-* Playlist folders are [not supported](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)
+* Playlist folders are not supported by the [Spotify API](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)
   * Liked playlists can only be viewed unorganized. They can still be tagged normally but do not appear in any folder structure (e.g. if you have a folder called "Discover" with the playlist "Discover Weekly" it will be shown only as "Discover Weekly" instead of "Discover/Discover Weekly")
   * Generated playlists have to be moved manually to a folder if desired (only required once)
     * The first run of a playlist generator will always create the playlist in the root directory of your Spotify library
     * When you move it to a folder, subsequent runs of a playlist generator will update the playlist normally but will not change the location.
 * Playing songs from the song tagger application requires an active Spotify player (e.g. [Spotify Player](https://www.spotify.com/us/download/other/) or [Spotify Web Player](https://open.spotify.com/))
 * Only Spotify Premium users can play songs from the song tagger application (the currently playing song is still displayed for non-premium users)
-* [local files](https://support.spotify.com/us/article/local-files/) are [not supported](https://developer.spotify.com/documentation/general/guides/local-files-spotify-playlists/#limitations)
+* [local files](https://support.spotify.com/us/article/local-files/) are not supported by the [Spotify API](https://developer.spotify.com/documentation/general/guides/local-files-spotify-playlists/#limitations)
 * [unavailable songs](https://community.spotify.com/t5/iOS-iPhone-iPad/Song-unavailable/td-p/4816227#:~:text=The%20greyed%20out%20tracks%20just,to%20the%20individual%20music%20companies.) are currently not supported
 
 

@@ -9,7 +9,7 @@ namespace Backend.Entities.GraphNodes
         public int? TagId
         {
             get => tagId;
-            set =>SetProperty(ref tagId, value, nameof(TagId));
+            set => SetProperty(ref tagId, value, nameof(TagId));
         }
         private Tag tag;
         public Tag Tag

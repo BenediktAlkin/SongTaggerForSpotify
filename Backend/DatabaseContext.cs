@@ -10,7 +10,7 @@ namespace Backend
         {
             if (dropDb)
                 Database.EnsureDeleted();
-            if(ensureCreated)
+            if (ensureCreated)
                 Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder builder)

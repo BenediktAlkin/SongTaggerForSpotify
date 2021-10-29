@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
@@ -47,7 +46,7 @@ namespace Backend.Entities.GraphNodes
         }
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
-        protected override void MapInputToOutput() 
+        protected override void MapInputToOutput()
             => OutputResult = InputResult[0].Where(t => t.Tags.Contains(Tag)).ToList();
 
         public override bool IsValid => TagId != null || Tag != null;

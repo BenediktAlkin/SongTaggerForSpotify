@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Util;
 
@@ -32,14 +31,14 @@ namespace SpotifySongTagger
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var logConfig = new LoggerConfiguration()
-                .WriteTo.File(formatter: new LogFormatter("UI"), @"frontend.log");
+                .WriteTo.File(formatter: new LogFormatter("UI"), @"log_frontend.log");
 #if DEBUG
             logConfig = logConfig.WriteTo.Trace(formatter: new LogFormatter("UI"));
 #endif
             Log.Logger = logConfig.CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 
-            if(!ViewModel.CheckedForUpdates)
+            if (!ViewModel.CheckedForUpdates)
             {
                 Log.Information("checking for updates");
 #if !DEBUG

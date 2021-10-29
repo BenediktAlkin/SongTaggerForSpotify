@@ -15,7 +15,7 @@ namespace Backend
         private const string SPOTIFY_ICON_LIGHT = "/Res/Spotify_Icon_RGB_Green.png";
         private const string SPOTIFY_ICON_DARK = "/Res/Spotify_Icon_RGB_White.png";
         private static ILogger logger;
-        protected static ILogger Logger 
+        protected static ILogger Logger
         {
             get
             {
@@ -279,7 +279,7 @@ namespace Backend
                     Logger.Information($"updated volume to {newVolume}");
                     Volume = newVolume;
                 }
-                    
+
             }
             catch (Exception e)
             {
@@ -303,7 +303,7 @@ namespace Backend
                     Logger.Information($"updated progress to {newProgress}");
                     Progress = newProgress;
                 }
-                    
+
             }
             catch (Exception e)
             {

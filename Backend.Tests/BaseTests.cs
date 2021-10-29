@@ -27,7 +27,7 @@ namespace Backend.Tests
                 .CreateLogger();
             ConnectionManager.InitDb("TestDb", logTo: DatabaseQueryLogger.Instance.Information);
             // drop db
-            using var _ = ConnectionManager.NewContext(ensureCreated: true,  dropDb: true);
+            using var _ = ConnectionManager.NewContext(ensureCreated: true, dropDb: true);
 
             idCounter = 1;
         }
@@ -87,7 +87,7 @@ namespace Backend.Tests
 
             return albums;
         }
-        protected static List<Track> InsertTracks(int count, List<Artist> artists, List<Album> albums, bool isLiked=false)
+        protected static List<Track> InsertTracks(int count, List<Artist> artists, List<Album> albums, bool isLiked = false)
         {
             using var db = ConnectionManager.NewContext();
             var tracks = Enumerable.Range(1, count).Select(i =>

@@ -1,5 +1,4 @@
 ﻿using Backend.Entities;
-using Serilog;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

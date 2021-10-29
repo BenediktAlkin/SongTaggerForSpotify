@@ -1,7 +1,5 @@
 ﻿using Backend.Entities.GraphNodes;
-using Serilog;
 using SpotifySongTagger.Utils;
-using SpotifySongTagger.ViewModels;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Windows;

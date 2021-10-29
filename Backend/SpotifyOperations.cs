@@ -5,7 +5,6 @@ using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Backend
@@ -33,6 +32,24 @@ namespace Backend
                 Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
             };
         }
+        private static Track ToTrack(SimpleTrack track, FullAlbum album)
+        {
+            return new Track
+            {
+                Id = track.LinkedFrom == null ? track.Id : track.LinkedFrom.Id,
+                Name = track.Name,
+                DurationMs = track.DurationMs,
+                Album = new Album
+                {
+                    Id = album.Id,
+                    Name = album.Name,
+                    ReleaseDate = album.ReleaseDate,
+                    ReleaseDatePrecision = album.ReleaseDatePrecision,
+                },
+                Artists = track.Artists.Select(a => new Artist { Id = a.Id, Name = a.Name }).ToList(),
+            };
+        }
+
 
         private static async Task<List<T>> GetAll<T>(Paging<T> page)
         {
@@ -42,7 +59,9 @@ namespace Backend
             return all;
         }
 
-        private static async Task<List<Track>> LikedTracks()
+
+
+        private static async Task<List<Track>> GetLikedTracks()
         {
             Logger.Information("Start fetching liked tracks");
             var page = await Spotify.Library.GetTracks(new LibraryTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country });
@@ -52,8 +71,7 @@ namespace Backend
             tracks.ForEach(t => t.IsLiked = true);
             return tracks;
         }
-
-        private static async Task<List<Playlist>> PlaylistCurrentUsers()
+        private static async Task<List<Playlist>> GetCurrentUsersPlaylists()
         {
             Logger.Information("Start fetching users playlists");
             var page = await Spotify.Playlists.CurrentUsers(new PlaylistCurrentUsersRequest { Limit = 50 });
@@ -66,12 +84,14 @@ namespace Backend
             }).ToList();
         }
 
-        public static async Task<List<Track>> PlaylistItems(string playlistId)
+
+        public static async Task<List<Track>> GetPlaylistTracks(string playlistId)
         {
             if (string.IsNullOrEmpty(playlistId)) return new();
 
             var request = new PlaylistGetItemsRequest { Limit = 100, Offset = 0, Market = DataContainer.Instance.User.Country };
-            request.Fields.Add("items(" +
+            request.Fields.Add(
+                "items(" +
                     "type," +
                     "track(" +
                         "type," +
@@ -82,7 +102,9 @@ namespace Backend
                         "is_playable," +
                         "linked_from," +
                         "album(id,name,release_date,release_date_precision)," +
-                        "artists(id,name)))," +
+                        "artists(id,name)" +
+                    ")" +
+                ")," +
                 "next");
             Logger.Information($"Start fetching playlist items playlistId={playlistId}");
             try
@@ -98,6 +120,93 @@ namespace Backend
                 return new();
             }
         }
+        public static async Task<Track> GetTrack(string id)
+        {
+            try
+            {
+                var fullTrack = await Spotify.Tracks.Get(id, new TrackRequest { Market = DataContainer.Instance.User.Country });
+                return ToTrack(fullTrack);
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error in {nameof(GetTrack)}: {e.Message}");
+                return null;
+            }
+        }
+        public static async Task<List<Track>> GetAlbumTracks(string id)
+        {
+            try
+            {
+                var album = await Spotify.Albums.Get(id, new AlbumRequest { Market = DataContainer.Instance.User.Country });
+                var req = new AlbumTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country };
+                var simpleTracks = await GetAll(album.Tracks);
+
+                return simpleTracks.Select(t => ToTrack(t, album)).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error in {nameof(GetAlbumTracks)}: {e.Message}");
+                return new();
+            }
+        }
+
+
+
+        public static async Task<(List<Playlist>, Dictionary<string, Track>)> GetFullLibrary(List<string> generatedPlaylistIds)
+        {
+            try
+            {
+                var likedTracksTask = SpotifyOperations.GetLikedTracks();
+                var playlistsTask = SpotifyOperations.GetCurrentUsersPlaylists();
+                var playlistsTracksTask = playlistsTask.ContinueWith(playlists =>
+                {
+                    var playlistTasks = playlists.Result
+                        .Where(pl => !generatedPlaylistIds.Contains(pl.Id))
+                        .Select(p => SpotifyOperations.GetPlaylistTracks(p.Id)).ToArray();
+                    Task.WaitAll(playlistTasks);
+                    return playlistTasks.Select(playlistTask => playlistTask.Result).ToList();
+                });
+
+                // add liked tracks to local mirror
+                var likedTracks = await likedTracksTask;
+                var tracks = likedTracks.ToDictionary(t => t.Id, t => t);
+
+
+                // add tracks from liked playlists
+                var playlists = (await playlistsTask).Where(pl => !generatedPlaylistIds.Contains(pl.Id)).ToList();
+                var playlistsTracks = await playlistsTracksTask;
+                Logger.Information("Start fetching full spotify library");
+                for (var i = 0; i < playlists.Count; i++)
+                {
+                    Logger.Information($"Fetching tracks from playlist \"{playlists[i].Name}\" {i + 1}/{playlists.Count} " +
+                        $"({playlistsTracks[i].Count} tracks)");
+                    var playlist = playlists[i];
+                    foreach (var track in playlistsTracks[i])
+                    {
+                        if (tracks.TryGetValue(track.Id, out var addedTrack))
+                        {
+                            // track is multiple times in library --> only add playlist name to track
+                            addedTrack.Playlists.Add(playlist);
+                            // set IsLiked (should not be needed because likedTracks are added first)
+                            addedTrack.IsLiked = addedTrack.IsLiked || track.IsLiked;
+                        }
+                        else
+                        {
+                            // track is first encountered in this playlist
+                            track.Playlists = new List<Playlist> { playlist };
+                            tracks[track.Id] = track;
+                        }
+                    }
+                }
+                Logger.Information("Finished fetching full spotify library");
+                return (playlists, tracks);
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error in GetFullLibrary: {e.Message}");
+                return (null, null);
+            }
+        }
 
         public static async Task<bool> SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
         {
@@ -111,8 +220,8 @@ namespace Backend
             if (playlistOutputNode.GeneratedPlaylistId == null)
             {
                 // create playlist
-                var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName) 
-                { 
+                var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName)
+                {
                     Description = "Automatically generated playlist by \"Song Tagger for Spotify\" (https://github.com/BenediktAlkin/SpotifySongTagger)"
                 };
                 var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
@@ -162,62 +271,6 @@ namespace Backend
             }
             Logger.Information($"synchronized PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
             return true;
-        }
-
-        public static async Task<(List<Playlist>, Dictionary<string, Track>)> GetFullLibrary(List<string> generatedPlaylistIds)
-        {
-            try
-            {
-                var likedTracksTask = SpotifyOperations.LikedTracks();
-                var playlistsTask = SpotifyOperations.PlaylistCurrentUsers();
-                var playlistsTracksTask = playlistsTask.ContinueWith(playlists =>
-                {
-                    var playlistTasks = playlists.Result
-                        .Where(pl => !generatedPlaylistIds.Contains(pl.Id))
-                        .Select(p => SpotifyOperations.PlaylistItems(p.Id)).ToArray();
-                    Task.WaitAll(playlistTasks);
-                    return playlistTasks.Select(playlistTask => playlistTask.Result).ToList();
-                });
-
-                // add liked tracks to local mirror
-                var likedTracks = await likedTracksTask;
-                var tracks = likedTracks.ToDictionary(t => t.Id, t => t);
-
-
-                // add tracks from liked playlists
-                var playlists = (await playlistsTask).Where(pl => !generatedPlaylistIds.Contains(pl.Id)).ToList();
-                var playlistsTracks = await playlistsTracksTask;
-                Logger.Information("Start fetching full spotify library");
-                for (var i = 0; i < playlists.Count; i++)
-                {
-                    Logger.Information($"Fetching tracks from playlist \"{playlists[i].Name}\" {i + 1}/{playlists.Count} " +
-                        $"({playlistsTracks[i].Count} tracks)");
-                    var playlist = playlists[i];
-                    foreach (var track in playlistsTracks[i])
-                    {
-                        if (tracks.TryGetValue(track.Id, out var addedTrack))
-                        {
-                            // track is multiple times in library --> only add playlist name to track
-                            addedTrack.Playlists.Add(playlist);
-                            // set IsLiked (should not be needed because likedTracks are added first)
-                            addedTrack.IsLiked = addedTrack.IsLiked || track.IsLiked;
-                        }
-                        else
-                        {
-                            // track is first encountered in this playlist
-                            track.Playlists = new List<Playlist> { playlist };
-                            tracks[track.Id] = track;
-                        }
-                    }
-                }
-                Logger.Information("Finished fetching full spotify library");
-                return (playlists, tracks);
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Error in GetFullLibrary: {e.Message}");
-                return (null, null);
-            }
         }
     }
 }

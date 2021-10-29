@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading;
 using Util;
 
 namespace Backend.Entities.GraphNodes
@@ -188,7 +187,7 @@ namespace Backend.Entities.GraphNodes
             if (InputResult != null) return;
 
             CalculateInputResultImpl();
-                
+
         }
         protected virtual void CalculateInputResultImpl()
         {

@@ -130,6 +130,7 @@ namespace Backend
         #endregion
 
         #region tracks
+        public static bool AssignTag(string trackId, string tagName) => AssignTag(new Track { Id = trackId }, new Tag { Name = tagName });
         public static bool AssignTag(Track track, Tag tag)
         {
             if (track == null)
@@ -142,10 +143,15 @@ namespace Backend
                 Logger.Information($"cannot assign tag null to track {track.Name}");
                 return false;
             }
+            if (tag.Name == null)
+            {
+                Logger.Information($"cannot assign tag (tag.Name is null)");
+                return false;
+            }
 
             using var db = ConnectionManager.NewContext();
             // get tag from db
-            var dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
+            var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
             if (dbTag == null)
             {
                 Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (tag does not exist)");
@@ -182,6 +188,7 @@ namespace Backend
             Logger.Information($"assigned tag {tag.Name} to {track.Name}");
             return true;
         }
+        public static bool DeleteAssignment(string trackId, string tagName) => DeleteAssignment(new Track { Id = trackId }, new Tag { Name = tagName });
         public static bool DeleteAssignment(Track track, Tag tag)
         {
             if (track == null)
@@ -192,6 +199,11 @@ namespace Backend
             if (tag == null)
             {
                 Logger.Information($"cannot delete track-tag assignment (tag is null)");
+                return false;
+            }
+            if(tag.Name == null)
+            {
+                Logger.Information($"cannot delete tag-track assignment (tag.Name is null)");
                 return false;
             }
 
@@ -231,6 +243,52 @@ namespace Backend
             }
 
             Logger.Information($"removed tag {tag.Name} from track {track.Name}");
+            return true;
+        }
+        public static bool AddTrack(Track track)
+        {
+            if (track == null)
+            {
+                Logger.Information($"cannot add track (track is null)");
+                return false;
+            }
+            if (track.Album == null)
+            {
+                Logger.Information($"cannot add track (album is null)");
+                return false;
+            }
+            if (track.Artists == null || track.Artists.Count == 0)
+            {
+                Logger.Information($"cannot add track (no artists)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            // check if track already exists
+            var dbTrack = db.Tracks.FirstOrDefault(t => t.Id == track.Id);
+            if (dbTrack != null)
+            {
+                Logger.Information($"cannot add track (already exists)");
+                return false;
+            }
+
+            // replace album with dbAlbum if it is already in db
+            var dbAlbum = db.Albums.FirstOrDefault(a => a.Id == track.Album.Id);
+            if (dbAlbum != null)
+                track.Album = dbAlbum;
+
+            // replace artists with dbArtists if they are already in db
+            for (var i = 0; i < track.Artists.Count; i++)
+            {
+                var dbArtist = db.Artists.FirstOrDefault(a => a.Id == track.Artists[i].Id);
+                if (dbArtist != null)
+                    track.Artists[i] = dbArtist;
+            }
+
+
+            db.Tracks.Add(track);
+            db.SaveChanges();
+            Logger.Information($"added track {track.Name}");
             return true;
         }
         #endregion
@@ -806,7 +864,7 @@ namespace Backend
                 Logger.Error($"Could not find PlaylistOutputNode with GeneratedPlaylistId {id}");
                 return new();
             }
-            var spotifyTracks = await SpotifyOperations.PlaylistItems(playlistOutputNode.GeneratedPlaylistId);
+            var spotifyTracks = await SpotifyOperations.GetPlaylistTracks(playlistOutputNode.GeneratedPlaylistId);
             var spotifyTrackIds = spotifyTracks.Select(t => t.Id);
 
             // replace spotify track with db track
@@ -826,6 +884,7 @@ namespace Backend
             return query;
         }
         #endregion
+
 
 
         #region AssignTagNode
@@ -1056,6 +1115,8 @@ namespace Backend
             await DataContainer.Instance.LoadSourcePlaylists(forceReload: true);
         }
         #endregion
+
+
 
         #region import/export tag
         public static async Task ExportTags(string outPath)

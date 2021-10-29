@@ -40,7 +40,7 @@ namespace Backend
             using var _ = ConnectionManager.NewContext(ensureCreated: true);
             Log.Information("initialized database");
         }
-            
+
         private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
         public static DatabaseContext NewContext(bool ensureCreated = false, bool dropDb = false)
         {
@@ -63,10 +63,10 @@ namespace Backend
 
         // option to set spotifyClient from outside (mostly for testing with mocked spotify client)
         public static void InitSpotify(ISpotifyClient spotifyClient) => Instance.Spotify = spotifyClient;
-        public static async Task TryInitFromSavedToken()
+        public static async Task<bool> TryInitFromSavedToken()
         {
             var tokenData = GetSavedToken();
-            await InitSpotify(tokenData);
+            return await InitSpotify(tokenData);
         }
 
         private static PKCETokenResponse GetSavedToken()

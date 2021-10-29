@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
@@ -7,25 +7,25 @@
 		<Version>1.0.1</Version>
 		<ApplicationIcon>logo.ico</ApplicationIcon>
 		<Authors>Benedikt Alkin</Authors>
-		<Company/>
+		<Company />
 	</PropertyGroup>
 	<ItemGroup>
-		<None Remove="Res\Spotify_Icon_RGB_Black.png"/>
-		<None Remove="Res\Spotify_Icon_RGB_Green.png"/>
-		<None Remove="Res\Spotify_Icon_RGB_White.png"/>
+		<None Remove="Res\Spotify_Icon_RGB_Black.png" />
+		<None Remove="Res\Spotify_Icon_RGB_Green.png" />
+		<None Remove="Res\Spotify_Icon_RGB_White.png" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="..\.editorconfig" Link=".editorconfig"/>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="MaterialDesignThemes" Version="4.1.0"/>
-		<PackageReference Include="Serilog" Version="2.10.0"/>
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
-		<PackageReference Include="Serilog.Sinks.Trace" Version="3.0.0"/>
-		<PackageReference Include="SpotifyAPI.Web" Version="6.2.0"/>
+		<PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+		<PackageReference Include="Serilog" Version="2.10.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Serilog.Sinks.Trace" Version="3.0.0" />
+		<PackageReference Include="SpotifyAPI.Web" Version="6.2.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Backend\Backend.csproj"/>
+		<ProjectReference Include="..\Backend\Backend.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Update="Views\HomeView.xaml.cs">
@@ -39,9 +39,9 @@
 		</Page>
 	</ItemGroup>
 	<ItemGroup>
-		<Resource Include="Res\Spotify_Icon_RGB_Black.png"/>
-		<Resource Include="Res\Spotify_Icon_RGB_Green.png"/>
-		<Resource Include="Res\Spotify_Icon_RGB_White.png"/>
+		<Resource Include="Res\Spotify_Icon_RGB_Black.png" />
+		<Resource Include="Res\Spotify_Icon_RGB_Green.png" />
+		<Resource Include="Res\Spotify_Icon_RGB_White.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="logo.ico">

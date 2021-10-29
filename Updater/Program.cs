@@ -9,7 +9,7 @@ namespace Updater
     public class Program
     {
         private const string APPLICATION_NAME = "SongTaggerForSpotify";
-        private const string APPLICATION= "SpotifySongTagger.exe";
+        private const string APPLICATION = "SpotifySongTagger.exe";
         private const string UPDATER_NAME = "Updater";
         public const string TEMP_DIR = "temp";
 
@@ -35,11 +35,11 @@ namespace Updater
             {
                 Process.Start(APPLICATION);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LogError($"could not start application {APPLICATION} (workdir={Directory.GetCurrentDirectory()}): {e.Message}");
             }
-            
+
 
             LogInformation($"Finished updater");
             UpdateLogger.CloseAndFlush();
@@ -74,12 +74,12 @@ namespace Updater
             {
                 path = Path.Combine(TEMP_DIR, APPLICATION_NAME);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 LogError($"invalid path (TEMP_DIR={TEMP_DIR} APPLICATION_NAME={APPLICATION_NAME})");
                 return;
             }
-            
+
             foreach (var dir in Directory.GetDirectories(path))
             {
                 var dstPath = dir[(path.Length + 1)..^0];

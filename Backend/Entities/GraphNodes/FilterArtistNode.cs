@@ -46,7 +46,7 @@ namespace Backend.Entities.GraphNodes
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
 
-        protected override void MapInputToOutput() 
+        protected override void MapInputToOutput()
             => OutputResult = InputResult[0].Where(t => t.Artists.Contains(Artist)).ToList();
 
         public override bool IsValid => ArtistId != null || Artist != null;

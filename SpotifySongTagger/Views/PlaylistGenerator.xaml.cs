@@ -1,6 +1,5 @@
 ﻿using Backend.Entities;
 using MaterialDesignThemes.Wpf;
-using Serilog;
 using SpotifySongTagger.ViewModels;
 using System.Windows;
 using System.Windows.Controls;

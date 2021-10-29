@@ -1,7 +1,6 @@
-tutorial
-- login
-- tag songs
-- generate 
+check if token is correctly handled when api and ui are open
+HTTP API tests
+
 
 minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
@@ -13,6 +12,8 @@ minor bugs:
 - RemoveNode had strange case where upon deleting input the input node would still be displayed as input (not sure if it was stored in db also)
 
 future
+- change path to db file
+- tag groups
 - search function (search for track and tag it)
 - audio features viewer/filter
 - top tracks

@@ -90,22 +90,14 @@ namespace Backend.Tests
         }
         #endregion
 
-        #region assign tags to tracks
+        #region tracks add/assign/unassign
         [Test]
-        public void Track_AssignTag()
+        public void Track_AssignTag_FullObjects()
         {
             var artists = InsertArtist(10);
             var albums = InsertAlbums(10);
             var tags = InsertTags(2);
             var tracks = InsertTracks(2, artists, albums);
-
-            List<Tag> tempTags;
-            List<Track> tempTracks;
-            using (var db = ConnectionManager.NewContext())
-            {
-                tempTags = db.Tags.ToList();
-                tempTracks = db.Tracks.ToList();
-            }
 
             using (var db = ConnectionManager.NewContext())
             {
@@ -125,7 +117,32 @@ namespace Backend.Tests
             }
         }
         [Test]
-        public void Track_DeleteAssignment()
+        public void Track_AssignTag_OnlyStrings()
+        {
+            var artists = InsertArtist(10);
+            var albums = InsertAlbums(10);
+            var tags = InsertTags(2);
+            var tracks = InsertTracks(2, artists, albums);
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.AssignTag(null, tags[0].Name)); // trackId is null
+                Assert.IsFalse(DatabaseOperations.AssignTag(tracks[0].Id, null)); // tagName is null
+                Assert.IsFalse(DatabaseOperations.AssignTag(tracks[0].Id, "asdf")); // tagName does not exist
+                Assert.IsFalse(DatabaseOperations.AssignTag("asdf", tags[0].Name)); // trackId does not exist
+
+                Assert.IsTrue(DatabaseOperations.AssignTag(tracks[0].Id, tags[0].Name));
+                Assert.AreEqual(1, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+
+                Assert.IsFalse(DatabaseOperations.AssignTag(tracks[0].Id, tags[0].Name)); // duplicate
+                Assert.AreEqual(1, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+
+                Assert.IsTrue(DatabaseOperations.AssignTag(tracks[0].Id, tags[1].Name));
+                Assert.AreEqual(2, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+            }
+        }
+        [Test]
+        public void Track_DeleteAssignment_FullObjects()
         {
             var artists = InsertArtist(10);
             var albums = InsertAlbums(10);
@@ -154,13 +171,131 @@ namespace Backend.Tests
                 Assert.AreEqual(1, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
 
                 Assert.IsTrue(DatabaseOperations.DeleteAssignment(tracks[0], tags[1]));
-                var asdf = db.Tracks.Include(t => t.Tags).ToList();
                 // not sure why this fails here but in new context it works
                 //Assert.AreEqual(0, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
             }
             using (var db = ConnectionManager.NewContext())
             {
                 Assert.AreEqual(0, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+            }
+        }
+
+        [Test]
+        public void Track_DeleteAssignment_OnlyStrings()
+        {
+            var artists = InsertArtist(10);
+            var albums = InsertAlbums(10);
+            var tags = InsertTags(2);
+            var tracks = InsertTracks(2, artists, albums);
+            using (var db = ConnectionManager.NewContext())
+            {
+                DatabaseOperations.AssignTag(tracks[0], tags[0]);
+                DatabaseOperations.AssignTag(tracks[0], tags[1]);
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.DeleteAssignment(null, tags[0].Name)); // trackId is null
+                Assert.IsFalse(DatabaseOperations.DeleteAssignment(tracks[0].Id, null)); // tagName is null
+                Assert.IsFalse(DatabaseOperations.DeleteAssignment("asdf", tags[0].Name)); // trackId does not exist
+                Assert.IsFalse(DatabaseOperations.DeleteAssignment(tracks[0].Id, "asdf")); // tagName does not exist
+                Assert.IsFalse(DatabaseOperations.DeleteAssignment(tracks[1].Id, tags[0].Name)); // assignment does not exist
+
+                Assert.IsTrue(DatabaseOperations.DeleteAssignment(tracks[0].Id, tags[0].Name));
+                Assert.AreEqual(1, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+
+                Assert.IsTrue(DatabaseOperations.DeleteAssignment(tracks[0].Id, tags[1].Name));
+                // not sure why this fails here but in new context it works
+                //Assert.AreEqual(0, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+            }
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.AreEqual(0, db.Tracks.Include(t => t.Tags).First(t => t.Id == tracks[0].Id).Tags.Count);
+            }
+        }
+        [Test]
+        public void Track_AddTrack()
+        {
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.AddTrack(null)); // track is null
+                var track = new Track { Id = "1VSuFS7PahCN3SWbOcQ98m", Name = "forget me too (feat. Halsey)" };
+                Assert.IsFalse(DatabaseOperations.AddTrack(track)); // no album
+                track.Album = new Album { Id = "57lgFncHBYu5E3igZnuCJK", Name = "Tickets To My Downfall", ReleaseDate = "2020-09-25", ReleaseDatePrecision = "day" };
+                Assert.IsFalse(DatabaseOperations.AddTrack(track)); // no artists
+                track.Artists = new();
+                Assert.IsFalse(DatabaseOperations.AddTrack(track)); // no artists
+                track.Artists = new()
+                {
+                    new() { Id = "6TIYQ3jFPwQSRmorSezPxX", Name = "Machine Gun Kelly" },
+                    new() { Id = "26VFTg2z8YR0cCuwLzESi2", Name = "Halsey" },
+                };
+                Assert.IsTrue(DatabaseOperations.AddTrack(track));
+                Assert.AreEqual(1, db.Tracks.Count());
+                Assert.AreEqual(1, db.Albums.Count());
+                Assert.AreEqual(2, db.Artists.Count());
+
+                Assert.IsFalse(DatabaseOperations.AddTrack(track)); // duplicate
+            }
+        }
+        [Test]
+        public void Track_AddTrack_AlbumExists()
+        {
+            var album = new Album { Id = "ExistingAlbum", Name = "ExistingAlbum" };
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Albums.Add(album);
+                db.SaveChanges();
+                Assert.AreEqual(1, db.Albums.Count());
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                var track = new Track
+                {
+                    Id = "1VSuFS7PahCN3SWbOcQ98m",
+                    Name = "forget me too (feat. Halsey)",
+                    Album = new Album { Id = album.Id, Name = album.Name },
+                    Artists = new()
+                    {
+                        new() { Id = "6TIYQ3jFPwQSRmorSezPxX", Name = "Machine Gun Kelly" },
+                        new() { Id = "26VFTg2z8YR0cCuwLzESi2", Name = "Halsey" },
+                    },
+                };
+                Assert.IsTrue(DatabaseOperations.AddTrack(track));
+                Assert.AreEqual(1, db.Tracks.Count());
+                Assert.AreEqual(1, db.Albums.Count());
+                Assert.AreEqual(2, db.Artists.Count());
+            }
+        }
+        [Test]
+        public void Track_AddTrack_ArtistExists()
+        {
+            var artist1 = new Artist { Id = "6TIYQ3jFPwQSRmorSezPxX", Name = "Machine Gun Kelly" };
+            using (var db = ConnectionManager.NewContext())
+            {
+                db.Artists.Add(artist1);
+                db.SaveChanges();
+                Assert.AreEqual(1, db.Artists.Count());
+            }
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                var track = new Track
+                {
+                    Id = "1VSuFS7PahCN3SWbOcQ98m",
+                    Name = "forget me too (feat. Halsey)",
+                    Album = new Album { Id = "57lgFncHBYu5E3igZnuCJK", Name = "Tickets To My Downfall", ReleaseDate = "2020-09-25", ReleaseDatePrecision = "day" },
+                    Artists = new()
+                    {
+                        new() { Id = artist1.Id, Name = artist1.Name },
+                        new() { Id = "26VFTg2z8YR0cCuwLzESi2", Name = "Halsey" },
+                    },
+                };
+                Assert.IsTrue(DatabaseOperations.AddTrack(track));
+                Assert.AreEqual(1, db.Tracks.Count());
+                Assert.AreEqual(1, db.Albums.Count());
+                Assert.AreEqual(2, db.Artists.Count());
             }
         }
         #endregion

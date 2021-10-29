@@ -85,7 +85,7 @@ namespace SpotifySongTagger.ViewModels
 
             foreach (var ggp in BaseViewModel.DataContainer.GraphGeneratorPages)
                 await Run(ggp);
-                
+
             IsRunningAll = false;
             Log.Information("Finished RunAll GraphGeneratorPages");
         }
@@ -171,7 +171,7 @@ namespace SpotifySongTagger.ViewModels
                 // update ui
                 BaseViewModel.DataContainer.GraphGeneratorPages.Remove(page);
             }
-                
+
         }
         public void EditGraphGeneratorPageName(GraphGeneratorPage page)
         {
@@ -181,7 +181,7 @@ namespace SpotifySongTagger.ViewModels
                 // update ui
                 page.Name = NewGraphGeneratorPageName;
             }
-                
+
             NewGraphGeneratorPageName = null;
         }
         #endregion
