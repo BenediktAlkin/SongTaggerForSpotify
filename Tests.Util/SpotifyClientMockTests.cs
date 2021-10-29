@@ -16,12 +16,14 @@ namespace Tests.Util
         private const int nLikedTracks = 500;
         private const int nPlaylists = 1000;
         private const int nLikedPlaylists = 500;
+        private const int nAlbums = 100;
 
         private List<FullTrack> Tracks;
         private List<FullTrack> LikedTracks;
         private List<SimplePlaylist> Playlists;
         private List<SimplePlaylist> LikedPlaylists;
         private Dictionary<string, List<FullTrack>> PlaylistTracks;
+        private Dictionary<string, (string, List<SimpleTrack>)> Albums;
 
         [SetUp]
         public override void SetUp()
@@ -35,9 +37,14 @@ namespace Tests.Util
             LikedPlaylists = Playlists.Take(nLikedPlaylists).ToList();
             PlaylistTracks = Enumerable.Range(1, nPlaylists)
                 .ToDictionary(
-                i => $"Playlist{i}",
+                i => NewPlaylist(i).Id,
                 i => Enumerable.Range(1, i).Select(j => NewTrack(j)).ToList());
-            Client = new SpotifyClientMock().SetUp(Tracks, LikedTracks, Playlists, LikedPlaylists, PlaylistTracks);
+            Albums = Enumerable.Range(1, nAlbums)
+                .ToDictionary(
+                i => NewAlbum(i).Id,
+                i => (NewAlbum(i).Name, Enumerable.Range(1, i).Select(j => ToSimpleTrack(NewTrack(j))).ToList()));
+
+            Client = new SpotifyClientMock().SetUp(Tracks, LikedTracks, Playlists, LikedPlaylists, PlaylistTracks, Albums);
         }
 
         [Test]
@@ -146,6 +153,34 @@ namespace Tests.Util
 
             var tracksAfterRemove = await Client.Paginate(await Client.Playlists.GetItems(newPlaylist.Id)).ToListAsync();
             Assert.AreEqual(0, tracksAfterRemove.Count);
+        }
+
+        [Test]
+        public async Task Albums_Get()
+        {
+            for(var i = 0; i < nAlbums; i++)
+            {
+                var albumId = Albums.Keys.ToList()[i];
+                var album = Albums[albumId];
+
+                var spotifyAlbum = await Client.Albums.Get(albumId, new AlbumRequest { Market = "EU" });
+                Assert.AreEqual(albumId, spotifyAlbum.Id);
+                Assert.AreEqual(album.Item1, spotifyAlbum.Name);
+                Assert.AreEqual(album.Item2.Count, spotifyAlbum.TotalTracks);
+            }
+        }
+        [Test]
+        public async Task Tracks_Get()
+        {
+            for(var i = 0; i < nTracks; i++)
+            {
+                var track = Tracks[i];
+                var spotifyTrack = await Client.Tracks.Get(track.Id, new TrackRequest { Market = "EU" });
+                Assert.AreEqual(track.Id, spotifyTrack.Id);
+                Assert.AreEqual(track.Name, spotifyTrack.Name);
+                Assert.AreEqual(track.Album.Id, spotifyTrack.Album.Id);
+                Assert.AreEqual(track.Album.Name, spotifyTrack.Album.Name);
+            }
         }
     }
 }

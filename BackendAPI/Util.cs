@@ -19,8 +19,7 @@ namespace BackendAPI
                     continue;
                 }
                 // make sure track is in db
-                success[i] = DatabaseOperations.AddTrack(tracks[i]);
-                if (!success[i]) continue; // failed to insert track
+                DatabaseOperations.AddTrack(tracks[i]);
 
                 // assign tags
                 success[i] = DatabaseOperations.AssignTag(tracks[i].Id, tagName);

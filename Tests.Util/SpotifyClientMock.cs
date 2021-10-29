@@ -18,6 +18,7 @@ namespace Tests.Util
         private List<SimplePlaylist> LikedPlaylists { get; } = new();
         private List<SimplePlaylist> Playlists { get; } = new();
         private Dictionary<string, List<FullTrack>> PlaylistTracks { get; } = new();
+        private Dictionary<string, (string, List<SimpleTrack>)> Albums { get; } = new();
 
 
         private static string ToPageUri(string actionType, string action, int offset, int limit, string param = null)
@@ -95,6 +96,20 @@ namespace Tests.Util
                                 default: throw new ArgumentException($"Invalid Action {action}");
                             }
                             break;
+                        case nameof(ISpotifyClient.Albums):
+                            switch (action)
+                            {
+                                case nameof(IAlbumsClient.Get):
+                                    var req3 = new AlbumTracksRequest
+                                    {
+                                        Offset = offset,
+                                        Limit = limit,
+                                    };
+                                    curPage = SpotifyClient.Albums.GetTracks(param, req3).Result;
+                                    break;
+                                default: throw new ArgumentException($"Invalid Action {action}");
+                            }
+                            break;
                         default: throw new ArgumentException($"Invalid ActionType {actionType}");
                     }
                 }
@@ -108,15 +123,22 @@ namespace Tests.Util
             List<FullTrack> likedTracks,
             List<SimplePlaylist> playlists,
             List<SimplePlaylist> likedPlaylists,
-            Dictionary<string, List<FullTrack>> playlistTracks)
+            Dictionary<string, List<FullTrack>> playlistTracks,
+            Dictionary<string, (string, List<SimpleTrack>)> albums)
         {
-            Tracks.AddRange(likedTracks);
-            LikedTracks.AddRange(likedTracks);
-            Playlists.AddRange(playlists);
-            LikedPlaylists.AddRange(likedPlaylists);
-            Playlists.AddRange(likedPlaylists);
-            foreach (var item in playlistTracks)
-                PlaylistTracks[item.Key] = item.Value;
+            Tracks.AddRange(tracks);
+            if(likedTracks != null)
+                LikedTracks.AddRange(likedTracks);
+            if(playlists != null)
+                Playlists.AddRange(playlists);
+            if(likedPlaylists != null)
+                LikedPlaylists.AddRange(likedPlaylists);
+            if(playlistTracks != null)
+                foreach (var item in playlistTracks)
+                    PlaylistTracks[item.Key] = item.Value;
+            if(albums != null)
+                foreach (var item in albums)
+                    Albums[item.Key] = item.Value;
 
 
             var mock = new Mock<ISpotifyClient>();
@@ -269,10 +291,50 @@ namespace Tests.Util
                             });
 
 
+            var albumMock = new Mock<IAlbumsClient>();
+            albumMock.Setup(album => album.Get(It.IsAny<string>(), It.IsAny<AlbumRequest>()))
+                .Returns((string albumId, AlbumRequest req) =>
+                {
+                    var album = Albums[albumId];
+                    var fullAlbum = new FullAlbum 
+                    { 
+                        Id = albumId, 
+                        Name = album.Item1, 
+                        TotalTracks = album.Item2.Count 
+                    };
+                    
+                    var page = new Paging<SimpleTrack>();
+                    var offset = 0;
+                    var limit = 50;
+                    page.Items = album.Item2
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(t => new SimpleTrack { Id = t.Id, Name = t.Name, Artists = t.Artists.ToList() })
+                        .ToList();
+                    if (offset + limit < LikedPlaylists.Count)
+                        page.Next = ToPageUri(
+                            nameof(ISpotifyClient.Albums),
+                            nameof(IPlaylistsClient.Get),
+                            offset + limit,
+                            limit,
+                            albumId);
+                    page.Total = album.Item2.Count;
+                    fullAlbum.Tracks = page;
+                    return Task.FromResult(fullAlbum);
+                });
+
+
+            var trackMock = new Mock<ITracksClient>();
+            trackMock.Setup(track => track.Get(It.IsAny<string>(), It.IsAny<TrackRequest>()))
+                .Returns((string trackId, TrackRequest req) => 
+                Task.FromResult(Tracks.FirstOrDefault(t => t.Id == trackId)));
+
 
             mock.SetupGet(client => client.Library).Returns(libraryMock.Object);
             mock.SetupGet(client => client.Playlists).Returns(playlistsMock.Object);
             mock.SetupGet(client => client.Follow).Returns(followMock.Object);
+            mock.SetupGet(client => client.Albums).Returns(albumMock.Object);
+            mock.SetupGet(client => client.Tracks).Returns(trackMock.Object);
 
 
             SpotifyClient = mock.Object;

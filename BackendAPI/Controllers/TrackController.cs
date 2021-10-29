@@ -3,6 +3,7 @@ using Backend.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BackendAPI.Controllers
@@ -10,9 +11,9 @@ namespace BackendAPI.Controllers
     [ApiController]
     public class TrackController : ControllerBase
     {
-        private ILogger<TagController> Logger { get; }
+        private ILogger<TrackController> Logger { get; }
 
-        public TrackController(ILogger<TagController> logger)
+        public TrackController(ILogger<TrackController> logger)
         {
             Logger = logger;
         }
@@ -21,7 +22,7 @@ namespace BackendAPI.Controllers
         [HttpPost("tags/{tag}/track")]
         public async Task<bool[]> AssignTag(string tag, [FromQuery(Name = "id")] string[] ids)
         {
-            using var timer = new RequestTimer<TagController>($"Track/{nameof(AssignTag)} tag={tag} ids={string.Join(',', ids)}", Logger);
+            using var timer = new RequestTimer<TrackController>($"Track/{nameof(AssignTag)} tag={tag} ids={string.Join(',', ids ?? Enumerable.Empty<string>())}", Logger);
 
             if (ids == null || ids.Length == 0)
             {
@@ -47,7 +48,7 @@ namespace BackendAPI.Controllers
         [HttpDelete("tags/{tag}/track")]
         public bool[] DeleteAssignment(string tag, [FromQuery(Name = "id")] string[] ids)
         {
-            using var timer = new RequestTimer<TagController>($"Track/{nameof(DeleteAssignment)} tag={tag} ids={string.Join(',', ids)}", Logger);
+            using var timer = new RequestTimer<TrackController>($"Track/{nameof(DeleteAssignment)} tag={tag} ids={string.Join(',', ids ?? Enumerable.Empty<string>())}", Logger);
 
             if (ids == null || ids.Length == 0)
             {
@@ -66,7 +67,7 @@ namespace BackendAPI.Controllers
         [HttpGet("tags/{tag}/tracks")]
         public string IsTagged(string tag, [FromQuery(Name = "id")] string[] ids)
         {
-            using var timer = new RequestTimer<TagController>($"Track/{nameof(IsTagged)} tag={tag} ids={string.Join(',', ids)}", Logger);
+            using var timer = new RequestTimer<TrackController>($"Track/{nameof(IsTagged)} tag={tag} ids={string.Join(',', ids ?? Enumerable.Empty<string>())}", Logger);
 
             if (ids == null || ids.Length == 0)
             {

@@ -138,7 +138,6 @@ namespace Backend
             try
             {
                 var album = await Spotify.Albums.Get(id, new AlbumRequest { Market = DataContainer.Instance.User.Country });
-                var req = new AlbumTracksRequest { Limit = 50, Market = DataContainer.Instance.User.Country };
                 var simpleTracks = await GetAll(album.Tracks);
 
                 return simpleTracks.Select(t => ToTrack(t, album)).ToList();

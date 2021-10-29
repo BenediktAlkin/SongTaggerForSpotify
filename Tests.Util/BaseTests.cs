@@ -51,12 +51,13 @@ namespace Tests.Util
 
         protected static void InitSpotify(
             List<FullTrack> tracks,
-            List<FullTrack> likedTracks,
-            List<SimplePlaylist> playlists,
-            List<SimplePlaylist> likedPlaylists,
-            Dictionary<string, List<FullTrack>> playlistTracks)
+            List<FullTrack> likedTracks = null,
+            List<SimplePlaylist> playlists = null,
+            List<SimplePlaylist> likedPlaylists = null,
+            Dictionary<string, List<FullTrack>> playlistTracks = null,
+            Dictionary<string, (string, List<SimpleTrack>)> albums = null)
         {
-            var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks);
+            var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks, albums);
             ConnectionManager.InitSpotify(client);
             DataContainer.Instance.User = new PrivateUser { Id = "TestId", Country = "TestCountry", Product = "TestProduct" };
         }
@@ -68,7 +69,7 @@ namespace Tests.Util
         protected static List<Tag> InsertTags(int count)
         {
             using var db = ConnectionManager.NewContext();
-            var tags = Enumerable.Range(1, count).Select(i => new Tag { Name = $"tag{i}" }).ToList();
+            var tags = Enumerable.Range(1, count).Select(i => new Tag { Name = $"tag{i}name" }).ToList();
             db.Tags.AddRange(tags);
             db.SaveChanges();
 
@@ -80,8 +81,8 @@ namespace Tests.Util
             var artists = Enumerable.Range(1, count).Select(i =>
             new Artist
             {
-                Id = $"artist{i}",
-                Name = $"artist{i}"
+                Id = $"artist{i}Id",
+                Name = $"artist{i}Name"
             }).ToList();
             db.Artists.AddRange(artists);
             db.SaveChanges();
@@ -94,8 +95,8 @@ namespace Tests.Util
             var albums = Enumerable.Range(1, count).Select(i =>
             new Album
             {
-                Id = $"album{i}",
-                Name = $"album{i}"
+                Id = $"album{i}Id",
+                Name = $"album{i}Name"
             }).ToList();
             db.Albums.AddRange(albums);
             db.SaveChanges();
@@ -108,8 +109,8 @@ namespace Tests.Util
             var tracks = Enumerable.Range(1, count).Select(i =>
             new Track
             {
-                Id = $"track{i}",
-                Name = $"track{i}",
+                Id = $"track{i}Id",
+                Name = $"track{i}Name",
                 //Album = albums[i % albums.Count],
                 Artists = new List<Artist> { artists[i % artists.Count] },
                 IsLiked = isLiked,
@@ -124,7 +125,7 @@ namespace Tests.Util
         {
             using var db = ConnectionManager.NewContext();
             var playlists = Enumerable.Range(1, count).Select(i =>
-            new Playlist { Id = $"playlist{i}", Name = $"playlist{i}" }).ToList();
+            new Playlist { Id = $"playlist{i}Id", Name = $"playlist{i}Name" }).ToList();
             db.Playlists.AddRange(playlists);
             db.SaveChanges();
 
@@ -167,13 +168,13 @@ namespace Tests.Util
         {
             return new FullTrack
             {
-                Id = $"Track{i}",
-                Name = $"Track{i}",
+                Id = $"Track{i}Id",
+                Name = $"Track{i}Name",
                 DurationMs = i,
                 Album = new SimpleAlbum
                 {
-                    Id = $"Album{i}",
-                    Name = $"Album{i}",
+                    Id = $"Album{i}Id",
+                    Name = $"Album{i}Name",
                     ReleaseDate = "2021",
                     ReleaseDatePrecision = "year",
                 },
@@ -181,20 +182,39 @@ namespace Tests.Util
                     {
                         new SimpleArtist
                         {
-                            Id = $"Artist{i}",
-                            Name = $"Artist{i}",
+                            Id = $"Artist{i}Id",
+                            Name = $"Artist{i}Name",
                         }
                     },
                 IsLocal = false,
                 IsPlayable = true,
             };
         }
+        protected static SimpleTrack ToSimpleTrack(FullTrack fullTrack)
+        {
+            return new SimpleTrack
+            {
+                Id = fullTrack.Id,
+                Name = fullTrack.Id,
+                DurationMs = fullTrack.DurationMs,
+                Artists = fullTrack.Artists.ToList(),
+                IsPlayable = fullTrack.IsPlayable,
+            };
+        }
         protected static SimplePlaylist NewPlaylist(int i)
         {
             return new SimplePlaylist
             {
-                Id = $"Playlist{i}",
-                Name = $"Playlist{i}",
+                Id = $"Playlist{i}Id",
+                Name = $"Playlist{i}Name",
+            };
+        }
+        protected static SimpleAlbum NewAlbum(int i)
+        {
+            return new SimpleAlbum
+            {
+                Id = $"Album{i}Id",
+                Name = $"Album{i}Name",
             };
         }
         #endregion

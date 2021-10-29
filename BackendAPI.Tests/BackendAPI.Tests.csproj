@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BackendAPI\BackendAPI.csproj" />
+    <ProjectReference Include="..\Tests.Util\Tests.Util.csproj" />
   </ItemGroup>
 
 </Project>
