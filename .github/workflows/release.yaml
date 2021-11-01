@@ -61,12 +61,14 @@ jobs:
         - name: windows
           asset_identifier: "-Windows"
           RID: win-x64
-        - name: Linux
-          asset_identifier: "Linux"
-          RID: linux-x64
-        - name: Mac
-          asset_identifier: "Mac"
-          RID: osx-x64
+        # while .net 5 can run on everything, running WPF complicates this a bunch
+        # so it was omitted
+        #- name: Linux
+        #  asset_identifier: "Linux"
+        #  RID: linux-x64
+        #- name: Mac
+        #  asset_identifier: "Mac"
+        #  RID: osx-x64
 
     steps:
       - name: checkout
