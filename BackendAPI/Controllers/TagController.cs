@@ -37,9 +37,9 @@ namespace BackendAPI.Controllers
             var allTags = db.Tags.Select(t => t.Name).ToArray();
             // just one group for default
             var groups = new Dictionary<string, string[]>() { { "default", allTags } };
-
-            var msg = string.Join(',', groups.Select(g => $"{g.Key}:[{string.Join(',', groups.Values)}]"));
-            timer.DetailMessage = $"result={msg}";
+            
+            var msg = string.Join(',', groups.Select(g => $"{g.Key}:[{string.Join(',', groups[g.Key])}]"));
+            timer.DetailMessage = $"result={{{msg}}}";
             return groups;
         }
     }

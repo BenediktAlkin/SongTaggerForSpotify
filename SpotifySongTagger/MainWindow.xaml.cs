@@ -56,7 +56,7 @@ namespace SpotifySongTagger
 
             Log.Information("trying logging in from saved token");
             ViewModel.IsLoggingIn = true;
-            await ConnectionManager.TryInitFromSavedToken();
+            await ConnectionManager.Instance.TryInitFromSavedToken();
             ViewModel.IsLoggingIn = false;
             Log.Information("tried logging in from saved token");
         }

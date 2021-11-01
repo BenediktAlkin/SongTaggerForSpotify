@@ -22,12 +22,10 @@ namespace BackendAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            var initialized = ConnectionManager.TryInitFromSavedToken().Result;
+            ConnectionManager.Instance.IsApi = true;
+            var initialized = ConnectionManager.Instance.TryInitFromSavedToken().Result;
             if (!initialized)
-            {
-                Log.Fatal("can't connect to Spotify/Database --> make sure you are logged into Song Tagger for Spotify (with the \"Remember me\" option)");
-                Environment.Exit(0);
-            }
+                ConnectionManager.Instance.Login(true).Wait();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

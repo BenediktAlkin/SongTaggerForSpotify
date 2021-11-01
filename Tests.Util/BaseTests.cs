@@ -58,7 +58,7 @@ namespace Tests.Util
             Dictionary<string, (string, List<SimpleTrack>)> albums = null)
         {
             var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks, albums);
-            ConnectionManager.InitSpotify(client);
+            ConnectionManager.Instance.InitSpotify(client);
             DataContainer.Instance.User = new PrivateUser { Id = "TestId", Country = "TestCountry", Product = "TestProduct" };
         }
 

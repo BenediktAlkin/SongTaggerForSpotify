@@ -14,7 +14,7 @@ namespace Backend.Tests.Spotify
         public override void SetUp()
         {
             base.SetUp();
-            ConnectionManager.TryInitFromSavedToken().Wait();
+            ConnectionManager.Instance.TryInitFromSavedToken().Wait();
         }
 
         public record TrackValues(string Id, string TrackName, int DurationInSeconds, string AlbumName, string[] ArtistNames);

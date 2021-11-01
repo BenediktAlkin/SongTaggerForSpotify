@@ -12,7 +12,7 @@ using Tests.Util;
 
 namespace BackendAPI.Tests
 {
-    public class AlbumControllerTests : BaseTests
+    public class AlbumControllerTests : BackendAPIBaseTests
     {
         protected AlbumController AlbumController { get; set; }
         protected TrackController TrackController { get; set; }

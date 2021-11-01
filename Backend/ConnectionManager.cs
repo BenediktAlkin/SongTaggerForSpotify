@@ -12,11 +12,23 @@ namespace Backend
 {
     public class ConnectionManager
     {
-        private const string TOKEN_FILE = "token.txt";
         private const string CLIENT_ID = "c15508ab1a5f453396e3da29d16a506b";
-        private const int PORT = 63846;
-        private static readonly string SERVER_URL = $"http://localhost:{PORT}/";
-        private static readonly string CALLBACK_URL = $"{SERVER_URL}callback/";
+        private const string SERVER_URL_TEMPLATE = "http://localhost:{0}/";
+        private static readonly string CALLBACK_URL_TEMPLATE = "{0}callback/";
+
+        private const string SST_TOKEN_FILE = "token.txt";
+        private const int SST_PORT = 63846;
+        // use different port for API to avoid conflicts when running API and songtagger concurrently
+        private const string API_TOKEN_FILE = "token_api.txt";
+        private const int API_PORT = 63847;
+
+
+        public bool IsApi { get; set; }
+        private string TOKEN_FILE => IsApi ? API_TOKEN_FILE : SST_TOKEN_FILE;
+        private int PORT => IsApi ? API_PORT : SST_PORT;
+        private string SERVER_URL => string.Format(SERVER_URL_TEMPLATE, API_PORT);
+        private string CALLBACK_URL => string.Format(CALLBACK_URL_TEMPLATE, SERVER_URL);
+
 
         protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "CM");
         public static ConnectionManager Instance { get; } = new();
@@ -36,9 +48,9 @@ namespace Backend
         {
             OptionsBuilder = GetOptionsBuilder(dbName, logTo);
             // create database if it doesn't exist yet
-            Log.Information("initializing database");
+            Logger.Information("initializing database");
             using var _ = ConnectionManager.NewContext(ensureCreated: true);
-            Log.Information("initialized database");
+            Logger.Information("initialized database");
         }
 
         private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
@@ -62,18 +74,14 @@ namespace Backend
 
 
         // option to set spotifyClient from outside (mostly for testing with mocked spotify client)
-        public static void InitSpotify(ISpotifyClient spotifyClient) => Instance.Spotify = spotifyClient;
-        public static async Task<bool> TryInitFromSavedToken()
+        public void InitSpotify(ISpotifyClient spotifyClient) => Instance.Spotify = spotifyClient;
+        public async Task<bool> TryInitFromSavedToken()
         {
             var tokenData = GetSavedToken();
             return await InitSpotify(tokenData);
         }
-
-        private static PKCETokenResponse GetSavedToken()
+        private static PKCETokenResponse GetTokenFromString(string[] tokenData)
         {
-            if (!File.Exists(TOKEN_FILE)) return null;
-
-            var tokenData = File.ReadAllText(TOKEN_FILE).Split('\n');
             return new PKCETokenResponse
             {
                 AccessToken = tokenData[0],
@@ -84,9 +92,25 @@ namespace Backend
                 CreatedAt = new DateTime(long.Parse(tokenData[5])),
             };
         }
-        private static void SaveToken(PKCETokenResponse tokenData)
+        public PKCETokenResponse GetSavedToken()
         {
-            var tokenStr = string.Join('\n', new[]
+            if (!File.Exists(TOKEN_FILE))
+            {
+                Logger.Information($"tokenfile not found ({TOKEN_FILE})");
+                return null;
+            }
+
+            var tokenStr = File.ReadAllText(TOKEN_FILE);
+            // remove \r to make token data independent of OS
+            tokenStr = tokenStr.Replace("\r", "");
+            var tokenData = tokenStr.Split('\n');
+            var token = GetTokenFromString(tokenData);
+            Logger.Information($"got token from {TOKEN_FILE}");
+            return token;
+        }
+        private void SaveToken(PKCETokenResponse tokenData)
+        {
+            var tokenStr = string.Join(Environment.NewLine, new[]
             {
                 tokenData.AccessToken,
                 tokenData.RefreshToken,
@@ -106,19 +130,23 @@ namespace Backend
             }
         }
 
-        private static ISpotifyClient CreateSpotifyClient(PKCETokenResponse tokenData)
+        private ISpotifyClient CreateSpotifyClient(PKCETokenResponse tokenData)
         {
             if (tokenData == null) return null;
 
             var authenticator = new PKCEAuthenticator(CLIENT_ID, tokenData);
-            authenticator.TokenRefreshed += (_, token) => SaveToken(token);
+            authenticator.TokenRefreshed += (_, token) =>
+            {
+                Logger.Information("TokenRefreshed");
+                SaveToken(token);
+            };
             var config = SpotifyClientConfig
                 .CreateDefault()
                 .WithAuthenticator(authenticator)
                 .WithRetryHandler(new SimpleRetryHandler());
             return new SpotifyClient(config);
         }
-        private static async Task<bool> InitSpotify(PKCETokenResponse tokenData)
+        public async Task<bool> InitSpotify(PKCETokenResponse tokenData)
         {
             var client = CreateSpotifyClient(tokenData);
             if (client == null) return false;
@@ -126,6 +154,7 @@ namespace Backend
             {
                 DataContainer.Instance.User = await client.UserProfile.Current();
                 Instance.Spotify = client;
+                Logger.Information($"connected to spotify with user {DataContainer.Instance.User.DisplayName} ({DataContainer.Instance.User.Id})");
                 InitDb(DataContainer.Instance.User.Id);
             }
             catch (Exception e)
@@ -140,7 +169,7 @@ namespace Backend
 
         #region Spotify login server
         private HttpListener Server { get; set; }
-        public static void Logout()
+        public void Logout()
         {
             Log.Information("logging out");
             if (File.Exists(TOKEN_FILE))
@@ -164,27 +193,8 @@ namespace Backend
             Server.Stop();
             Server = null;
         }
-        public async Task Login(bool rememberMe)
+        private (string, LoginRequest) CreateLoginRequest()
         {
-            // stop server if it is running
-            if (Server != null)
-            {
-                try
-                {
-                    Server.Stop();
-                }
-                catch (Exception e)
-                {
-                    Logger.Information($"Failed to stop server {e.Message}");
-                }
-            }
-
-            // start server
-            Server = new HttpListener();
-            Server.Prefixes.Add(SERVER_URL);
-            Server.Start();
-            Logger.Information($"Listening for connections on {PORT}");
-
             // create code
             var (verifier, challenge) = PKCEUtil.GenerateCodes();
 
@@ -209,6 +219,30 @@ namespace Backend
                         Scopes.UserModifyPlaybackState,
                     }
             };
+            return (verifier, loginRequest);
+        }
+        public async Task Login(bool rememberMe)
+        {
+            // stop server if it is running
+            if (Server != null)
+            {
+                try
+                {
+                    Server.Stop();
+                }
+                catch (Exception e)
+                {
+                    Logger.Information($"Failed to stop server {e.Message}");
+                }
+            }
+
+            // start server
+            Server = new HttpListener();
+            Server.Prefixes.Add(SERVER_URL);
+            Server.Start();
+            Logger.Information($"Listening for connections on {PORT}");
+
+            var (verifier, loginRequest) = CreateLoginRequest();
 
             // start browser to authenticate
             var uri = loginRequest.ToUri();
@@ -237,10 +271,19 @@ namespace Backend
 
             // create spotify client
             var tokenRequest = new PKCETokenRequest(CLIENT_ID, code, new Uri(CALLBACK_URL), verifier);
-            var tokenData = await new OAuthClient().RequestToken(tokenRequest);
-            var tokenIsValid = await InitSpotify(tokenData);
-            if (tokenIsValid && rememberMe)
-                SaveToken(tokenData);
+            PKCETokenResponse tokenData;
+            bool tokenIsValid = false;
+            try
+            {
+                tokenData = await new OAuthClient().RequestToken(tokenRequest);
+                tokenIsValid = await InitSpotify(tokenData);
+                if (tokenIsValid && rememberMe)
+                    SaveToken(tokenData);
+            }
+            catch(Exception e)
+            {
+                Logger.Information($"login token is invalid: {e.Message}");
+            }
 
             // write response
             var response = ctx.Response;
