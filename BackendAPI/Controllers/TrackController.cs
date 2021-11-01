@@ -19,7 +19,7 @@ namespace BackendAPI.Controllers
         }
 
 
-        [HttpPost("tags/{tag}/track")]
+        [HttpPost("tags/{tag}/tracks")]
         public async Task<bool[]> AssignTag(string tag, [FromQuery(Name = "id")] string[] ids)
         {
             using var timer = new RequestTimer<TrackController>($"Track/{nameof(AssignTag)} tag={tag} ids={string.Join(',', ids ?? Enumerable.Empty<string>())}", Logger);
@@ -45,7 +45,7 @@ namespace BackendAPI.Controllers
         }
 
 
-        [HttpDelete("tags/{tag}/track")]
+        [HttpDelete("tags/{tag}/tracks")]
         public bool[] DeleteAssignment(string tag, [FromQuery(Name = "id")] string[] ids)
         {
             using var timer = new RequestTimer<TrackController>($"Track/{nameof(DeleteAssignment)} tag={tag} ids={string.Join(',', ids ?? Enumerable.Empty<string>())}", Logger);

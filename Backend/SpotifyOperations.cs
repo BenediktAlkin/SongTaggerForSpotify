@@ -89,26 +89,26 @@ namespace Backend
         {
             if (string.IsNullOrEmpty(playlistId)) return new();
 
-            var request = new PlaylistGetItemsRequest { Limit = 100, Offset = 0, Market = DataContainer.Instance.User.Country };
-            request.Fields.Add(
-                "items(" +
-                    "type," +
-                    "track(" +
-                        "type," +
-                        "id," +
-                        "name," +
-                        "duration_ms," +
-                        "is_local," +
-                        "is_playable," +
-                        "linked_from," +
-                        "album(id,name,release_date,release_date_precision)," +
-                        "artists(id,name)" +
-                    ")" +
-                ")," +
-                "next");
             Logger.Information($"Start fetching playlist items playlistId={playlistId}");
             try
             {
+                var request = new PlaylistGetItemsRequest { Limit = 100, Offset = 0, Market = DataContainer.Instance.User.Country };
+                request.Fields.Add(
+                    "items(" +
+                        "type," +
+                        "track(" +
+                            "type," +
+                            "id," +
+                            "name," +
+                            "duration_ms," +
+                            "is_local," +
+                            "is_playable," +
+                            "linked_from," +
+                            "album(id,name,release_date,release_date_precision)," +
+                            "artists(id,name)" +
+                        ")" +
+                    ")," +
+                    "next");
                 var page = await Spotify.Playlists.GetItems(playlistId, request);
                 var allTracks = await GetAll(page);
                 Logger.Information($"Finished fetching playlist items playlistId={playlistId}");

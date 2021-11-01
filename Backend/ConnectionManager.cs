@@ -240,7 +240,7 @@ namespace Backend
             Server = new HttpListener();
             Server.Prefixes.Add(SERVER_URL);
             Server.Start();
-            Logger.Information($"Listening for connections on {PORT}");
+            Logger.Information($"Listening for login connections on {PORT}");
 
             var (verifier, loginRequest) = CreateLoginRequest();
 

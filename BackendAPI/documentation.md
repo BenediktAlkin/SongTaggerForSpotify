@@ -68,21 +68,21 @@ Check if all tracks of the playlist are tagged with a specific tag.
 **Returns** string: "ALL", "SOME" or "NONE"
 
 ## Track
-### POST tags/{tag}/track?id={}&id={}&...
+### POST tags/{tag}/tracks?id={}&id={}&...
 Assign a tag to one or many tracks.
 **tag** string: The tag to assign
 **id** array of strings: [SpotifyId](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)s of tracks
 
 **Returns** array of booleans: A boolean array with a length equivalent to the number of ids. Each value indicates whether or not the track was successfully tagged. If an invalid id is provided, the corresponding success value is false.
 
-### DELETE tags/{tag}/track?id={}&id={}&...
+### DELETE tags/{tag}/tracks?id={}&id={}&...
 Remove a tag from one or many tracks.
 **tag** string: The tag to remove
 **id** array of strings: [SpotifyId](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)s of tracks
 
 **Returns** array of booleans: A boolean array with a length equivalent to the number of tracks in the playlist. Each value indicates whether or not the tag was successfully removed. If an invalid id is provided, the corresponding success value is false.
 
-### GET tags/{tag}/track?id={}&id={}&...
+### GET tags/{tag}/tracks?id={}&id={}&...
 Check if all provided tracks are tagged with a specific tag.
 **tag** string: The tag to check for
 **id** array of strings: [SpotifyId](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)s of tracks

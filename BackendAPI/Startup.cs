@@ -1,6 +1,7 @@
 using Backend;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,6 +45,10 @@ namespace BackendAPI
             {
                 endpoints.MapControllers();
             });
+
+            var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
+            Log.Information("listening on addresse " + string.Join(" ", serverAddressesFeature.Addresses));
+
         }
     }
 }

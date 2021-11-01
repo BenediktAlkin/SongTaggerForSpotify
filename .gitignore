@@ -6,6 +6,7 @@
 # spotify authentication things
 code.txt
 token.txt
+token_api.txt
 verifier.txt
 *.sqlite
 

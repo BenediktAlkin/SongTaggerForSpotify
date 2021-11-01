@@ -180,12 +180,12 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Logger.Information($"cannot assign tag {tag.Name} to {track.Name}: " +
+                Logger.Information($"cannot assign tag {dbTag.Name} to {dbTrack.Name}: " +
                     $"{e.Message} - {e.InnerException?.Message}");
                 return false;
             }
 
-            Logger.Information($"assigned tag {tag.Name} to {track.Name}");
+            Logger.Information($"assigned tag {dbTag.Name} to {dbTrack.Name}");
             return true;
         }
         public static bool DeleteAssignment(string trackId, string tagName) => DeleteAssignment(new Track { Id = trackId }, new Tag { Name = tagName });
@@ -237,12 +237,12 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Logger.Information($"cannot delete tag {tag.Name} from track {track.Name}: " +
+                Logger.Information($"cannot delete tag {dbTag.Name} from track {dbTrack.Name}: " +
                     $"{e.Message} - {e.InnerException?.Message}");
                 return false;
             }
 
-            Logger.Information($"removed tag {tag.Name} from track {track.Name}");
+            Logger.Information($"removed tag {dbTag.Name} from track {dbTrack.Name}");
             return true;
         }
         public static bool AddTrack(Track track)
@@ -288,7 +288,7 @@ namespace Backend
 
             db.Tracks.Add(track);
             db.SaveChanges();
-            Logger.Information($"added track {track.Name}");
+            Logger.Information($"added track {dbTrack.Name}");
             return true;
         }
         #endregion

@@ -35,6 +35,7 @@ namespace BackendAPI
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://localhost:63848");
                 });
     }
 }
