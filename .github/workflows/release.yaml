@@ -51,7 +51,7 @@ jobs:
       uses: softprops/action-gh-release@v1
 
 
-  create-release-portable:
+  create_release_portable:
     needs: update_version_in_source
     runs-on: windows-latest
 
@@ -71,6 +71,23 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
+      # for some reason the checkout checks out the old commit without version update (even with provided SHA)
+      # prepare version update
+      - name: extract tag
+        uses: olegtarasov/get-tag@v2.1
+        id: tagName
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      # update versions locally
+      - name: update application version
+        run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.main_project_name }}/${{ env.main_project_name }}.csproj
+      - name: update updater version
+        run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.updater_name }}/${{ env.updater_name }}.csproj
+
+
       # setup runtime
       - name: Install .NET Core
         uses: actions/setup-dotnet@v1
@@ -112,13 +129,27 @@ jobs:
           asset_content_type: application/zip
 
 
-  create-release-installer:
+  create_release_installer:
     needs: update_version_in_source
     runs-on: windows-latest
     
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
+      # for some reason the checkout checks out the old commit without version update (even with provided SHA)
+      # prepare version update
+      - name: extract tag
+        uses: olegtarasov/get-tag@v2.1
+        id: tagName
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      # update versions locally
+      - name: update installer version
+        run: python .buildscripts/update_version_vdproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file Setup/Setup.vdproj
+
       # setup runtime
       - name: Install .NET Core
         uses: actions/setup-dotnet@v1
