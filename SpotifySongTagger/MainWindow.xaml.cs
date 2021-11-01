@@ -43,11 +43,11 @@ namespace SpotifySongTagger
             {
                 string os = string.Empty;
                 if (RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
-                    os = "Windows";
+                    os = "windows";
                 if (RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
-                    os = "Linux"; 
+                    os = "linux"; 
                 if (RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX))
-                    os = "Mac";
+                    os = "mac";
                 Log.Information($"checking for updates (OperatingSystem={os})");
 
 #if !DEBUG

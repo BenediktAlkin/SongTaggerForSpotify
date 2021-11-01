@@ -84,10 +84,10 @@ namespace Util
             var portableAssets = release.Assets.Where(a => a.Name.ToLower().Contains(".zip"));
 
             // get asset for os
-            var asset = portableAssets.FirstOrDefault(a => a.Name.ToLower().Contains(os));
+            var asset = portableAssets.FirstOrDefault(a => a.Name.ToLower().Contains(os.ToLower()));
             if (asset == null)
             {
-                Logger.Error($"Failed to download update (no asset contains 'zip')");
+                Logger.Error($"Failed to download update (no zip asset contains \"{os.ToLower()}\")");
                 return;
             }
             var url = asset.BrowserDownloadUrl;
