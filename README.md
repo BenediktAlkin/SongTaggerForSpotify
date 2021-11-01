@@ -60,6 +60,9 @@ All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which 
 * [local files](https://support.spotify.com/us/article/local-files/) are not supported by the [Spotify API](https://developer.spotify.com/documentation/general/guides/local-files-spotify-playlists/#limitations)
 * [unavailable songs](https://community.spotify.com/t5/iOS-iPhone-iPad/Song-unavailable/td-p/4816227#:~:text=The%20greyed%20out%20tracks%20just,to%20the%20individual%20music%20companies.) are currently not supported
 
+## API
+A HTTP API is available and documented [here](https://github.com/BenediktAlkin/SongTaggerForSpotify/blob/main/BackendAPI/documentation.md).
+
 
 ## Donate
 Song Tagger for Spotify is free and open source! 

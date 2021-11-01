@@ -9,6 +9,7 @@ env:
   main_project_name: SpotifySongTagger
   application_name: SongTaggerForSpotify
   updater_name: Updater
+  api_name: BackendAPI
   build_config: Release
   MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
 
@@ -61,6 +62,10 @@ jobs:
     # publish updater to {application_name}/{build_config}
     - name: Publish updater
       run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
+    # publish API to {application_name}/{build_config}
+    - name: Publish API
+      run: dotnet publish ${{ env.api_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
+    
     # publish setup project to Setup/{build_config}
     - name: Publish setup
       shell: cmd
