@@ -14,8 +14,7 @@ env:
   MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
 
 jobs:
-  build:
-
+  update_version_in_source:
     runs-on: windows-latest
 
     steps:
@@ -23,72 +22,128 @@ jobs:
       uses: actions/checkout@v2
 
     # prepare version update
-    - name: Extract tag
+    - name: extract tag
       uses: olegtarasov/get-tag@v2.1
       id: tagName
-    - name: Setup python
+    - name: setup python
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
     # update versions locally
-    - name: Update application version
+    - name: update application version
       run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.main_project_name }}/${{ env.main_project_name }}.csproj
-    - name: Update updater version
+    - name: update updater version
       run: python .buildscripts/update_version_csproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file ${{ env.updater_name }}/${{ env.updater_name }}.csproj
-    - name: Update installer version
+    - name: update installer version
       run: python .buildscripts/update_version_vdproj.py --tagname ${{ steps.tagName.outputs.tag }} --project-file Setup/Setup.vdproj
     # push updated version
-    - name: Push updated version number
+    - name: push updated version number
       uses: test-room-7/action-update-file@v1
       with:
           file-path: |
               ${{ env.main_project_name }}/${{ env.main_project_name }}.csproj
               ${{ env.updater_name }}/${{ env.updater_name }}.csproj
               Setup/Setup.vdproj
-          commit-msg: Update version number
+          commit-msg: update version number
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-
-    # setup runtime
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-        
-
-    # publish program to {application_name}/{build_config}
-    - name: Publish program
-      run: dotnet publish ${{ env.main_project_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
-    # publish updater to {application_name}/{build_config}
-    - name: Publish updater
-      run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
-    # publish API to {application_name}/{build_config}
-    - name: Publish API
-      run: dotnet publish ${{ env.api_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ env.build_config }}"
-    
-    # publish setup project to Setup/{build_config}
-    - name: Publish setup
-      shell: cmd
-      run: |
-        "%MSBUILD_PATH%" ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
-    
-    # zip {application_name}/{build_config} into a zip file where the root folder has name {application_name}
-    - name: Zip portable build
-      uses: papeloto/action-zip@v1
-      with:
-        files: "${{ env.application_name }}/${{ env.build_config }}"
-        dest: "Releases/${{ env.application_name }}-Portable.zip"
-        recursive: false
-    # rename Setup.msi
-    - name: Rename setup
-      run: |
-        cd Setup/${{ env.build_config }} && ren Setup.msi "${{ env.application_name }}-Installer.msi"
-
-
-    # make git release
-    - name: Release build
+    # create empty release
+    - name: create empty release
       uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          Releases/${{ env.application_name }}-Portable.zip
-          Setup/${{ env.build_config }}/${{ env.application_name }}-Installer.msi
+
+
+  create-release-portable:
+    needs: update_version_in_source
+    runs-on: windows-latest
+
+    strategy: 
+      matrix:
+        include: 
+        - name: windows
+          asset_identifier: "-Windows"
+          RID: win-x64
+        - name: Linux
+          asset_identifier: "Linux"
+          RID: linux-x64
+        - name: Mac
+          asset_identifier: "Mac"
+          RID: osx-x64
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      # setup runtime
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      # publish program to {application_name}/{matrix.name}
+      - name: publish program ${{ matrix.name }}
+        run: dotnet publish ${{ env.main_project_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ matrix.name }}" -r ${{ matrix.RID }} --no-self-contained
+      # publish updater to {application_name}/{matrix.name}
+      - name: publish updater ${{ matrix.name }}
+        run: dotnet publish ${{ env.updater_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ matrix.name }}" -r ${{ matrix.RID }} --no-self-contained
+      # publish API to {application_name}/{matrix.name}
+      - name: publish API ${{ matrix.name }}
+        run: dotnet publish ${{ env.api_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ matrix.name }}" -r ${{ matrix.RID }} --no-self-contained
+      # zip {application_name}/{matrix.name} into a zip file where the root folder has name {application_name}
+      - name: zip portable build
+        uses: papeloto/action-zip@v1
+        with:
+          files: "${{ env.application_name }}/${{ matrix.name }}"
+          dest: "Releases/${{ env.application_name }}-${{ matrix.name }}.zip"
+          recursive: false
+
+      # get release.upload_url
+      - name: get release.upload_url
+        id: update_release
+        uses: tubone24/update_release@v1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      # add zip to release assets
+      - name: add ${{ matrix.name }} to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+        with:
+          upload_url: ${{ steps.update_release.outputs.upload_url }}
+          asset_path: ./Releases/${{ env.application_name }}-${{ matrix.name }}.zip
+          asset_name: ${{ env.application_name }}${{ matrix.asset_identifier }}.zip
+          asset_content_type: application/zip
+
+
+  create-release-installer:
+    needs: update_version_in_source
+    runs-on: windows-latest
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      # setup runtime
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      # publish setup project to Setup/{build_config}
+      - name: Publish setup
+        shell: cmd
+        run: |
+          "%MSBUILD_PATH%" ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+      
+      # get release.upload_url
+      - name: get release.upload_url
+        id: update_release
+        uses: tubone24/update_release@v1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      # add msi to release assets
+      - name: add ${{ matrix.name }} to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+        with:
+          upload_url: ${{ steps.update_release.outputs.upload_url }}
+          asset_path: ./Setup/${{ env.build_config }}/Setup.msi
+          asset_name: ${{ env.application_name }}-Windows-Installer.msi
+          asset_content_type: application/octet-stream

@@ -68,19 +68,23 @@ namespace Util
             set => SetProperty(ref updateProgressPercent, value, nameof(UpdateProgressPercent));
         }
 
-        public async Task<Version> UpdateToLatestRelease(string user, string repo, Version currentVersion, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
+        public async Task<Version> UpdateToLatestRelease(string os, string user, string repo, Version currentVersion, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
         {
             State = UpdatingState.Checking;
             var latestRelease = await Github.CheckForUpdate(user, repo, currentVersion);
             if (latestRelease == null)
                 return null;
 
-            await UpdateToRelease(user, repo, latestRelease, updaterName, applicationName, shutdownAction, startUpdater);
+            await UpdateToRelease(os, user, repo, latestRelease, updaterName, applicationName, shutdownAction, startUpdater);
             return latestRelease.Version;
         }
-        public async Task UpdateToRelease(string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
+        public async Task UpdateToRelease(string os, string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
         {
-            var asset = release.Assets.FirstOrDefault(a => a.Name.ToLower().Contains(".zip"));
+            // filter installer
+            var portableAssets = release.Assets.Where(a => a.Name.ToLower().Contains(".zip"));
+
+            // get asset for os
+            var asset = portableAssets.FirstOrDefault(a => a.Name.ToLower().Contains(os));
             if (asset == null)
             {
                 Logger.Error($"Failed to download update (no asset contains 'zip')");
