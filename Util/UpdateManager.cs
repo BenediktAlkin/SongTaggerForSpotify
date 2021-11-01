@@ -13,7 +13,7 @@ namespace Util
     {
         public const string TEMP_DIR = "temp";
         public const string ZIP_DEFAULT_NAME = "temp.zip";
-        private static ILogger Logger { get; } = Log.ForContext("SourceContext", "UM");
+        private static ILogger Logger { get; set; }
         public static UpdateManager Instance { get; } = new();
         private UpdateManager() { }
 
@@ -68,18 +68,31 @@ namespace Util
             set => SetProperty(ref updateProgressPercent, value, nameof(UpdateProgressPercent));
         }
 
-        public async Task<Version> UpdateToLatestRelease(string os, string user, string repo, Version currentVersion, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
+        private static void InitLogger()
         {
+            // for some reason doing this in the property initialization returned SilentLogger
+            if (Logger == null)
+                Logger = Log.ForContext("SourceContext", "UM");
+        }
+
+        public async Task<Version> UpdateToLatestRelease(string os, string user, string repo, Version currentVersion,
+            string updaterName, string zipRootFolder, Action shutdownAction, bool startUpdater = true)
+        {
+            InitLogger();
+
             State = UpdatingState.Checking;
             var latestRelease = await Github.CheckForUpdate(user, repo, currentVersion);
             if (latestRelease == null)
                 return null;
 
-            await UpdateToRelease(os, user, repo, latestRelease, updaterName, applicationName, shutdownAction, startUpdater);
+            await UpdateToRelease(os, user, repo, latestRelease, updaterName, zipRootFolder, shutdownAction, startUpdater);
             return latestRelease.Version;
         }
-        public async Task UpdateToRelease(string os, string user, string repo, Github.Release release, string updaterName, string applicationName, Action shutdownAction, bool startUpdater = true)
+        public async Task UpdateToRelease(string os, string user, string repo, Github.Release release,
+            string updaterName, string zipRootFolder, Action shutdownAction, bool startUpdater = true)
         {
+            InitLogger();
+
             // filter installer
             var portableAssets = release.Assets.Where(a => a.Name.ToLower().Contains(".zip"));
 
@@ -87,13 +100,13 @@ namespace Util
             var asset = portableAssets.FirstOrDefault(a => a.Name.ToLower().Contains(os.ToLower()));
             if (asset == null)
             {
-                Logger.Error($"Failed to download update (no zip asset contains \"{os.ToLower()}\")");
+                Logger.Error($"failed to download update (no zip asset contains \"{os.ToLower()}\")");
                 return;
             }
             var url = asset.BrowserDownloadUrl;
             var (zipFileName, zipFilePath) = PrepareUpdate(url);
             await DownloadUpdate(url, zipFilePath);
-            ExtractUpdate(zipFilePath, updaterName, applicationName);
+            ExtractUpdate(zipFilePath, updaterName, zipRootFolder);
             State = UpdatingState.Restarting;
 
             if (startUpdater)
@@ -104,11 +117,16 @@ namespace Util
                 }
                 catch (Exception e)
                 {
-                    Logger.Error($"Error starting updater: {e.Message}");
+                    Logger.Error($"error starting updater: {e.Message}");
+                }
+                finally
+                {
+                    Logger.Information("started updater");
                 }
             }
             shutdownAction?.Invoke();
         }
+
         private (string, string) PrepareUpdate(string url)
         {
             State = UpdatingState.Preparation;
@@ -117,16 +135,17 @@ namespace Util
             var zipFilePath = Path.Combine(TEMP_DIR, zipFileName);
             try
             {
-                Logger.Information("Creating temp directory");
+                Logger.Information("creating temp directory");
                 if (Directory.Exists(TEMP_DIR))
                     Directory.Delete(TEMP_DIR, true);
                 Directory.CreateDirectory(TEMP_DIR);
             }
             catch (Exception e)
             {
-                Logger.Error($"Failed to create/clear the temp directory: {e.Message}");
+                Logger.Error($"failed to create/clear the temp directory: {e.Message}");
                 return (null, null);
             }
+            Logger.Information("created temp directory");
             return (zipFileName, zipFilePath);
         }
         private async Task DownloadUpdate(string url, string filePath)
@@ -137,7 +156,7 @@ namespace Util
             {
                 using (var wc = new WebClient())
                 {
-                    Logger.Information("Downloading latest version");
+                    Logger.Information("downloading latest version");
                     wc.DownloadProgressChanged += (sender, e) =>
                     {
                         UpdateSizeMb = (double)e.TotalBytesToReceive / 1024 / 1024;
@@ -149,21 +168,25 @@ namespace Util
             }
             catch (Exception e)
             {
-                Logger.Error($"Failed update download: {e.Message}");
+                Logger.Error($"failed update download: {e.Message}");
+            }
+            finally
+            {
+                Logger.Information("downloaded latest version");
             }
         }
-        private void ExtractUpdate(string zipFilePath, string updaterName, string applicationName)
+        private void ExtractUpdate(string zipFilePath, string updaterName, string zipRootFolder)
         {
             State = UpdatingState.Extracting;
             try
             {
                 // extract zip
                 File.Move(zipFilePath, zipFilePath.Replace("rar", "zip"));
-                Logger.Information("Extracting files...");
+                Logger.Information("extracting zip file");
                 ZipFile.ExtractToDirectory(zipFilePath, TEMP_DIR);
 
-                // update updater (copy all files starting with updaterName [e.g. Updater.exe, Updater.dll, ...])
-                var tempAppDirPath = Path.Combine(TEMP_DIR, applicationName);
+                // update updater (move all files starting with updaterName [e.g. Updater.exe, Updater.dll, ...])
+                var tempAppDirPath = Path.Combine(TEMP_DIR, zipRootFolder);
                 foreach (var filePath in Directory.GetFiles(tempAppDirPath))
                 {
                     var fileName = filePath[(tempAppDirPath.Length + 1)..^0];
@@ -171,13 +194,17 @@ namespace Util
                     {
                         var newUpdaterFilePath = Path.Combine(tempAppDirPath, fileName);
                         File.Move(newUpdaterFilePath, fileName, true);
+                        Logger.Information($"updated file {fileName}");
                     }
                 }
             }
             catch (Exception e)
             {
-                Logger.Error($"Failed to extract update: {e.Message}");
-                return;
+                Logger.Error($"failed to extract update: {e.Message}");
+            }
+            finally
+            {
+                Logger.Information("extracted zip file");
             }
         }
     }

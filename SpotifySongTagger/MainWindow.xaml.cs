@@ -57,7 +57,14 @@ namespace SpotifySongTagger
                     Close();
                     Application.Current.Shutdown();
                 };
-                await UpdateManager.Instance.UpdateToLatestRelease(os, "BenediktAlkin", "SongTaggerForSpotify", typeof(MainWindow).Assembly.GetName().Version, "Updater", "SpotifySongTagger", shutdownAction);
+                await UpdateManager.Instance.UpdateToLatestRelease(
+                    os, 
+                    "BenediktAlkin", 
+                    "SongTaggerForSpotify", 
+                    typeof(MainWindow).Assembly.GetName().Version, 
+                    "Updater", 
+                    "SongTaggerForSpotify", 
+                    shutdownAction);
 #endif
                 ViewModel.CheckedForUpdates = true;
                 Log.Information("checked for updates");
