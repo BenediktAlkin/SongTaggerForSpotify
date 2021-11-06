@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,5 +44,8 @@ namespace BackendAPI.Controllers
             timer.DetailMessage = $"userId={user.Id}";
             return user.Id;
         }
+
+        [HttpGet("json/connection/userid")]
+        public Dictionary<string, string> JsonUserId() => new() { { Constants.JSON_RESULT, UserId() } };
     }
 }

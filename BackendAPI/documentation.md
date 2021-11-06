@@ -2,6 +2,10 @@
 
 Running "BackendAPI.exe" will start a HTTP server on http://localhost:63848/ with the following endpoints.
 
+## JSON format
+All endpoints described here use text/plain as return type. The return value is wrapped into a json object when an endpoint is prefixed with json/.
+E.g. If the endpoint GET connection/userid returns *exampleuserid* the endpoint GET json/connection/userid will return *{"result":"exampleuserid"}*
+
 ## Connection
 The API does need access to the SpotifyAPI. Upon starting the API it will check if a user is already logged in. If no user is logged in it will open a browser window for the user to login. The login for the API is independent of the login for the main app. A user remains logged into the API until the logout endpoint is called.
 

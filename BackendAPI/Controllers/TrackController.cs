@@ -43,6 +43,8 @@ namespace BackendAPI.Controllers
 
             return success;
         }
+        [HttpPost("json/tags/{tag}/tracks")]
+        public async Task<Dictionary<string, bool[]>> JsonAssignTag(string tag, [FromQuery(Name = "id")] string[] ids) => new() { { Constants.JSON_RESULT, await AssignTag(tag, ids) } };
 
 
         [HttpDelete("tags/{tag}/tracks")]
@@ -63,6 +65,9 @@ namespace BackendAPI.Controllers
 
             return success;
         }
+        [HttpDelete("json/tags/{tag}/tracks")]
+        public Dictionary<string, bool[]> JsonDeleteAssignment(string tag, [FromQuery(Name = "id")] string[] ids) => new() { { Constants.JSON_RESULT, DeleteAssignment(tag, ids) } };
+
 
         [HttpGet("tags/{tag}/tracks")]
         public string IsTagged(string tag, [FromQuery(Name = "id")] string[] ids)
@@ -85,6 +90,7 @@ namespace BackendAPI.Controllers
             timer.DetailMessage = $"result={tracksAreTagged}";
             return tracksAreTagged;
         }
-
+        [HttpGet("json/tags/{tag}/tracks")]
+        public Dictionary<string, string> JsonIsTagged(string tag, [FromQuery(Name = "id")] string[] ids) => new() { { Constants.JSON_RESULT, IsTagged(tag, ids) } };
     }
 }

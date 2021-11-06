@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,6 +46,9 @@ namespace BackendAPI.Controllers
             return success;
         }
 
+        [HttpPost("json/tags/{tag}/album")]
+        public async Task<Dictionary<string, bool[]>> JsonAssignTag(string tag, [FromQuery] string id) => new() { { Constants.JSON_RESULT, await AssignTag(tag, id) } };
+
 
         [HttpDelete("tags/{tag}/album")]
         public async Task<bool[]> DeleteAssignment(string tag, [FromQuery] string id)
@@ -72,6 +76,9 @@ namespace BackendAPI.Controllers
 
             return success;
         }
+        [HttpDelete("json/tags/{tag}/album")]
+        public async Task<Dictionary<string, bool[]>> JsonDeleteAssignment(string tag, [FromQuery] string id) => new() { { Constants.JSON_RESULT, await DeleteAssignment(tag, id) } };
+
 
         [HttpGet("tags/{tag}/album")]
         public async Task<string> IsTagged(string tag, [FromQuery] string id)
@@ -103,5 +110,7 @@ namespace BackendAPI.Controllers
             return tracksAreTagged;
         }
 
+        [HttpGet("json/tags/{tag}/album")]
+        public async Task<Dictionary<string, string>> JsonIsTagged(string tag, [FromQuery] string id) => new() { { Constants.JSON_RESULT, await IsTagged(tag, id) } };
     }
 }

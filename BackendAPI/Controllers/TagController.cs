@@ -27,6 +27,8 @@ namespace BackendAPI.Controllers
             timer.DetailMessage = $"result={string.Join(',', allTags)}";
             return allTags;
         }
+        [HttpGet("json/tags")]
+        public Dictionary<string, string[]> JsonGetTags() => new() { { Constants.JSON_RESULT, GetTags() } };
 
         [HttpGet("taggroups")]
         public Dictionary<string, string[]> GetTagGroups()
@@ -42,5 +44,7 @@ namespace BackendAPI.Controllers
             timer.DetailMessage = $"result={{{msg}}}";
             return groups;
         }
+        [HttpGet("json/taggroups")]
+        public Dictionary<string, Dictionary<string, string[]>> JsonGetTagGroups() => new() { { Constants.JSON_RESULT, GetTagGroups() } };
     }
 }

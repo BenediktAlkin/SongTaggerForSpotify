@@ -5,5 +5,7 @@
         public const string NONE = "NONE";
         public const string SOME = "SOME";
         public const string ALL = "ALL";
+
+        public const string JSON_RESULT = "result";
     }
 }
