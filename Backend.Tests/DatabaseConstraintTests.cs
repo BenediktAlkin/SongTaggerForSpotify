@@ -16,6 +16,41 @@ namespace Backend.Tests
             base.SetUp();
         }
 
+        [Test]
+        public void TagGroup_Default_IsInserted()
+        {
+            using (var db = ConnectionManager.NewContext())
+            {
+                var tagGroups = db.TagGroups.ToList();
+                Assert.AreEqual(1, tagGroups.Count);
+                var tagGroup = tagGroups.First();
+                Assert.AreEqual(Constants.DEFAULT_TAGGROUP_ID, tagGroup.Id);
+                Assert.AreEqual(Constants.DEFAULT_TAGGROUP_NAME, tagGroup.Name);
+                Assert.AreEqual(Constants.DEFAULT_TAGGROUP_ID, tagGroup.Order);
+            } 
+        }
+        [Test]
+        public void Tag_TagGroup_DefaultIsSet()
+        {
+            var tag = InsertTags(1).First();
+            Assert.AreEqual(Constants.DEFAULT_TAGGROUP_ID, tag.TagGroupId);
+        }
+
+        [Test]
+        public void MetaPlaylists_AreInserted()
+        {
+            using (var db = ConnectionManager.NewContext())
+            {
+                var playlists = db.Playlists.ToList();
+                Assert.AreEqual(Constants.META_PLAYLIST_IDS.Length, playlists.Count);
+                foreach(var playlistId in Constants.META_PLAYLIST_IDS)
+                {
+                    var playlist = playlists.FirstOrDefault(p => p.Id == playlistId);
+                    Assert.AreEqual(playlistId, playlist.Id);
+                    Assert.AreEqual(playlistId, playlist.Name);
+                }
+            }
+        }
 
         [Test]
         public void Playlist_GraphNode_OnDeleteSetNull()

@@ -17,11 +17,11 @@ namespace Backend
         private static ILogger Logger { get; } = Log.ForContext("SourceContext", "DB");
 
         #region tags
-        public static List<Tag> GetTags()
+        public static List<Tag> GetTagsWithGroups()
         {
             Logger.Information($"loading tags");
             using var db = ConnectionManager.NewContext();
-            var tags = db.Tags.ToList();
+            var tags = db.Tags.Include(t => t.TagGroup).ToList();
             Logger.Information($"loaded {tags.Count} tags");
             return tags;
         }
@@ -93,7 +93,7 @@ namespace Backend
             if (!IsValidTag(newName, db)) return false;
 
 
-            var dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
+            var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
             if (dbTag == null)
             {
                 Logger.Information($"cannot update tag {tag.Name} (not in db)");
@@ -125,6 +125,84 @@ namespace Backend
                 return false;
             }
             Logger.Information($"deleted tag {tag.Name}");
+            return true;
+        }
+        #endregion
+
+        #region TagGroups
+        public static List<TagGroup> GetTagGroups()
+        {
+            Logger.Information($"loading TagGroups");
+            using var db = ConnectionManager.NewContext();
+            var tagGroups = db.TagGroups.Include(tg => tg.Tags.OrderBy(t => t.Name)).OrderBy(tg => tg.Order).ToList();
+            Logger.Information($"loaded {tagGroups.Count} TagGroups with {tagGroups.SelectMany(tg => tg.Tags).Count()} tags");
+            return tagGroups;
+        }
+        public static bool AddTagGroup(TagGroup tagGroup)
+        {
+            if (tagGroup == null)
+            {
+                Logger.Information("cannot add tagGroup (is null)");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(tagGroup.Name))
+            {
+                Logger.Information("cannot add tagGroup (name null/empty/whitespace)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+
+            db.TagGroups.Add(tagGroup);
+            try
+            {
+                db.SaveChanges();
+            }catch(DbUpdateException e)
+            {
+                Logger.Information($"can't add tagGroup (probably duplicate id)" +
+                    $"{e.Message} - {e.InnerException?.Message}");
+                return false;
+            }
+            
+            // sqlite does not support autoincrement for non-key properties
+            // set order equal to id
+            tagGroup.Order = tagGroup.Id;
+            db.SaveChanges();
+
+            Logger.Information($"added tagGroup {tagGroup.Name}");
+            return true;
+        }
+        public static bool ChangeTagGroup(Tag tag, TagGroup tagGroup)
+        {
+            if (tag == null)
+            {
+                Logger.Information("can't change TagGroup (tag is null)");
+                return false;
+            }
+            if (tagGroup == null)
+            {
+                Logger.Information("can't change TagGroup (tagGroup is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
+            if (dbTag == null)
+            {
+                Logger.Information($"can't change TagGroup (tag {tag.Name} is not in db)");
+                return false;
+            }
+            var dbTagGroup = db.TagGroups.FirstOrDefault(tg => tg.Id == tagGroup.Id);
+            if (dbTagGroup == null)
+            {
+                Logger.Information($"can't change TagGroup (tagGroup {tagGroup.Name} is not in db)");
+                return false;
+            }
+
+            dbTag.TagGroupId = dbTagGroup.Id;
+            db.SaveChanges();
+
+            Logger.Information($"changed tag {dbTag.Name} to tagGroup {dbTagGroup.Name}");
             return true;
         }
         #endregion

@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Backend.Entities;
 using MaterialDesignThemes.Wpf;
+using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
 using System.Threading.Tasks;
@@ -170,6 +171,22 @@ namespace SpotifySongTagger.Views
         }
         #endregion
 
+        #region TagGroups
+        private void AddTagGroup(object sender, RoutedEventArgs e)
+        {
+            ViewModel.AddTagGroup();
+        }
+        private void TagGroupHeader_Drop(object sender, DragEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            var tagGroup = frameworkElement.DataContext as TagGroup;
+            var tagName = e.Data.GetData(DataFormats.StringFormat) as string;
+
+            ViewModel.ChangeTagGroup(tagName, tagGroup);
+            Log.Information($"Changed TagGroup of Tag {tagName} to {tagGroup.Name}");
+            e.Handled = true;
+        }
+        #endregion
 
         #region play/pause
         private async void Play_Click(object sender, RoutedEventArgs e) => await PlayerManager.Instance.Play();
@@ -258,5 +275,6 @@ namespace SpotifySongTagger.Views
             await BaseViewModel.PlayerManager.SetProgress(newProgress);
         }
         #endregion
+
     }
 }

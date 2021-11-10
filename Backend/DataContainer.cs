@@ -2,6 +2,7 @@
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Util;
 
@@ -15,7 +16,7 @@ namespace Backend
         public void Clear()
         {
             User = null;
-            Tags = null;
+            TagGroups = null;
             MetaPlaylists = null;
             LikedPlaylists = null;
             GeneratedPlaylists = null;
@@ -84,21 +85,27 @@ namespace Backend
 
 
         #region tags
-        private ObservableCollection<Tag> tags;
-        public ObservableCollection<Tag> Tags
+        public List<Tag> Tags => TagGroups == null ? null : TagGroups.SelectMany(tg => tg.Tags).ToList();
+        private ObservableCollection<TagGroup> tagGroups;
+        public ObservableCollection<TagGroup> TagGroups
         {
-            get => tags;
-            set => SetProperty(ref tags, value, nameof(Tags));
+            get => tagGroups;
+            set
+            {
+                SetProperty(ref tagGroups, value, nameof(TagGroups));
+                NotifyPropertyChanged(nameof(Tags));
+            }
         }
-        public async Task LoadTags()
+
+        public async Task LoadTagGroups()
         {
             if (Tags != null) return;
 
-            Tags = null;
+            TagGroups = null;
             await Task.Run(() =>
             {
-                var dbTags = DatabaseOperations.GetTags();
-                Tags = new ObservableCollection<Tag>(dbTags);
+                var dbTagGroups = DatabaseOperations.GetTagGroups();
+                TagGroups = new ObservableCollection<TagGroup>(dbTagGroups);
             });
         }
         #endregion

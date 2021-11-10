@@ -33,7 +33,7 @@ namespace SpotifySongTagger.ViewModels.Controls
             Log.Information($"loading GraphNodes from {GraphGeneratorPage?.Name}");
             IsLoading = true;
 
-            var loadTagsTask = BaseViewModel.DataContainer.LoadTags();
+            var loadTagsTask = BaseViewModel.DataContainer.LoadTagGroups();
             var loadSourcePlaylistsTask = DataContainer.LoadSourcePlaylists();
 
             var nodes = await Task.Run(() => DatabaseOperations.GetGraphNodes(GraphGeneratorPage));

@@ -20,6 +20,9 @@ namespace Backend.Entities
         public List<AssignTagNode> AssignTagNodes { get; set; }
         public List<FilterTagNode> FilterTagNodes { get; set; }
 
+        public int? TagGroupId { get; set; }
+        public TagGroup TagGroup { get; set; }
+
 
         public override string ToString() => Name;
 

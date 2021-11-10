@@ -43,7 +43,17 @@ namespace Backend
             foreach (var metaPlaylistId in Constants.META_PLAYLIST_IDS)
                 builder.Entity<Playlist>().HasData(new Playlist { Id = metaPlaylistId, Name = metaPlaylistId });
 
-            // requi
+            // insert default TagGroup
+            builder.Entity<TagGroup>().HasData(new TagGroup 
+            { 
+                Id = Constants.DEFAULT_TAGGROUP_ID, 
+                Name = Constants.DEFAULT_TAGGROUP_NAME, 
+                Order = Constants.DEFAULT_TAGGROUP_ID 
+            });
+            // every tag has the default TagGroup
+            builder.Entity<Tag>().Property(t => t.TagGroupId).HasDefaultValue(Constants.DEFAULT_TAGGROUP_ID);
+
+            // required because it is n:m relation
             builder.Entity<GraphNode>()
                 .HasMany(gn => gn.Outputs)
                 .WithMany(gn => gn.Inputs);
@@ -81,6 +91,7 @@ namespace Backend
         public DbSet<Artist> Artists { get; set; }
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<TagGroup> TagGroups { get; set; }
         public DbSet<Track> Tracks { get; set; }
         public DbSet<GraphNode> GraphNodes { get; set; }
         public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }

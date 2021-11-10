@@ -47,7 +47,7 @@ namespace SpotifySongTagger.ViewModels
             Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result => LoadedPlaylists = true);
 
             // load tags
-            LoadTagsTask = BaseViewModel.DataContainer.LoadTags();
+            LoadTagsTask = BaseViewModel.DataContainer.LoadTagGroups();
         }
         public void OnUnloaded()
         {
@@ -192,8 +192,12 @@ namespace SpotifySongTagger.ViewModels
         {
             if (string.IsNullOrEmpty(NewTagName)) return;
             var tag = new Tag { Name = NewTagName };
-            DatabaseOperations.AddTag(tag);
-            DataContainer.Instance.Tags.Add(tag);
+            if (DatabaseOperations.AddTag(tag))
+            {
+                var defaultTagGroup = DataContainer.Instance.TagGroups.FirstOrDefault(tg => tg.Id == Backend.Constants.DEFAULT_TAGGROUP_ID);
+                if (defaultTagGroup != null)
+                    defaultTagGroup.Tags.Add(tag);
+            }
         }
         public bool CanEditTag => DatabaseOperations.IsValidTag(NewTagName);
         public void EditTag()
@@ -249,6 +253,31 @@ namespace SpotifySongTagger.ViewModels
         public bool IsTagEditOrDeleteMode => IsTagDeleteMode || IsTagEditMode;
         #endregion
 
+        #region TagGroups
+        public void AddTagGroup()
+        {
+            var tagGroup = new TagGroup { Name = "New TagGroup" };
+            if (DatabaseOperations.AddTagGroup(tagGroup))
+            {
+                DataContainer.Instance.TagGroups.Add(tagGroup);
+            }
+        }
+        public void ChangeTagGroup(string tagName, TagGroup tagGroup)
+        {
+            var tag = DataContainer.Tags.FirstOrDefault(t => t.Name == tagName);
+            if (tag == null)
+            {
+                Log.Error($"Could not find tagName {tagName} in db");
+                return;
+            }
+            if (DatabaseOperations.ChangeTagGroup(tag, tagGroup))
+            {
+                tag.TagGroup.Tags.Remove(tag);
+                tagGroup.Tags.Add(tag);
+                tag.TagGroup = tagGroup;
+            }
+        }
+        #endregion
 
         public enum UpdateSource
         {

@@ -75,6 +75,14 @@ namespace Tests.Util
 
             return tags;
         }
+        protected static List<TagGroup> InsertTagGroups(int count)
+        {
+            var tagGroups = Enumerable.Range(1, count).Select(i => new TagGroup { Name = $"tag{i}name" }).ToList();
+            foreach (var tagGroup in tagGroups)
+                DatabaseOperations.AddTagGroup(tagGroup);
+
+            return tagGroups;
+        }
         protected static List<Artist> InsertArtist(int count)
         {
             using var db = ConnectionManager.NewContext();

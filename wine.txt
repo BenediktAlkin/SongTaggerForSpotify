@@ -1,0 +1,21 @@
+install wine
+sudo apt install wine64
+
+initilize wine
+wine winecfg
+
+close wine configuration
+
+install .net 5 in wine
+wine windowsdesktop-runtime-5.0.12-win-x64.exe
+
+
+run app
+cd SongTaggerForSpotify
+export MESA_GL_VERSION_OVERRIDE=4.5
+wine SpotifySongTagger.exe
+
+
+program crashes regularly
+not sure if updating works
+

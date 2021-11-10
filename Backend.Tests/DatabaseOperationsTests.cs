@@ -11,14 +11,14 @@ namespace Backend.Tests
 {
     public class DatabaseOperationsTests : BaseTests
     {
-        #region add/edit/delete tags
+        #region get/add/edit/delete tags
         [Test]
         [TestCase(10)]
         public void Tags_GetTags(int count)
         {
             InsertTags(count);
 
-            Assert.AreEqual(count, DatabaseOperations.GetTags().Count);
+            Assert.AreEqual(count, DatabaseOperations.GetTagsWithGroups().Count);
         }
         [Test]
         public void Tags_TagExists()
@@ -89,6 +89,62 @@ namespace Backend.Tests
                 Assert.IsFalse(DatabaseOperations.DeleteTag(new Tag { Id = 5 }));
             }
         }
+        #endregion
+
+        #region TagGroups
+        [Test]
+        public void TagGroups_AddTagGroup()
+        {
+            var tagGroup = InsertTagGroups(1).First();
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.AddTagGroup(tagGroup)); // duplicate
+                Assert.IsTrue(DatabaseOperations.AddTagGroup(new TagGroup { Name = "asdf" })); // new TagGroup
+                Assert.IsNotNull(db.TagGroups.FirstOrDefault(tg => tg.Name == "asdf"));
+                Assert.IsTrue(DatabaseOperations.AddTagGroup(new TagGroup { Name = tagGroup.Name })); // duplicate names are allowed
+                Assert.AreEqual(2, db.TagGroups.Count(tg => tg.Name == tagGroup.Name));
+                Assert.IsFalse(DatabaseOperations.AddTagGroup(new TagGroup { Name = "" })); // empty tagname
+                Assert.IsFalse(DatabaseOperations.AddTagGroup(new TagGroup { })); // tagname is null
+                Assert.IsFalse(DatabaseOperations.AddTagGroup(null)); // tagGroup is null
+                Assert.AreEqual(4, db.TagGroups.Count()); // default tagGroup + 3 that were inserted
+                Assert.AreEqual(tagGroup.Id, tagGroup.Order);
+            }
+        }
+        [Test]
+        [TestCase(10, 2)]
+        public void TagGroups_GetTagGroups(int nTags, int nTagGroups)
+        {
+            var tags = InsertTags(nTags);
+            var tagGroups = InsertTagGroups(nTagGroups);
+
+            var dbTagGroups = DatabaseOperations.GetTagGroups();
+            Assert.AreEqual(nTagGroups + 1, dbTagGroups.Count); // + 1 because default tagGroups is always inserted
+            Assert.AreEqual(nTags, dbTagGroups.First(tg => tg.Id == Constants.DEFAULT_TAGGROUP_ID).Tags.Count); // everything is in default TagGroup
+
+            var targetTagGroup = tagGroups[0];
+            Assert.IsTrue(DatabaseOperations.ChangeTagGroup(tags[2], targetTagGroup));
+            dbTagGroups = DatabaseOperations.GetTagGroups();
+            Assert.AreEqual(nTags - 1, dbTagGroups.First(t => t.Id == Constants.DEFAULT_TAGGROUP_ID).Tags.Count);
+            Assert.AreEqual(1, dbTagGroups.First(tg => tg.Id == targetTagGroup.Id).Tags.Count);
+        }
+        [Test]
+        public void Tags_ChangeTagGroup()
+        {
+            var tag = InsertTags(1)[0];
+            var tagGroup = InsertTagGroups(1)[0];
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.ChangeTagGroup(null, tagGroup)); // tag is null
+                Assert.IsFalse(DatabaseOperations.ChangeTagGroup(tag, null)); // tagGroup is null
+                Assert.IsFalse(DatabaseOperations.ChangeTagGroup(new Tag { Name = "asdf" }, tagGroup)); // tag does not exist
+                Assert.IsFalse(DatabaseOperations.ChangeTagGroup(tag, new TagGroup { Name = "asdf" })); // tagGroup does not exist
+                Assert.IsTrue(DatabaseOperations.ChangeTagGroup(tag, tagGroup));
+                Assert.IsTrue(DatabaseOperations.ChangeTagGroup(tag, tagGroup)); // assigning twice does not change anything
+                Assert.AreEqual(1, db.TagGroups.Include(tg => tg.Tags).First(tg => tg.Id == tagGroup.Id).Tags.Count);
+            }
+        }
+
         #endregion
 
         #region tracks add/assign/unassign
