@@ -99,7 +99,7 @@ namespace Backend
 
         public async Task LoadTagGroups()
         {
-            if (Tags != null) return;
+            if (TagGroups != null) return;
 
             TagGroups = null;
             await Task.Run(() =>
@@ -107,6 +107,49 @@ namespace Backend
                 var dbTagGroups = DatabaseOperations.GetTagGroups();
                 TagGroups = new ObservableCollection<TagGroup>(dbTagGroups);
             });
+        }
+        private void ChangeTagGroupSorted(Tag tag, TagGroup tagGroup)
+        {
+            // insert sorted
+            bool wasInserted = false;
+            for (var i = 0; i < tagGroup.Tags.Count; i++)
+            {
+                if (string.Compare(tagGroup.Tags[i].Name, tag.Name) > 0)
+                {
+                    tagGroup.Tags.Insert(i, tag);
+                    wasInserted = true;
+                    break;
+                }
+            }
+            // insert at last position
+            if (!wasInserted)
+                tagGroup.Tags.Add(tag);
+        }
+        public void AddTag(Tag tag)
+        {
+            var defaultTagGroup = TagGroups.FirstOrDefault(tg => tg.Id == Constants.DEFAULT_TAGGROUP_ID);
+            if (defaultTagGroup != null)
+            {
+                ChangeTagGroupSorted(tag, defaultTagGroup);
+                NotifyPropertyChanged(nameof(Tags));
+            }
+        }
+        public void ChangeTagGroup(Tag tag, TagGroup tagGroup)
+        {
+            tag.TagGroup.Tags.Remove(tag);
+            ChangeTagGroupSorted(tag, tagGroup);
+            tag.TagGroup = tagGroup;
+        }
+        public void DeleteTag(Tag tag)
+        {
+            tag.TagGroup.Tags.Remove(tag);
+            NotifyPropertyChanged(nameof(Tags));
+        }
+        public void EditTag(Tag tag, string newName)
+        {
+            tag.Name = newName;
+            tag.TagGroup.Tags.Remove(tag);
+            ChangeTagGroupSorted(tag, tag.TagGroup);
         }
         #endregion
 

@@ -194,9 +194,7 @@ namespace SpotifySongTagger.ViewModels
             var tag = new Tag { Name = NewTagName };
             if (DatabaseOperations.AddTag(tag))
             {
-                var defaultTagGroup = DataContainer.Instance.TagGroups.FirstOrDefault(tg => tg.Id == Backend.Constants.DEFAULT_TAGGROUP_ID);
-                if (defaultTagGroup != null)
-                    defaultTagGroup.Tags.Add(tag);
+                DataContainer.Instance.AddTag(tag);
             }
         }
         public bool CanEditTag => DatabaseOperations.IsValidTag(NewTagName);
@@ -205,19 +203,22 @@ namespace SpotifySongTagger.ViewModels
             if (ClickedTag == null) return;
 
             if (DatabaseOperations.EditTag(ClickedTag, NewTagName))
-                ClickedTag.Name = NewTagName;
+                DataContainer.Instance.EditTag(ClickedTag, NewTagName);
         }
         public void DeleteTag()
         {
             if (ClickedTag == null) return;
             if (DatabaseOperations.DeleteTag(ClickedTag))
             {
-                foreach (var trackVM in TrackVMs)
+                if(TrackVMs != null)
                 {
-                    if (trackVM.Track.Tags.Contains(ClickedTag))
-                        trackVM.Track.Tags.Remove(ClickedTag);
+                    foreach (var trackVM in TrackVMs)
+                    {
+                        if (trackVM.Track.Tags.Contains(ClickedTag))
+                            trackVM.Track.Tags.Remove(ClickedTag);
+                    }
                 }
-                DataContainer.Instance.Tags.Remove(ClickedTag);
+                DataContainer.Instance.DeleteTag(ClickedTag);
             }
         }
         #endregion
@@ -258,9 +259,7 @@ namespace SpotifySongTagger.ViewModels
         {
             var tagGroup = new TagGroup { Name = "New TagGroup" };
             if (DatabaseOperations.AddTagGroup(tagGroup))
-            {
                 DataContainer.Instance.TagGroups.Add(tagGroup);
-            }
         }
         public void ChangeTagGroup(string tagName, TagGroup tagGroup)
         {
@@ -271,11 +270,7 @@ namespace SpotifySongTagger.ViewModels
                 return;
             }
             if (DatabaseOperations.ChangeTagGroup(tag, tagGroup))
-            {
-                tag.TagGroup.Tags.Remove(tag);
-                tagGroup.Tags.Add(tag);
-                tag.TagGroup = tagGroup;
-            }
+                DataContainer.Instance.ChangeTagGroup(tag, tagGroup);
         }
         #endregion
 
