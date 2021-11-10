@@ -6,6 +6,7 @@ namespace Backend
 {
     public class DatabaseContext : DbContext
     {
+        public DatabaseContext() : base(new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source=MigrationsDb.sqlite").Options) { }
         public DatabaseContext(DbContextOptions<DatabaseContext> options, bool ensureCreated = false, bool dropDb = false) : base(options)
         {
             if (dropDb)
