@@ -112,6 +112,45 @@ namespace Backend.Tests
             }
         }
         [Test]
+        public void TagGroups_EditTagGroup()
+        {
+            var tagGroup = InsertTagGroups(1)[0];
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                Assert.IsFalse(DatabaseOperations.EditTagGroup(null, "asdf")); // tagGroup is null
+                Assert.IsFalse(DatabaseOperations.EditTagGroup(tagGroup, null)); // newName null
+                Assert.IsFalse(DatabaseOperations.EditTagGroup(tagGroup, "")); // newName empty
+                Assert.IsFalse(DatabaseOperations.EditTagGroup(new TagGroup(), "asdf")); // tagGroup not in db
+                Assert.IsTrue(DatabaseOperations.EditTagGroup(tagGroup, "asdf")); // success
+                Assert.AreEqual("asdf", db.TagGroups.First(t => t.Id == tagGroup.Id).Name);
+            }
+        }
+        [Test]
+        public void TagGroups_DeleteTagGroup()
+        {
+            var tagGroup = InsertTagGroups(1)[0];
+            var tag = InsertTags(1)[0];
+            DatabaseOperations.ChangeTagGroup(tag, tagGroup);
+            tagGroup.Tags.Add(tag);
+            tag.TagGroup = tagGroup;
+
+            using (var db = ConnectionManager.NewContext())
+            {
+                var defaultTagGroup = db.TagGroups.First(tg => tg.Id == Constants.DEFAULT_TAGGROUP_ID);
+
+                Assert.IsTrue(DatabaseOperations.DeleteTagGroup(tagGroup)); // success
+                Assert.IsFalse(DatabaseOperations.DeleteTagGroup(defaultTagGroup)); // can't delete default tagGroup
+                Assert.AreEqual(1, db.TagGroups.Count());
+                Assert.IsFalse(DatabaseOperations.DeleteTagGroup(null)); // tagGroup is null
+                Assert.IsFalse(DatabaseOperations.DeleteTagGroup(new TagGroup { Id = 5 })); // not in db
+
+                // on delete TagGroup cascades to Tags
+                Assert.AreEqual(0, db.Tags.Count());
+            }
+        }
+
+        [Test]
         [TestCase(10, 2)]
         public void TagGroups_GetTagGroups(int nTags, int nTagGroups)
         {

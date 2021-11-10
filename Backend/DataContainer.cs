@@ -152,6 +152,12 @@ namespace Backend
             tag.TagGroup.Tags.Remove(tag);
             ChangeTagGroupSorted(tag, tag.TagGroup);
         }
+
+        public void DeleteTagGroup(TagGroup tagGroup)
+        {
+            TagGroups.Remove(tagGroup);
+            NotifyPropertyChanged(nameof(Tags));
+        }
         #endregion
 
         #region GraphGeneratorPages

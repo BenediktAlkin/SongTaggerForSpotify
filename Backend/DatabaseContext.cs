@@ -53,6 +53,13 @@ namespace Backend
             // every tag has the default TagGroup
             builder.Entity<Tag>().Property(t => t.TagGroupId).HasDefaultValue(Constants.DEFAULT_TAGGROUP_ID);
 
+            // on delete cascade for TagGroup
+            builder.Entity<Tag>()
+                .HasOne(t => t.TagGroup)
+                .WithMany(tg => tg.Tags)
+                .HasForeignKey(t => t.TagGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // required because it is n:m relation
             builder.Entity<GraphNode>()
                 .HasMany(gn => gn.Outputs)

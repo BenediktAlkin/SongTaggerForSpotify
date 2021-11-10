@@ -64,14 +64,14 @@ namespace Backend
         {
             if (tag == null)
             {
-                Logger.Information("cannot add tag (is null)");
+                Logger.Information("can't add tag (is null)");
                 return false;
             }
 
             using var db = ConnectionManager.NewContext();
             if (!IsValidTag(tag.Name, db))
             {
-                Logger.Information($"cannot add tag {tag.Name}");
+                Logger.Information($"can't add tag {tag.Name}");
                 return false;
             }
 
@@ -85,7 +85,7 @@ namespace Backend
         {
             if (tag == null)
             {
-                Logger.Information("cannot edit tag null");
+                Logger.Information("can't edit tag null");
                 return false;
             }
 
@@ -96,7 +96,7 @@ namespace Backend
             var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
             if (dbTag == null)
             {
-                Logger.Information($"cannot update tag {tag.Name} (not in db)");
+                Logger.Information($"can't update tag {tag.Name} (not in db)");
                 return false;
             }
 
@@ -109,7 +109,7 @@ namespace Backend
         {
             if (tag == null)
             {
-                Logger.Information($"cannot delete tag (is null)");
+                Logger.Information($"can't delete tag (is null)");
                 return false;
             }
 
@@ -121,7 +121,7 @@ namespace Backend
             }
             catch (Exception)
             {
-                Logger.Information($"cannot delete tag {tag.Name} (does not exist)");
+                Logger.Information($"can't delete tag {tag.Name} (does not exist)");
                 return false;
             }
             Logger.Information($"deleted tag {tag.Name}");
@@ -142,12 +142,12 @@ namespace Backend
         {
             if (tagGroup == null)
             {
-                Logger.Information("cannot add tagGroup (is null)");
+                Logger.Information("can't add tagGroup (is null)");
                 return false;
             }
             if (string.IsNullOrWhiteSpace(tagGroup.Name))
             {
-                Logger.Information("cannot add tagGroup (name null/empty/whitespace)");
+                Logger.Information("can't add tagGroup (name null/empty/whitespace)");
                 return false;
             }
 
@@ -172,6 +172,62 @@ namespace Backend
             Logger.Information($"added tagGroup {tagGroup.Name}");
             return true;
         }
+        public static bool EditTagGroup(TagGroup tagGroup, string newName)
+        {
+            if (tagGroup == null)
+            {
+                Logger.Information("can't edit tagGroup (is null)");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                Logger.Information("can't edit tagGroup (newName null/empty/whitespace)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+
+            var dbTagGroup = db.TagGroups.FirstOrDefault(tg => tg.Id == tagGroup.Id);
+            if (dbTagGroup == null)
+            {
+                Logger.Information($"can't update tagGroup {tagGroup.Name} (not in db)");
+                return false;
+            }
+
+            dbTagGroup.Name = newName;
+            db.SaveChanges();
+            Logger.Information($"updated tagGroupName old={tagGroup.Name} new={newName}");
+            return true;
+        }
+        public static bool DeleteTagGroup(TagGroup tagGroup)
+        {
+            if (tagGroup == null)
+            {
+                Logger.Information($"can't delete tagGroup (is null)");
+                return false;
+            }
+            if(tagGroup.Id == Constants.DEFAULT_TAGGROUP_ID)
+            {
+                Logger.Information("can't delete default tagGroup");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            try
+            {
+                db.TagGroups.Remove(tagGroup);
+                db.SaveChanges();
+            }
+            catch (DbUpdateException e)
+            {
+                Logger.Information($"can't delete tagGroup {tagGroup.Name} (probably doesn't exist): " +
+                    $"{e.Message} - {e.InnerException?.Message}");
+                return false;
+            }
+            Logger.Information($"deleted tagGroup {tagGroup.Name} and all its tags ({string.Join(',', tagGroup.Tags.Select(t => t.Name))})");
+            return true;
+        }
+
         public static bool ChangeTagGroup(Tag tag, TagGroup tagGroup)
         {
             if (tag == null)
@@ -213,17 +269,17 @@ namespace Backend
         {
             if (track == null)
             {
-                Logger.Information($"cannot assign tag {tag?.Name} to track null");
+                Logger.Information($"can't assign tag {tag?.Name} to track null");
                 return false;
             }
             if (tag == null)
             {
-                Logger.Information($"cannot assign tag null to track {track.Name}");
+                Logger.Information($"can't assign tag null to track {track.Name}");
                 return false;
             }
             if (tag.Name == null)
             {
-                Logger.Information($"cannot assign tag (tag.Name is null)");
+                Logger.Information($"can't assign tag (tag.Name is null)");
                 return false;
             }
 
@@ -232,7 +288,7 @@ namespace Backend
             var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
             if (dbTag == null)
             {
-                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (tag does not exist)");
+                Logger.Information($"can't assign tag {tag.Name} to {track.Name} (tag does not exist)");
                 return false;
             }
 
@@ -240,14 +296,14 @@ namespace Backend
             var dbTrack = db.Tracks.Include(t => t.Tags).FirstOrDefault(t => t.Id == track.Id);
             if (dbTrack == null)
             {
-                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (track does not exist)");
+                Logger.Information($"can't assign tag {tag.Name} to {track.Name} (track does not exist)");
                 return false;
             }
 
             // avoid duplicates
             if (dbTrack.Tags.Contains(dbTag))
             {
-                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (already assigned)");
+                Logger.Information($"can't assign tag {tag.Name} to {track.Name} (already assigned)");
                 return false;
             }
 
@@ -258,7 +314,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Logger.Information($"cannot assign tag {dbTag.Name} to {dbTrack.Name}: " +
+                Logger.Information($"can't assign tag {dbTag.Name} to {dbTrack.Name}: " +
                     $"{e.Message} - {e.InnerException?.Message}");
                 return false;
             }
@@ -271,17 +327,17 @@ namespace Backend
         {
             if (track == null)
             {
-                Logger.Information($"cannot delete track-tag assignment (track is null)");
+                Logger.Information($"can't delete track-tag assignment (track is null)");
                 return false;
             }
             if (tag == null)
             {
-                Logger.Information($"cannot delete track-tag assignment (tag is null)");
+                Logger.Information($"can't delete track-tag assignment (tag is null)");
                 return false;
             }
             if(tag.Name == null)
             {
-                Logger.Information($"cannot delete tag-track assignment (tag.Name is null)");
+                Logger.Information($"can't delete tag-track assignment (tag.Name is null)");
                 return false;
             }
 
@@ -290,7 +346,7 @@ namespace Backend
             var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
             if (dbTag == null)
             {
-                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (tag does not exist)");
+                Logger.Information($"can't assign tag {tag.Name} to {track.Name} (tag does not exist)");
                 return false;
             }
 
@@ -298,13 +354,13 @@ namespace Backend
             var dbTrack = db.Tracks.Include(t => t.Tags).FirstOrDefault(t => t.Id == track.Id);
             if (dbTrack == null)
             {
-                Logger.Information($"cannot assign tag {tag.Name} to {track.Name} (track does not exist)");
+                Logger.Information($"can't assign tag {tag.Name} to {track.Name} (track does not exist)");
                 return false;
             }
 
             if (!dbTrack.Tags.Contains(dbTag))
             {
-                Logger.Information($"cannot delete tag {tag.Name} from track {track.Name} (no assignment)");
+                Logger.Information($"can't delete tag {tag.Name} from track {track.Name} (no assignment)");
                 return false;
             }
 
@@ -315,7 +371,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Logger.Information($"cannot delete tag {dbTag.Name} from track {dbTrack.Name}: " +
+                Logger.Information($"can't delete tag {dbTag.Name} from track {dbTrack.Name}: " +
                     $"{e.Message} - {e.InnerException?.Message}");
                 return false;
             }
@@ -327,17 +383,17 @@ namespace Backend
         {
             if (track == null)
             {
-                Logger.Information($"cannot add track (track is null)");
+                Logger.Information($"can't add track (track is null)");
                 return false;
             }
             if (track.Album == null)
             {
-                Logger.Information($"cannot add track (album is null)");
+                Logger.Information($"can't add track (album is null)");
                 return false;
             }
             if (track.Artists == null || track.Artists.Count == 0)
             {
-                Logger.Information($"cannot add track (no artists)");
+                Logger.Information($"can't add track (no artists)");
                 return false;
             }
 
@@ -346,7 +402,7 @@ namespace Backend
             var dbTrack = db.Tracks.FirstOrDefault(t => t.Id == track.Id);
             if (dbTrack != null)
             {
-                Logger.Information($"cannot add track (already exists)");
+                Logger.Information($"can't add track (already exists)");
                 return false;
             }
 
@@ -384,7 +440,7 @@ namespace Backend
         {
             if (page == null)
             {
-                Logger.Information("cannot add GraphGeneratorPage (page is null)");
+                Logger.Information("can't add GraphGeneratorPage (page is null)");
                 return false;
             }
 
@@ -398,7 +454,7 @@ namespace Backend
         {
             if (page == null)
             {
-                Logger.Information("cannot delete GraphGeneratorPage (page is null)");
+                Logger.Information("can't delete GraphGeneratorPage (page is null)");
                 return false;
             }
 
@@ -410,7 +466,7 @@ namespace Backend
             }
             catch (Exception)
             {
-                Logger.Information($"cannot delete GraphGeneratorPage {page.Name} (does not exist)");
+                Logger.Information($"can't delete GraphGeneratorPage {page.Name} (does not exist)");
                 return false;
             }
             Logger.Information($"deleted GraphGeneratorPage {page.Name}");
@@ -420,7 +476,7 @@ namespace Backend
         {
             if (page == null)
             {
-                Logger.Information("cannot edit GraphGeneratorPage (page is null)");
+                Logger.Information("can't edit GraphGeneratorPage (page is null)");
                 return false;
             }
 
@@ -428,7 +484,7 @@ namespace Backend
             var dbGgp = db.GraphGeneratorPages.FirstOrDefault(ggp => ggp.Id == page.Id);
             if (dbGgp == null)
             {
-                Logger.Information($"cannot edit GraphGeneratorPage {page.Name} (not in db)");
+                Logger.Information($"can't edit GraphGeneratorPage {page.Name} (not in db)");
                 return false;
             }
 
@@ -474,12 +530,12 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot add GraphNode (is null)");
+                Logger.Information("can't add GraphNode (is null)");
                 return false;
             }
             if (ggp == null)
             {
-                Logger.Information("cannot add GraphNode (GraphGeneratorPage is null)");
+                Logger.Information("can't add GraphNode (GraphGeneratorPage is null)");
                 return false;
             }
 
@@ -487,7 +543,7 @@ namespace Backend
             var dbGgp = db.GraphGeneratorPages.FirstOrDefault(dbGgp => dbGgp.Id == ggp.Id);
             if (dbGgp == null)
             {
-                Logger.Information("cannot add GraphNode (GraphGeneratorPage does not exist)");
+                Logger.Information("can't add GraphNode (GraphGeneratorPage does not exist)");
                 return false;
             }
             node.GraphGeneratorPage = dbGgp;
@@ -500,7 +556,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update GraphNode (is null)");
+                Logger.Information("can't update GraphNode (is null)");
                 return false;
             }
 
@@ -508,7 +564,7 @@ namespace Backend
             var dbNode = db.GraphNodes.FirstOrDefault(n => n.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information($"cannot update GraphNode {node} (not in db)");
+                Logger.Information($"can't update GraphNode {node} (not in db)");
                 return false;
             }
 
@@ -524,7 +580,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot delete graphNode (is null)");
+                Logger.Information("can't delete graphNode (is null)");
                 return false;
             }
             using var db = ConnectionManager.NewContext();
@@ -535,7 +591,7 @@ namespace Backend
             }
             catch (Exception)
             {
-                Logger.Information($"cannot delete GraphNode {node} (does not exist)");
+                Logger.Information($"can't delete GraphNode {node} (does not exist)");
                 return false;
             }
             Logger.Information($"deleted GraphNode {node}");
@@ -546,13 +602,13 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update PlaylistOutputNode (is null)");
+                Logger.Information("can't update PlaylistOutputNode (is null)");
                 return false;
             }
             // null value is allowed (graphnode becomes invalid but it is updated in db)
             //if (string.IsNullOrEmpty(newName))
             //{
-            //    Logger.Information("cannot update PlaylistOutputNode (newName is null)");
+            //    Logger.Information("can't update PlaylistOutputNode (newName is null)");
             //    return false;
             //}
 
@@ -560,7 +616,7 @@ namespace Backend
             var dbNode = db.PlaylistOutputNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update PlaylistOutputNode (not in db)");
+                Logger.Information("can't update PlaylistOutputNode (not in db)");
                 return false;
             }
 
@@ -575,12 +631,12 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update PlaylistOutputNode (is null)");
+                Logger.Information("can't update PlaylistOutputNode (is null)");
                 return false;
             }
             if (string.IsNullOrEmpty(newId))
             {
-                Logger.Information("cannot update PlaylistOutputNode (newId is null)");
+                Logger.Information("can't update PlaylistOutputNode (newId is null)");
                 return false;
             }
 
@@ -588,7 +644,7 @@ namespace Backend
             var dbNode = db.PlaylistOutputNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update PlaylistOutputNode (not in db)");
+                Logger.Information("can't update PlaylistOutputNode (not in db)");
                 return false;
             }
 
@@ -603,7 +659,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot swap sets of RemoveNode (is null)");
+                Logger.Information("can't swap sets of RemoveNode (is null)");
                 return false;
             }
 
@@ -614,7 +670,7 @@ namespace Backend
                 .FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot swap sets of RemoveNode (not in db)");
+                Logger.Information("can't swap sets of RemoveNode (not in db)");
                 return false;
             }
 
@@ -629,7 +685,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update FilterYearNode (is null)");
+                Logger.Information("can't update FilterYearNode (is null)");
                 return false;
             }
 
@@ -637,7 +693,7 @@ namespace Backend
             var dbNode = db.FilterYearNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update FilterYearNode (not in db)");
+                Logger.Information("can't update FilterYearNode (not in db)");
                 return false;
             }
 
@@ -656,7 +712,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update AssignTagNode (node is null)");
+                Logger.Information("can't update AssignTagNode (node is null)");
                 return false;
             }
 
@@ -664,7 +720,7 @@ namespace Backend
             var dbNode = db.AssignTagNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update AssignTagNode (not in db)");
+                Logger.Information("can't update AssignTagNode (not in db)");
                 return false;
             }
             Tag dbTag = null;
@@ -673,7 +729,7 @@ namespace Backend
                 dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
                 if (dbTag == null)
                 {
-                    Logger.Information("cannot update AssignTagNode (tag not in db)");
+                    Logger.Information("can't update AssignTagNode (tag not in db)");
                     return false;
                 }
             }
@@ -688,7 +744,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update FilterTagNode (node is null)");
+                Logger.Information("can't update FilterTagNode (node is null)");
                 return false;
             }
 
@@ -696,7 +752,7 @@ namespace Backend
             var dbNode = db.FilterTagNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update FilterTagNode (not in db)");
+                Logger.Information("can't update FilterTagNode (not in db)");
                 return false;
             }
             Tag dbTag = null;
@@ -705,7 +761,7 @@ namespace Backend
                 dbTag = db.Tags.FirstOrDefault(t => t.Id == tag.Id);
                 if (dbTag == null)
                 {
-                    Logger.Information("cannot update FilterTagNode (tag not in db)");
+                    Logger.Information("can't update FilterTagNode (tag not in db)");
                     return false;
                 }
             }
@@ -720,7 +776,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update FilterArtistNode (node is null)");
+                Logger.Information("can't update FilterArtistNode (node is null)");
                 return false;
             }
 
@@ -728,7 +784,7 @@ namespace Backend
             var dbNode = db.FilterArtistNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update FilterArtistNode (not in db)");
+                Logger.Information("can't update FilterArtistNode (not in db)");
                 return false;
             }
             Artist dbArtist = null;
@@ -737,7 +793,7 @@ namespace Backend
                 dbArtist = db.Artists.FirstOrDefault(a => a.Id == artist.Id);
                 if (dbArtist == null)
                 {
-                    Logger.Information("cannot update FilterArtistNode (artist not in db)");
+                    Logger.Information("can't update FilterArtistNode (artist not in db)");
                     return false;
                 }
             }
@@ -753,7 +809,7 @@ namespace Backend
         {
             if (node == null)
             {
-                Logger.Information("cannot update PlaylistInputNode (node is null)");
+                Logger.Information("can't update PlaylistInputNode (node is null)");
                 return false;
             }
 
@@ -761,7 +817,7 @@ namespace Backend
             var dbNode = db.PlaylistInputNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("cannot update PlaylistInputNode (not in db)");
+                Logger.Information("can't update PlaylistInputNode (not in db)");
                 return false;
             }
             Playlist dbPlaylist = null;
@@ -770,7 +826,7 @@ namespace Backend
                 dbPlaylist = db.Playlists.FirstOrDefault(a => a.Id == playlist.Id);
                 if (dbPlaylist == null)
                 {
-                    Logger.Information("cannot update PlaylistInputNode (artist not in db)");
+                    Logger.Information("can't update PlaylistInputNode (artist not in db)");
                     return false;
                 }
             }
@@ -789,12 +845,12 @@ namespace Backend
         {
             if (from == null)
             {
-                Logger.Information("cannot add GarphNode connection (from is null)");
+                Logger.Information("can't add GarphNode connection (from is null)");
                 return false;
             }
             if (to == null)
             {
-                Logger.Information("cannot add GarphNode connection (to is null)");
+                Logger.Information("can't add GarphNode connection (to is null)");
                 return false;
             }
 
@@ -803,19 +859,19 @@ namespace Backend
             var fromDb = db.GraphNodes.Include(gn => gn.Outputs).FirstOrDefault(gn => gn.Id == from.Id);
             if (fromDb == null)
             {
-                Logger.Information("cannot add GraphNode connection (from not in db)");
+                Logger.Information("can't add GraphNode connection (from not in db)");
                 return false;
             }
             var toDb = db.GraphNodes.Include(gn => gn.Inputs).FirstOrDefault(gn => gn.Id == to.Id);
             if (toDb == null)
             {
-                Logger.Information("cannot add GraphNode connection (to not in db)");
+                Logger.Information("can't add GraphNode connection (to not in db)");
                 return false;
             }
 
             if (fromDb.Outputs.Contains(toDb))
             {
-                Logger.Information("cannot add GraphNode connection (already connected)");
+                Logger.Information("can't add GraphNode connection (already connected)");
                 return false;
             }
 
@@ -829,12 +885,12 @@ namespace Backend
         {
             if (from == null)
             {
-                Logger.Information("cannot remove GarphNode connection (from is null)");
+                Logger.Information("can't remove GarphNode connection (from is null)");
                 return false;
             }
             if (to == null)
             {
-                Logger.Information("cannot remove GarphNode connection (to is null)");
+                Logger.Information("can't remove GarphNode connection (to is null)");
                 return false;
             }
 
@@ -843,19 +899,19 @@ namespace Backend
             var fromDb = db.GraphNodes.Include(gn => gn.Outputs).FirstOrDefault(gn => gn.Id == from.Id);
             if (fromDb == null)
             {
-                Logger.Information("cannot remove GraphNode connection (from not in db)");
+                Logger.Information("can't remove GraphNode connection (from not in db)");
                 return false;
             }
             var toDb = db.GraphNodes.Include(gn => gn.Inputs).FirstOrDefault(gn => gn.Id == to.Id);
             if (toDb == null)
             {
-                Logger.Information("cannot remove GraphNode connection (to not in db)");
+                Logger.Information("can't remove GraphNode connection (to not in db)");
                 return false;
             }
 
             if (!fromDb.Outputs.Contains(toDb))
             {
-                Logger.Information("cannot remove GraphNode connection (not connected)");
+                Logger.Information("can't remove GraphNode connection (not connected)");
                 return false;
             }
 
@@ -970,7 +1026,7 @@ namespace Backend
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid))
             {
-                Logger.Information("cannot run AssignTagNode (graph contains invalid node)");
+                Logger.Information("can't run AssignTagNode (graph contains invalid node)");
                 return false;
             }
 

@@ -331,17 +331,130 @@
                 </StackPanel>
                 <!-- tag groups -->
                 <ScrollViewer Grid.Row="1" Visibility="{Binding DataContainer.TagGroups, Converter={StaticResource NullableToVisibilityConverter}}">
-                    <!-- existing tag groups -->
                     <ItemsControl ItemsSource="{Binding DataContainer.TagGroups}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
                                     <!-- tag group header -->
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label Content="---"/>
-                                        <Label Content="{Binding Name}" AllowDrop="True" Drop="TagGroupHeader_Drop"/>
-                                        <Label Content="---"/>
-                                    </StackPanel>
+                                    <DockPanel Height="25">
+                                        <StackPanel DockPanel.Dock="Left" AllowDrop="True" Drop="TagGroupHeader_Drop" Orientation="Horizontal">
+                                            <Label Content="{Binding Name}" />
+                                            <!-- edit/delete button -->
+                                            <Button 
+                                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                                Visibility="{Binding DataContext.IsTagEditOrDeleteMode, ElementName=TagEditorUserControl, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Click="EditOrDeleteTagGroupButton_Click">
+                                                <!-- display button if edit/delete mode is selected -->
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <StackPanel VerticalAlignment="Center">
+                                                            <materialDesign:PackIcon 
+                                                                Margin="0 -5 5 0"
+                                                                VerticalContentAlignment="Center"
+                                                                Kind="{Binding DataContext.TagDeleteOrEditIcon, ElementName=TagEditorUserControl}"  
+                                                                Width="16" Height="16"/>
+                                                        </StackPanel>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                                <!-- edit/delete tag group dialogs -->
+                                                <Button.CommandParameter>
+                                                    <ContentControl Content="{Binding DataContext.IsTagEditMode, Source={x:Reference TagEditorUserControl}}">
+                                                        <!-- dialog templates -->
+                                                        <ContentControl.Resources>
+                                                            <!-- delete dialog -->
+                                                            <DataTemplate x:Key="DeleteTagGroupDialog">
+                                                                <Grid Margin="16">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition />
+                                                                        <RowDefinition />
+                                                                    </Grid.RowDefinitions>
+                                                                    <StackPanel Grid.Row="0">
+                                                                        <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">Really delete tag group?</TextBlock>
+                                                                        <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">WARNING: this will also delete all tags in the group</TextBlock>
+                                                                        <TextBlock Style="{DynamicResource MaterialDesignTextBlock}"
+                                                                            Margin="0 6 0 0"
+                                                                            FontSize="18" 
+                                                                            FontWeight="Bold"
+                                                                            Text="{Binding DataContext.ClickedTagGroup.Name, ElementName=TagEditorUserControl}"/>
+                                                                    </StackPanel>
+                                                                    <Grid Grid.Row="1" Margin="0 16 0 0">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Button Grid.Column="0" IsCancel="True" Style="{DynamicResource DialogButton}"
+                                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                                            Content="CANCEL"
+                                                                            Click="DeleteTagGroupDialog_Cancel"/>
+                                                                        <Button Grid.Column="1" IsDefault="True" Style="{DynamicResource DialogButton}"
+                                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                                            Content="DELETE"
+                                                                            Click="DeleteTagGroupDialog_Delete"/>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                            <!-- edit dialog -->
+                                                            <DataTemplate x:Key="EditTagGroupDialog">
+                                                                <Grid Margin="16">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition />
+                                                                        <RowDefinition />
+                                                                        <RowDefinition />
+                                                                    </Grid.RowDefinitions>
+                                                                    <TextBlock Margin="0 6 0 0" FontSize="18" Style="{DynamicResource MaterialDesignTextBlock}">Edit tag group:</TextBlock>
+                                                                    <TextBox 
+                                                                        materialDesign:HintAssist.Hint="Name" 
+                                                                        Style="{DynamicResource DialogTextBox}"
+                                                                        materialDesign:HintAssist.Foreground="{DynamicResource PrimaryHueLightBrush}"
+                                                                        Margin="0 6 0 0"
+                                                                        FontSize="18" Grid.Row="1"
+                                                                        TextChanged="NewTagGroupName_TextChanged">
+                                                                        <TextBox.Text>
+                                                                            <Binding Path="DataContext.NewTagGroupName" ElementName="TagEditorUserControl" UpdateSourceTrigger="PropertyChanged">
+                                                                                <Binding.ValidationRules>
+                                                                                    <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
+                                                                                </Binding.ValidationRules>
+                                                                            </Binding>
+                                                                        </TextBox.Text>
+                                                                    </TextBox>
+                                                                    <Grid Grid.Row="2" Margin="0 16 0 0">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Button Grid.Column="0" IsCancel="True" Style="{DynamicResource DialogButton}"
+                                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                                            Content="CANCEL"
+                                                                            Click="EditTagGroupDialog_Cancel"/>
+                                                                        <Button Grid.Column="1" IsDefault="True" Style="{DynamicResource DialogButton}"
+                                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                                            IsEnabled="{Binding DataContext.CanEditTag, ElementName=TagEditorUserControl}"
+                                                                            Content="SAVE"
+                                                                            Click="EditTagGroupDialog_Save"/>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ContentControl.Resources>
+                                                        <!-- dialog template selection -->
+                                                        <ContentControl.Style>
+                                                            <Style TargetType="{x:Type ContentControl}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding DataContext.IsTagDeleteMode, Source={x:Reference TagEditorUserControl}}" Value="true">
+                                                                        <Setter Property="ContentTemplate" Value="{StaticResource DeleteTagGroupDialog}" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding DataContext.IsTagEditMode, Source={x:Reference TagEditorUserControl}}" Value="true">
+                                                                        <Setter Property="ContentTemplate" Value="{StaticResource EditTagGroupDialog}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ContentControl.Style>
+                                                    </ContentControl>
+                                                </Button.CommandParameter>
+                                            </Button>
+                                        </StackPanel>
+                                        <Separator/>
+                                    </DockPanel>
+
                                     <!-- tag chips -->
                                     <ItemsControl Grid.Row="1" ItemsSource="{Binding Tags}">
                                         <ItemsControl.ItemsPanel>
@@ -351,9 +464,7 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <materialDesign:Chip
-                                                            PreviewMouseDown="Tag_PreviewMouseDown"
-                                                            VerticalAlignment="Center">
+                                                <materialDesign:Chip PreviewMouseDown="Tag_PreviewMouseDown" VerticalAlignment="Center">
                                                     <!-- tag content -->
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock VerticalAlignment="Center" Text="{Binding Name}"/>

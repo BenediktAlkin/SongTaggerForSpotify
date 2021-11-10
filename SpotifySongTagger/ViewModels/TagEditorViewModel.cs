@@ -223,7 +223,7 @@ namespace SpotifySongTagger.ViewModels
         }
         #endregion
 
-        #region edit/delete icons for tags
+        #region edit/delete icons for tags/tagGroups
         private bool isTagEditMode;
         public bool IsTagEditMode
         {
@@ -262,11 +262,39 @@ namespace SpotifySongTagger.ViewModels
             get => newTagGroupName;
             set => SetProperty(ref newTagGroupName, value, nameof(NewTagGroupName));
         }
+        public TagGroup ClickedTagGroup { get; set; }
         public void AddTagGroup()
         {
             var tagGroup = new TagGroup { Name = NewTagGroupName };
             if (DatabaseOperations.AddTagGroup(tagGroup))
                 DataContainer.Instance.TagGroups.Add(tagGroup);
+        }
+        public void EditTagGroup()
+        {
+            if (ClickedTagGroup == null) return;
+
+            if (DatabaseOperations.EditTagGroup(ClickedTagGroup, NewTagGroupName))
+                ClickedTagGroup.Name = NewTagGroupName;
+        }
+        public void DeleteTagGroup()
+        {
+            if (ClickedTagGroup == null) return;
+            var tags = ClickedTagGroup.Tags;
+            if (DatabaseOperations.DeleteTagGroup(ClickedTagGroup))
+            {
+                if (TrackVMs != null)
+                {
+                    foreach(var tag in tags)
+                    {
+                        foreach (var trackVM in TrackVMs)
+                        {
+                            if (trackVM.Track.Tags.Contains(tag))
+                                trackVM.Track.Tags.Remove(tag);
+                        }
+                    }
+                }
+                DataContainer.Instance.DeleteTagGroup(ClickedTagGroup);
+            }
         }
         public void ChangeTagGroup(string tagName, TagGroup tagGroup)
         {

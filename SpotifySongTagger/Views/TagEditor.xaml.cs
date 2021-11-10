@@ -177,6 +177,28 @@ namespace SpotifySongTagger.Views
             else
                 Validation.ClearInvalid(textBinding);
         }
+        public void EditTagGroupDialog_Cancel(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NewTagGroupName = null;
+            ViewModel.ClickedTagGroup = null;
+        }
+        private void EditTagGroupDialog_Save(object sender, RoutedEventArgs e)
+        {
+            ViewModel.EditTagGroup();
+            ViewModel.NewTagGroupName = null;
+            ViewModel.ClickedTagGroup = null;
+        }
+        public void DeleteTagGroupDialog_Cancel(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NewTagGroupName = null;
+            ViewModel.ClickedTagGroup = null;
+        }
+        private void DeleteTagGroupDialog_Delete(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DeleteTagGroup();
+            ViewModel.NewTagGroupName = null;
+            ViewModel.ClickedTagGroup = null;
+        }
         #endregion
 
         #region tag edit/delete button behaviour
@@ -218,6 +240,12 @@ namespace SpotifySongTagger.Views
             ViewModel.ChangeTagGroup(tagName, tagGroup);
             Log.Information($"Changed TagGroup of Tag {tagName} to {tagGroup.Name}");
             e.Handled = true;
+        }
+        private void EditOrDeleteTagGroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            ViewModel.ClickedTagGroup = frameworkElement.DataContext as TagGroup;
+            ViewModel.NewTagGroupName = ViewModel.ClickedTagGroup.Name;
         }
         #endregion
 
