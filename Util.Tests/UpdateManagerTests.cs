@@ -12,6 +12,7 @@ namespace Util.Tests
 {
     public class UpdateManagerTests : BaseTests
     {
+        private const string OS = "Windows";
         private const string USER = "BenediktAlkin";
         private const string REPO = "UpdaterTest";
         private const string UPDATER_NAME = "Updater";
@@ -88,7 +89,7 @@ namespace Util.Tests
         {
             await RemoveAllFiles();
 
-            await UpdateManager.Instance.UpdateToLatestRelease(USER, REPO, new Version(1, 0, 0), UPDATER_NAME, APPLICATION_NAME, null);
+            await UpdateManager.Instance.UpdateToLatestRelease(OS, USER, REPO, new Version(1, 0, 0), UPDATER_NAME, APPLICATION_NAME, null);
 
             // zip exists
             Assert.AreEqual(1, Directory.GetFiles(UpdateManager.TEMP_DIR).Length);
@@ -106,7 +107,7 @@ namespace Util.Tests
         {
             await RemoveAllFiles();
 
-            var newVersion = await UpdateManager.Instance.UpdateToLatestRelease(USER, REPO, MIN_VERSION,
+            var newVersion = await UpdateManager.Instance.UpdateToLatestRelease(OS, USER, REPO, MIN_VERSION,
                 UPDATER_NAME, APPLICATION_NAME, null, false);
 
             // automatic updater call in update is disabled
@@ -127,7 +128,7 @@ namespace Util.Tests
             var releases = await Github.GetReleases(USER, REPO);
             var release = releases.First(r => r.Version == new Version(2, 0, 0));
             var newVersion = release.Version;
-            await UpdateManager.Instance.UpdateToRelease(USER, REPO, release,
+            await UpdateManager.Instance.UpdateToRelease(OS, USER, REPO, release,
                 UPDATER_NAME, APPLICATION_NAME, null, false);
 
             // automatic updater call in update is disabled

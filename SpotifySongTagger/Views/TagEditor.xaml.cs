@@ -146,6 +146,39 @@ namespace SpotifySongTagger.Views
         }
         #endregion
 
+        #region add/edit/delete tag group dialog
+        public void AddTagGroupDialog_Cancel(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NewTagGroupName = null;
+            NewTagGroupNameTextBox.Text = null; // this bugs sometimes and does not adapt the value of ViewModel.NewTagName even though it is set to null
+        }
+        private void AddTagGroupDialog_Add(object sender, RoutedEventArgs e)
+        {
+            ViewModel.AddTagGroup();
+            ViewModel.NewTagGroupName = null;
+            NewTagGroupNameTextBox.Text = null; // this bugs sometimes and does not adapt the value of ViewModel.NewTagName even though it is set to null
+        }
+        private void NewTagGroupName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // if validation gives an error for NewTagName, it is not updated in the ViewModel
+            var textBox = sender as TextBox;
+            ViewModel.NewTagGroupName = textBox.Text;
+            //Log.Information("TextChanged");
+            // binding would sometimes bug and not bind properly
+            var textBinding = NewTagGroupNameTextBox.GetBindingExpression(TextBox.TextProperty);
+            var validationRule = textBinding.ParentBinding.ValidationRules[0];
+            var validationError = new ValidationError(validationRule, textBox.GetBindingExpression(TextBox.TextProperty));
+            var validationResult = validationRule.Validate(ViewModel.NewTagGroupName, null);
+            if (!validationResult.IsValid)
+            {
+                validationError.ErrorContent = validationResult.ErrorContent;
+                Validation.MarkInvalid(textBinding, validationError);
+            }
+            else
+                Validation.ClearInvalid(textBinding);
+        }
+        #endregion
+
         #region tag edit/delete button behaviour
         private void ToggleDeleteMode(object sender, RoutedEventArgs e)
         {

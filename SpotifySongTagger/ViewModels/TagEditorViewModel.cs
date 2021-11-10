@@ -255,9 +255,16 @@ namespace SpotifySongTagger.ViewModels
         #endregion
 
         #region TagGroups
+
+        private string newTagGroupName;
+        public string NewTagGroupName
+        {
+            get => newTagGroupName;
+            set => SetProperty(ref newTagGroupName, value, nameof(NewTagGroupName));
+        }
         public void AddTagGroup()
         {
-            var tagGroup = new TagGroup { Name = "New TagGroup" };
+            var tagGroup = new TagGroup { Name = NewTagGroupName };
             if (DatabaseOperations.AddTagGroup(tagGroup))
                 DataContainer.Instance.TagGroups.Add(tagGroup);
         }

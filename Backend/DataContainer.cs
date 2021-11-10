@@ -131,6 +131,7 @@ namespace Backend
             if (defaultTagGroup != null)
             {
                 ChangeTagGroupSorted(tag, defaultTagGroup);
+                tag.TagGroup = defaultTagGroup;
                 NotifyPropertyChanged(nameof(Tags));
             }
         }
