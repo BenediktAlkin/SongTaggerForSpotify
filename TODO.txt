@@ -1,3 +1,6 @@
+test db path change
+check what errors are thrown when api and sst are open and dbfile is moved
+
 code improvements:
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
 - Dialogs should be templated

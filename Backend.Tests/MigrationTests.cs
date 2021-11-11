@@ -31,7 +31,7 @@ namespace Backend.Tests
         [TestCase("TagGroups")]
         public void UpdatesToLatestVersion(string dbName)
         {
-            ConnectionManager.InitDb($"res/{dbName}");
+            ConnectionManager.InitDb(dbName, dbPath: "res");
             AssertDbIsValid();
         }
 

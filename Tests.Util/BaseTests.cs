@@ -62,6 +62,7 @@ namespace Tests.Util
                 user = new PrivateUser { Id = TEST_USER_ID, DisplayName = "TestUserName", Country = "TestUserCountry", Product = "TestUserProduct" };
             var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks, albums, user);
             ConnectionManager.Instance.InitSpotify(client).Wait();
+            ConnectionManager.InitDb();
         }
 
 

@@ -22,6 +22,8 @@ namespace Backend
         private const string API_TOKEN_FILE = "token_api.txt";
         private const int API_PORT = 63847;
 
+        private const string DB_FOLDER_FILE = "db_folder.txt";
+
 
         public bool IsApi { get; set; }
         private string TOKEN_FILE => IsApi ? API_TOKEN_FILE : SST_TOKEN_FILE;
@@ -48,8 +50,59 @@ namespace Backend
             //optionsBuilder.EnableSensitiveDataLogging();
             return optionsBuilder;
         }
-        public static void InitDb(string dbName, string dbPath=null, bool dropDb=false, Action<string> logTo = null)
+        private static string GetDbPath()
         {
+            string folderPath = null;
+            // try to read from file
+            if (File.Exists(DB_FOLDER_FILE))
+            {
+                try
+                {
+                    folderPath = File.ReadAllText(DB_FOLDER_FILE);
+                    Logger.Information($"read db path from DB_FOLDER_FILE ({folderPath})");
+                    if (!Directory.Exists(folderPath))
+                    {
+                        folderPath = null;
+                        Logger.Information($"directory {folderPath} does not exist");
+                    }
+                }
+                catch(Exception e)
+                {
+                    Logger.Error($"failed to read DB_FOLDER_FILE: {e.Message}");
+                    return null;
+                }
+            }
+
+            // set to current directory
+            if (string.IsNullOrWhiteSpace(folderPath))
+                folderPath = Directory.GetCurrentDirectory();
+            return folderPath;
+        }
+        private static bool SaveDbPath(string folderPath)
+        {
+            try
+            {
+                File.WriteAllText(DB_FOLDER_FILE, folderPath);
+            }
+            catch(Exception e)
+            {
+                Logger.Error($"failed to write {folderPath} to DB_FOLDER_FILE: {e.Message}");
+                return false;
+            }
+            return true;
+        }
+        public static void InitDb(string dbName=null, bool dropDb=false, Action<string> logTo = null)
+        {
+            if (dbName == null && DataContainer.Instance.User == null)
+            {
+                Logger.Information("failed to initialize db (no user is logged in)");
+                return;
+            }
+            // set default dbName (only tests use a different dbName)
+            if (dbName == null)
+                dbName = DataContainer.Instance.User.Id;
+
+            var dbPath = GetDbPath();
             OptionsBuilder = GetOptionsBuilder(dbName, dbPath, logTo);
             // recreate/create/update database if necessary
             Logger.Information($"initializing database path={dbPath} name={dbName}");
@@ -89,7 +142,8 @@ namespace Backend
                 Log.Information($"moved database file ({fileName}) from {oldFolder} to {newFolder}");
                 try
                 {
-                    ConnectionManager.InitDb(DataContainer.Instance.User.Id, dbPath: newFolder);
+                    SaveDbPath(newFolder);
+                    InitDb();
                 }
                 catch(Exception e)
                 {
@@ -196,7 +250,7 @@ namespace Backend
                 DataContainer.Instance.User = await client.UserProfile.Current();
                 Instance.Spotify = client;
                 Logger.Information($"connected to spotify with user {DataContainer.Instance.User.DisplayName} ({DataContainer.Instance.User.Id})");
-                InitDb(DataContainer.Instance.User.Id);
+                InitDb();
             }
             catch (Exception e)
             {
