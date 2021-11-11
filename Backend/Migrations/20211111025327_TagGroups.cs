@@ -10,7 +10,7 @@ namespace Backend.Migrations
                 name: "TagGroupId",
                 table: "Tags",
                 type: "INTEGER",
-                nullable: true,
+                nullable: false,
                 defaultValue: 1);
 
             migrationBuilder.CreateTable(

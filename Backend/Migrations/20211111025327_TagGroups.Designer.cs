@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20211110225804_TagGroups")]
+    [Migration("20211111025327_TagGroups")]
     partial class TagGroups
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,7 +146,7 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TagGroupId")
+                    b.Property<int>("TagGroupId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(1);
@@ -417,7 +417,8 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Entities.TagGroup", "TagGroup")
                         .WithMany("Tags")
                         .HasForeignKey("TagGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TagGroup");
                 });

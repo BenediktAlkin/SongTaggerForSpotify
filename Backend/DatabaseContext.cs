@@ -7,7 +7,8 @@ namespace Backend
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext() : base() { }
+        // parameterless constructor for migrations
+        public DatabaseContext() : base(new DbContextOptionsBuilder<DatabaseContext>().UseSqlite().Options) { }
         public DatabaseContext(DbContextOptions<DatabaseContext> options, bool ensureCreated = false, bool dropDb = false) : base(options)
         {
             if (dropDb)
