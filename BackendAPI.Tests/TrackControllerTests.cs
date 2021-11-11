@@ -22,6 +22,7 @@ namespace BackendAPI.Tests
         [SetUp]
         public override void SetUp()
         {
+            REQUIRES_DB = true;
             base.SetUp();
             TrackController = new TrackController(MockUtil.GetMockedLogger<TrackController>(Log.Logger));
 

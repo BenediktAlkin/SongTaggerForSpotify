@@ -1,0 +1,719 @@
+<Playlist Version="2.0">
+  <Rule Name="Includes" Match="Any">
+    <Rule Match="All">
+      <Property Name="Solution" />
+      <Rule Match="Any">
+        <Rule Match="All">
+          <Property Name="Project" Value="Backend.Tests" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="Backend.Tests" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="ConnectionManagerTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.ConnectionManagerTests.MoveDatabaseFile" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MoveDatabaseFile" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="DatabaseConstraintTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.AssignTagNode_AssignTag_OnDeleteSetNull" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="AssignTagNode_AssignTag_OnDeleteSetNull" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.FilterTagNode_AssignTag_OnDeleteSetNull" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="FilterTagNode_AssignTag_OnDeleteSetNull" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.MetaPlaylists_AreInserted" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MetaPlaylists_AreInserted" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.Playlist_GraphNode_OnDeleteSetNull" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlist_GraphNode_OnDeleteSetNull" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.RemoveGraphNode_BaseSet_OnDeleteSetNull" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveGraphNode_BaseSet_OnDeleteSetNull" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.RemoveGraphNode_RemoveSet_OnDeleteSetNull" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveGraphNode_RemoveSet_OnDeleteSetNull" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.TagGroup_Default_IsInserted" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TagGroup_Default_IsInserted" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseConstraintTests.Tag_TagGroup_DefaultIsSet" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tag_TagGroup_DefaultIsSet" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="DatabaseOperationsTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphGeneratorPage_Add" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphGeneratorPage_Add" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphGeneratorPage_Delete" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphGeneratorPage_Delete" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphGeneratorPage_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphGeneratorPage_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphGeneratorPage_Get" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphGeneratorPage_Get(10)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_Add" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_Add" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_AddConnection" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_AddConnection" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_AssignTagNode_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_AssignTagNode_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_DeleteConnection" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_DeleteConnection" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_FilterArtistNode_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_FilterArtistNode_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_FilterTagNode_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_FilterTagNode_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_FilterYearNode_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_FilterYearNode_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_PlaylistInputNode_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_PlaylistInputNode_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_PlaylistOutputNode_EditGeneratedPlaylistId" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_PlaylistOutputNode_EditGeneratedPlaylistId" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_PlaylistOutputNode_EditName" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_PlaylistOutputNode_EditName" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.GraphNode_RemoveSet_SwapSets" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GraphNode_RemoveSet_SwapSets" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.SyncLibrary" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="SyncLibrary" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.TagGroups_AddTagGroup" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TagGroups_AddTagGroup" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.TagGroups_ChangeOrder" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TagGroups_ChangeOrder" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.TagGroups_DeleteTagGroup" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TagGroups_DeleteTagGroup" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.TagGroups_EditTagGroup" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TagGroups_EditTagGroup" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.TagGroups_GetTagGroups" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TagGroups_GetTagGroups(10,2)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_AddTag" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_AddTag" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_ChangeTagGroup" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_ChangeTagGroup" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_DeleteTag" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_DeleteTag" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_Edit" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_Edit" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_GetTags" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_GetTags(10)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_IsValidTag" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_IsValidTag" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Tags_TagExists" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tags_TagExists" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_AddTrack" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_AddTrack" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_AddTrack_AlbumExists" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_AddTrack_AlbumExists" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_AddTrack_ArtistExists" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_AddTrack_ArtistExists" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_AssignTag_FullObjects" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_AssignTag_FullObjects" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_AssignTag_OnlyStrings" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_AssignTag_OnlyStrings" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_DeleteAssignment_FullObjects" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_DeleteAssignment_FullObjects" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.DatabaseOperationsTests.Track_DeleteAssignment_OnlyStrings" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Track_DeleteAssignment_OnlyStrings" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="GraphNodeCalculationTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeCalculationTests.CalculateInputResult_Invalid_IsEmptyList" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CalculateInputResult_Invalid_IsEmptyList(Backend.Entities.GraphNodes.PlaylistInputMetaNode)" />
+                        <Property Name="DisplayName" Value="CalculateInputResult_Invalid_IsEmptyList(Backend.Entities.GraphNodes.AssignTagNode)" />
+                        <Property Name="DisplayName" Value="CalculateInputResult_Invalid_IsEmptyList(Backend.Entities.GraphNodes.PlaylistOutputNode)" />
+                        <Property Name="DisplayName" Value="CalculateInputResult_Invalid_IsEmptyList(Backend.Entities.GraphNodes.FilterTagNode)" />
+                        <Property Name="DisplayName" Value="CalculateInputResult_Invalid_IsEmptyList(Backend.Entities.GraphNodes.FilterArtistNode)" />
+                        <Property Name="DisplayName" Value="CalculateInputResult_Invalid_IsEmptyList(Backend.Entities.GraphNodes.PlaylistInputLikedNode)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeCalculationTests.NoInput_IsEmptyList" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.DeduplicateNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.AssignTagNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.RemoveNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.FilterArtistNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.FilterTagNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.PlaylistInputLikedNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.IntersectNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.PlaylistInputMetaNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.PlaylistOutputNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.FilterYearNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.FilterUntaggedNode)" />
+                        <Property Name="DisplayName" Value="NoInput_IsEmptyList(Backend.Entities.GraphNodes.ConcatNode)" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="GraphNodeTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.AllInputs_TagFilter_Output" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="AllInputs_TagFilter_Output(2)" />
+                        <Property Name="DisplayName" Value="AllInputs_TagFilter_Output(1)" />
+                        <Property Name="DisplayName" Value="AllInputs_TagFilter_Output(0)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.AllInputs_YearFilter_Output" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="AllInputs_YearFilter_Output(2005,2010)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.ConcatNode" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="ConcatNode" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.DeduplicateNode" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DeduplicateNode" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.DetectCycles_CycleToSameNode" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DetectCycles_CycleToSameNode" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.DetectCycles_SameSource_NoCycle" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DetectCycles_SameSource_NoCycle" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.Input_Output" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Input_Output(3)" />
+                        <Property Name="DisplayName" Value="Input_Output(0)" />
+                        <Property Name="DisplayName" Value="Input_Output(4)" />
+                        <Property Name="DisplayName" Value="Input_Output(1)" />
+                        <Property Name="DisplayName" Value="Input_Output(2)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.RemoveNode_NoInputSet" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveNode_NoInputSet" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.RemoveNode_NoInputs" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveNode_NoInputs" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.RemoveNode_NoRemoveSet" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveNode_NoRemoveSet" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.RemoveNode_RemoveSameNode" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveNode_RemoveSameNode" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.GraphNodeTests.RemoveNode_UndoConcat" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="RemoveNode_UndoConcat" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="MigrationTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.MigrationTests.CreateNewDb" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CreateNewDb" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.MigrationTests.UpdatesToLatestVersion" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="UpdatesToLatestVersion(&quot;InitialCreate&quot;)" />
+                        <Property Name="DisplayName" Value="UpdatesToLatestVersion(&quot;EnsureCreated&quot;)" />
+                        <Property Name="DisplayName" Value="UpdatesToLatestVersion(&quot;TagGroups&quot;)" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="SpotifyOperationsMockTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetFullLibrary" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetFullLibrary" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetFullLibrary_NoItems" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetFullLibrary_NoItems" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetFullLibrary_OnlyLikedPlaylists" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetFullLibrary_OnlyLikedPlaylists" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetFullLibrary_OnlyLikedTracks" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetFullLibrary_OnlyLikedTracks" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetPlaylistItems" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetPlaylistItems" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetUser" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetUser(&quot;SomeId&quot;,&quot;SomeDisplayName&quot;,&quot;SomeCountry&quot;,&quot;SomeProduct&quot;)" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.GetUser_DefaultTestUser" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetUser_DefaultTestUser" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.SpotifyOperationsMockTests.SyncPlaylistOutput" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="SyncPlaylistOutput" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="BackendAPI.Tests" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="BackendAPI.Tests" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="AlbumControllerTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.AlbumControllerTests.AssignTag" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="AssignTag" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.AlbumControllerTests.DeleteAssignment" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DeleteAssignment" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.AlbumControllerTests.IsTagged" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="IsTagged" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="PlaylistControllerTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.PlaylistControllerTests.AssignTag" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="AssignTag" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.PlaylistControllerTests.DeleteAssignment" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DeleteAssignment" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.PlaylistControllerTests.IsTagged" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="IsTagged" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="TagControllerTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.TagControllerTests.GetTagGroups" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetTagGroups" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.TagControllerTests.GetTags" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetTags" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="TrackControllerTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.TrackControllerTests.AssignTag" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="AssignTag" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.TrackControllerTests.DeleteAssignment" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DeleteAssignment" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="BackendAPI.Tests.TrackControllerTests.IsTagged" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="IsTagged" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Tests.Util" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="Tests.Util" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="SpotifyClientMockTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Albums_Get" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Albums_Get" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Follow_CheckPlaylist_FollowPlaylist" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Follow_CheckPlaylist_FollowPlaylist" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Library_GetTracks" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Library_GetTracks" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Playlists_AddItems_RemoveItems" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlists_AddItems_RemoveItems" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Playlists_ChangeDetails" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlists_ChangeDetails" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Playlists_Create" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlists_Create" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Playlists_CurrentUsers" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlists_CurrentUsers" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Playlists_Get" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlists_Get" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Playlists_GetItems" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Playlists_GetItems" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Tests.Util.SpotifyClientMockTests.Tracks_Get" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Tracks_Get" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Util.Tests" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="Util.Tests" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="GithubTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Util.Tests.GithubTests.CheckForUpdates" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CheckForUpdates" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Util.Tests.GithubTests.GetLatestRelease" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetLatestRelease" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Util.Tests.GithubTests.GetReleases" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetReleases" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="UpdateManagerTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Util.Tests.UpdateManagerTests.ApplyLatestUpdate" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="ApplyLatestUpdate" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Util.Tests.UpdateManagerTests.ApplySpecificUpdate" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="ApplySpecificUpdate" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Util.Tests.UpdateManagerTests.DownloadUpdate" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="DownloadUpdate" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+      </Rule>
+    </Rule>
+  </Rule>
+</Playlist>

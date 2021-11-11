@@ -20,6 +20,7 @@ namespace BackendAPI.Tests
         [SetUp]
         public override void SetUp()
         {
+            REQUIRES_DB = true;
             base.SetUp();
             TagController = new TagController(MockUtil.GetMockedLogger<TagController>(Log.Logger));
         }

@@ -27,6 +27,7 @@ namespace Backend.Tests
         [SetUp]
         public override void SetUp()
         {
+            REQUIRES_DB = true;
             base.SetUp();
 
             Playlists = new();

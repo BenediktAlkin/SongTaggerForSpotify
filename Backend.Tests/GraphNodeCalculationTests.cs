@@ -10,6 +10,14 @@ namespace Backend.Tests
 {
     public class GraphNodeCalculationTests : BaseTests
     {
+        [SetUp]
+        public override void SetUp()
+        {
+            REQUIRES_DB = true;
+            base.SetUp();
+        }
+
+
         private static readonly Type[] ALL_GRAPH_NODE_TYPES = new[]
         {
             typeof(AssignTagNode),
@@ -34,6 +42,7 @@ namespace Backend.Tests
             typeof(PlaylistInputMetaNode), // requires playlist
             typeof(PlaylistOutputNode), // requires playlistname
         };
+
 
         private static void AssertEmptyInputResult(List<List<Track>> inputResult)
         {

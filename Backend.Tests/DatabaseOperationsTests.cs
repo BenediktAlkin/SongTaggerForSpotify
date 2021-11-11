@@ -11,6 +11,13 @@ namespace Backend.Tests
 {
     public class DatabaseOperationsTests : BaseTests
     {
+        [SetUp]
+        public override void SetUp()
+        {
+            REQUIRES_DB = true;
+            base.SetUp();
+        }
+
         #region get/add/edit/delete tags
         [Test]
         [TestCase(10)]

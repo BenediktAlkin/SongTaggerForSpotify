@@ -25,6 +25,7 @@ namespace BackendAPI.Tests
         [SetUp]
         public override void SetUp()
         {
+            REQUIRES_DB = true;
             base.SetUp();
             PlaylistController = new PlaylistController(MockUtil.GetMockedLogger<PlaylistController>(Log.Logger));
             TrackController = new TrackController(MockUtil.GetMockedLogger<TrackController>(Log.Logger));
