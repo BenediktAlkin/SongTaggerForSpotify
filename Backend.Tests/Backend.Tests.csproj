@@ -21,4 +21,16 @@
     <ProjectReference Include="..\Tests.Util\Tests.Util.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="res\InitialCreate.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="res\InitialCreate.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

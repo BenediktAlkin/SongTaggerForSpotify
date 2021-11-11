@@ -1,18 +1,52 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Backend
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext() : base(new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source=MigrationsDb.sqlite").Options) { }
+        public DatabaseContext() : base() { }
         public DatabaseContext(DbContextOptions<DatabaseContext> options, bool ensureCreated = false, bool dropDb = false) : base(options)
         {
             if (dropDb)
                 Database.EnsureDeleted();
+            //if (ensureCreated)
+            //    Database.EnsureCreated();
+            //var appliedMigrations = Database.GetAppliedMigrations();
+            var pending = Database.GetPendingMigrations();
+            //var canConnect = Database.CanConnect();
+
             if (ensureCreated)
-                Database.EnsureCreated();
+            {
+                // first versions used Database.EnsureCreated instead of migrations
+                // to preserve compatibility --> create a __EFMigrationsHistory table
+                // if it does not exist and set it to the InitialCreate migration
+                Database.OpenConnection();
+                using var cmd = Database.GetDbConnection().CreateCommand();
+                cmd.CommandText = "select count() from sqlite_schema where name == '__EFMigrationsHistory'";
+                var migrationHistoryExists = (Int64)cmd.ExecuteScalar() == (Int64)1;
+                cmd.CommandText = "select count() from sqlite_schema";
+                var dbWasCreated = (Int64)cmd.ExecuteScalar() > (Int64)0;
+
+                if(dbWasCreated && !migrationHistoryExists)
+                {
+                    cmd.CommandText = 
+                        "CREATE TABLE '__EFMigrationsHistory' (" +
+                        "'MigrationId' TEXT NOT NULL CONSTRAINT 'PK___EFMigrationsHistory' PRIMARY KEY," +
+                        "'ProductVersion' TEXT NOT NULL" +
+                        ")";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = 
+                        "INSERT INTO '__EFMigrationsHistory' ('MigrationId', 'ProductVersion') " +
+                        "VALUES ('20211110225321_InitialCreate', '5.0.11')";
+                    cmd.ExecuteNonQuery();
+                }
+
+                Database.Migrate();
+            }
+                
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -25,7 +59,6 @@ namespace Backend
 
             void RegisterInheritedType<T>() where T : class =>
                 builder.Entity<T>().HasDiscriminator<string>("Discriminator").HasValue(typeof(T).Name);
-
 
             RegisterInheritedType<AssignTagNode>();
             RegisterInheritedType<ConcatNode>();
