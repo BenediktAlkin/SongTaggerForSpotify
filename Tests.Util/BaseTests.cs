@@ -36,9 +36,7 @@ namespace Tests.Util
             if (REQUIRES_DB)
             {
                 Action<string> logTo = LOG_DB_QUERIES ? DatabaseQueryLogger.Instance.Information : null;
-                ConnectionManager.InitDb("TestDb", logTo: logTo);
-                // drop db
-                using var _ = ConnectionManager.NewContext(ensureCreated: true, dropDb: true);
+                ConnectionManager.InitDb("TestDb", dropDb:true, logTo: logTo);
             }
 
             idCounter = 1;

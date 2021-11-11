@@ -13,11 +13,6 @@ namespace Backend
         {
             if (dropDb)
                 Database.EnsureDeleted();
-            //if (ensureCreated)
-            //    Database.EnsureCreated();
-            //var appliedMigrations = Database.GetAppliedMigrations();
-            var pending = Database.GetPendingMigrations();
-            //var canConnect = Database.CanConnect();
 
             if (ensureCreated)
             {
@@ -47,7 +42,6 @@ namespace Backend
 
                 Database.Migrate();
             }
-                
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

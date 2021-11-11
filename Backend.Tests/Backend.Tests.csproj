@@ -22,13 +22,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="res\InitialCreate.sqlite">
+    <Resource Include="res\EnsureCreated.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="res\EnsureCreated.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="res\InitialCreate.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="res\TagGroups.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

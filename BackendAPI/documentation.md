@@ -23,7 +23,7 @@ Logs the current user out.
 **Returns** array of strings: All available tags.
 
 ### GET taggroups
-**Returns** dictionary of string to array of strings: Taggroups in dictionary form. As taggroups are not yet implemented the dictionary contains only one entry "default" with all tags in it.
+**Returns** dictionary of string to array of strings: Taggroups in dictionary form.
 
 
 ## Album

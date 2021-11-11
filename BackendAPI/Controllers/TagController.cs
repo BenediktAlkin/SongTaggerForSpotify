@@ -36,9 +36,9 @@ namespace BackendAPI.Controllers
             using var timer = new RequestTimer<TagController>($"Tag/{nameof(GetTagGroups)}", Logger);
 
             using var db = ConnectionManager.NewContext();
-            var allTags = db.Tags.Select(t => t.Name).ToArray();
-            // just one group for default
-            var groups = new Dictionary<string, string[]>() { { "default", allTags } };
+
+            var tagGroups = DatabaseOperations.GetTagGroups();
+            var groups = tagGroups.ToDictionary(tg => tg.Name, tg => tg.Tags.Select(t => t.Name).ToArray());
             
             var msg = string.Join(',', groups.Select(g => $"{g.Key}:[{string.Join(',', groups[g.Key])}]"));
             timer.DetailMessage = $"result={{{msg}}}";

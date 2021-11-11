@@ -44,17 +44,18 @@ namespace Backend
             //optionsBuilder.EnableSensitiveDataLogging();
             return optionsBuilder;
         }
-        public static void InitDb(string dbName, Action<string> logTo = null)
+        public static void InitDb(string dbName, bool dropDb=false, Action<string> logTo = null)
         {
             OptionsBuilder = GetOptionsBuilder(dbName, logTo);
-            // create database if it doesn't exist yet
+            // recreate/create/update database if necessary
             Logger.Information("initializing database");
-            using var _ = ConnectionManager.NewContext(ensureCreated: true);
+            using var _ = ConnectionManager.NewContext(true, dropDb);
             Logger.Information("initialized database");
         }
 
         private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
-        public static DatabaseContext NewContext(bool ensureCreated = false, bool dropDb = false)
+        public static DatabaseContext NewContext() => NewContext(false, false);
+        private static DatabaseContext NewContext(bool ensureCreated, bool dropDb)
         {
             try
             {

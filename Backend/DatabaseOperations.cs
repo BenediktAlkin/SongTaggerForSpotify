@@ -85,13 +85,17 @@ namespace Backend
         {
             if (tag == null)
             {
-                Logger.Information("can't edit tag null");
+                Logger.Information("can't edit tag (is null)");
+                return false;
+            }
+            if(tag.Name == null)
+            {
+                Logger.Information("can't edit tag (name is null)");
                 return false;
             }
 
             using var db = ConnectionManager.NewContext();
             if (!IsValidTag(newName, db)) return false;
-
 
             var dbTag = db.Tags.FirstOrDefault(t => t.Name == tag.Name.ToLower());
             if (dbTag == null)
@@ -233,6 +237,11 @@ namespace Backend
             if (tag == null)
             {
                 Logger.Information("can't change TagGroup (tag is null)");
+                return false;
+            }
+            if (tag.Name == null)
+            {
+                Logger.Information("can't change TagGroup (tagName is null)");
                 return false;
             }
             if (tagGroup == null)
@@ -422,7 +431,7 @@ namespace Backend
 
             db.Tracks.Add(track);
             db.SaveChanges();
-            Logger.Information($"added track {dbTrack.Name}");
+            Logger.Information($"added track {track.Name}");
             return true;
         }
         #endregion

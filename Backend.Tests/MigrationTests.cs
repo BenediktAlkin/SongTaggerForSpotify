@@ -17,14 +17,29 @@ namespace Backend.Tests
             base.SetUp();
         }
 
-        [Test]
-        public void InitialCreate_Migrate()
+        private void AssertDbIsValid()
         {
-            ConnectionManager.InitDb("res/InitialCreate");
-            //ConnectionManager.InitDb("res/InitialCreateTest");
             using (var db = ConnectionManager.NewContext())
             {
+                Assert.AreEqual(1, db.TagGroups.Count());
             }
+        }
+
+        [Test]
+        [TestCase("EnsureCreated")]
+        [TestCase("InitialCreate")]
+        [TestCase("TagGroups")]
+        public void UpdatesToLatestVersion(string dbName)
+        {
+            ConnectionManager.InitDb($"res/{dbName}");
+            AssertDbIsValid();
+        }
+
+        [Test]
+        public void CreateNewDb()
+        {
+            ConnectionManager.InitDb($"MigrationNewDb");
+            AssertDbIsValid();
         }
     }
 }

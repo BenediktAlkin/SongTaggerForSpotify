@@ -126,7 +126,7 @@ namespace Util.Tests
             await RemoveAllFiles();
 
             var releases = await Github.GetReleases(USER, REPO);
-            var release = releases.First(r => r.Version == new Version(2, 0, 0));
+            var release = releases.First(r => r.Version == new Version(3, 0, 0));
             var newVersion = release.Version;
             await UpdateManager.Instance.UpdateToRelease(OS, USER, REPO, release,
                 UPDATER_NAME, APPLICATION_NAME, null, false);
