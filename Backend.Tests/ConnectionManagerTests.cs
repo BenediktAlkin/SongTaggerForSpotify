@@ -28,7 +28,7 @@ namespace Backend.Tests
             const string DST_FOLDER_NAME = "MoveDatabaseTo";
             Directory.CreateDirectory(DST_FOLDER_NAME);
             var dstFolderPath = Path.Combine(Directory.GetCurrentDirectory(), DST_FOLDER_NAME);
-            ConnectionManager.MoveDatabaseFile(Directory.GetCurrentDirectory(), dstFolderPath);
+            ConnectionManager.Instance.ChangeDatabaseFolder(dstFolderPath);
 
             // check if dbfile was moved
             Assert.IsFalse(File.Exists(DataContainer.Instance.DbFileName));

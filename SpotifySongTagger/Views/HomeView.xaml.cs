@@ -84,7 +84,7 @@ namespace SpotifySongTagger.Views
         {
             // dialog from Microsoft.WindowsAPICodePack-Shell
             var dialog = new VistaFolderBrowserDialog();
-            dialog.SelectedPath = Settings.Instance.DatabasePath;
+            dialog.SelectedPath = ConnectionManager.Instance.DbPath;
             if (dialog.ShowDialog().Value)
                 ViewModel.ChangeDatabasePath(dialog.SelectedPath);
         }

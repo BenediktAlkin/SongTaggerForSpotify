@@ -11,7 +11,6 @@ namespace SpotifySongTagger.Utils
         IsDarkTheme,
         HidePlayer,
         AutoUpdate,
-        DatabasePath,
     }
     public class Settings
     {
@@ -58,11 +57,6 @@ namespace SpotifySongTagger.Utils
         {
             get => TryGetValue(SettingKey.AutoUpdate, AUTO_UPDATE_DEFAULT, bool.Parse);
             set => SetValue(SettingKey.AutoUpdate, value.ToString());
-        }
-        public string DatabasePath
-        {
-            get => TryGetValue(SettingKey.DatabasePath, Directory.GetCurrentDirectory(), v => v);
-            set => SetValue(SettingKey.DatabasePath, value);
         }
 
         private T TryGetValue<T>(SettingKey key, T defaultValue, Func<string, T> convert)

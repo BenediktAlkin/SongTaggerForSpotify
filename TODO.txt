@@ -1,3 +1,5 @@
+update readme
+clear datacontainer when path is changed
 test db path change
 check what errors are thrown when api and sst are open and dbfile is moved
 
@@ -7,6 +9,8 @@ code improvements:
 - the SpotifyPlayer control ViewModel should be seperate
 - viewmodel tests
 - DatabaseOperationsTests should probably use DatabaseOperations to prepare tests instead of directly inserting into db
+- ConnectionManager turned into a weird mix of static method and singleton methods
+- static logger should be initialized on first get (like in ConnectionManager) --> otherwise some weird behavior happens where sometimes the logger is initialized before the configuration
 
 minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node

@@ -7,10 +7,11 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Util;
 
 namespace Backend
 {
-    public class ConnectionManager
+    public class ConnectionManager : NotifyPropertyChangedBase
     {
         private const string CLIENT_ID = "c15508ab1a5f453396e3da29d16a506b";
         private const string SERVER_URL_TEMPLATE = "http://localhost:{0}/";
@@ -31,17 +32,29 @@ namespace Backend
         private string SERVER_URL => string.Format(SERVER_URL_TEMPLATE, API_PORT);
         private string CALLBACK_URL => string.Format(CALLBACK_URL_TEMPLATE, SERVER_URL);
 
-
-        protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "CM");
+        private static ILogger logger;
+        protected static ILogger Logger
+        {
+            get
+            {
+                if (logger == null)
+                    logger = Log.ForContext("SourceContext", "CM");
+                return logger;
+            }
+        }
         public static ConnectionManager Instance { get; } = new();
-        private ConnectionManager() { }
+        private ConnectionManager()
+        {
+            DbPath = GetDbPath();
+        }
 
         #region Database
-        private static DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, string dbPath, Action<string> logTo)
+        private DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
+        private DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, Action<string> logTo)
         {
             var filePath = $"{dbName}.sqlite";
-            if (dbPath != null)
-                filePath = Path.Combine(dbPath, filePath);
+            if (DbPath != null)
+                filePath = Path.Combine(DbPath, filePath);
 
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={filePath}");
             if (logTo != null)
@@ -49,6 +62,12 @@ namespace Backend
             //optionsBuilder.LogTo(Logger.Information, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.EnableSensitiveDataLogging();
             return optionsBuilder;
+        }
+        private string dbPath;
+        public string DbPath 
+        {
+            get => dbPath;
+            set => SetProperty(ref dbPath, value, nameof(DbPath));
         }
         private static string GetDbPath()
         {
@@ -91,72 +110,115 @@ namespace Backend
             }
             return true;
         }
-        public static void InitDb(string dbName=null, bool dropDb=false, Action<string> logTo = null)
+        public bool ChangeDatabaseFolder(string newFolder)
+        {
+            // change DbPath and write it to config file (behavior when logged in and when not logged in)
+            Logger.Information($"changing database folder from {DbPath} to {newFolder}");
+            if (!Directory.Exists(newFolder))
+            {
+                Logger.Information("failed to change database folder (directory does not exist)");
+                return false;
+            }
+            if (!SaveDbPath(newFolder))
+            {
+                Logger.Information("failed to change database folder (SaveDbPath failed)");
+                return false;
+            }
+            DbPath = GetDbPath();
+            return true;
+        }
+        public bool ChangeDatabaseFolder(string newFolder, bool copyCurrentDb)
+        {
+            var oldFolder = DbPath;
+            var success = ChangeDatabaseFolder(newFolder);
+            if (!success) return false;
+
+            // finished if not logged in
+            if (DataContainer.Instance.User == null) return true;
+
+
+            // copy current db to new directory when user is logged in
+            if(copyCurrentDb)
+            {
+                var fileName = DataContainer.Instance.DbFileName;
+                var src = Path.Combine(oldFolder, fileName);
+                var dst = Path.Combine(newFolder, fileName);
+
+                // handle overwriting (rename existing db to <name>_conflict_<current_millis>.sqlite)
+                if (File.Exists(dst))
+                {
+                    try
+                    {
+                        var newName = $"{DataContainer.Instance.User.Id}_conflict_{DateTime.Now.Ticks}";
+                        File.Move(dst, Path.Combine(newFolder, newName));
+                        Logger.Information($"renamed conflicting database file {fileName} to {newName}");
+                    }
+                    catch(Exception e)
+                    {
+                        Logger.Information($"failed to rename conflicting database file {fileName} in new folder: {e.Message}");
+                        return false;
+                    }
+                }
+
+                // copy to new directory
+                try
+                {
+                    File.Copy(src, dst);
+                    Logger.Information($"copied database file ({fileName}) from {oldFolder} to {newFolder}");
+                }
+                catch (Exception e)
+                {
+                    Logger.Information($"failed to copy database file ({fileName}) from {oldFolder} to {newFolder}: {e.Message}");
+                    return false;
+                }
+            }
+
+            // initialize db
+            try
+            {
+                InitDb();
+            }
+            catch (Exception e)
+            {
+                Log.Information($"failed to initialize database after moving database file: {e.Message}");
+                return false;
+            }
+            return true;
+        }
+
+
+        public void InitDb(string dbName=null, bool dropDb=false, Action<string> logTo = null)
         {
             if (dbName == null && DataContainer.Instance.User == null)
             {
                 Logger.Information("failed to initialize db (no user is logged in)");
                 return;
             }
+            DataContainer.Instance.Clear();
             // set default dbName (only tests use a different dbName)
             if (dbName == null)
                 dbName = DataContainer.Instance.User.Id;
 
-            var dbPath = GetDbPath();
-            OptionsBuilder = GetOptionsBuilder(dbName, dbPath, logTo);
+            OptionsBuilder = GetOptionsBuilder(dbName, logTo);
             // recreate/create/update database if necessary
-            Logger.Information($"initializing database path={dbPath} name={dbName}");
+            Logger.Information($"initializing database path={DbPath} name={dbName}");
             using var _ = ConnectionManager.NewContext(true, dropDb);
             Logger.Information("initialized database");
         }
 
-        private static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder { get; set; }
+        
         public static DatabaseContext NewContext() => NewContext(false, false);
         private static DatabaseContext NewContext(bool ensureCreated, bool dropDb)
         {
             try
             {
-                return new DatabaseContext(OptionsBuilder.Options, ensureCreated: ensureCreated, dropDb: dropDb);
+                return new DatabaseContext(Instance.OptionsBuilder.Options, ensureCreated: ensureCreated, dropDb: dropDb);
             }
             catch (Exception e)
             {
                 Logger.Error($"failed to connect to database {e.Message}");
                 throw;
             }
-        }
-
-        public static bool MoveDatabaseFile(string oldFolder, string newFolder)
-        {
-            if(DataContainer.Instance.User == null)
-            {
-                Logger.Information("can't move database file (no user logged in)");
-                return false;
-            }
-
-            var fileName = DataContainer.Instance.DbFileName;
-            try
-            {
-                var src = Path.Combine(oldFolder, fileName);
-                var dst = Path.Combine(newFolder, fileName);
-                File.Move(src, dst, true);
-                Log.Information($"moved database file ({fileName}) from {oldFolder} to {newFolder}");
-                try
-                {
-                    SaveDbPath(newFolder);
-                    InitDb();
-                }
-                catch(Exception e)
-                {
-                    Log.Information($"failed to initialize database after moving database file: {e.Message}");
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Information($"failed to move database file ({fileName}) from {oldFolder} to {newFolder}: {e.Message}");
-                return false;
-            }
-            return true;
         }
         #endregion
 
@@ -167,8 +229,14 @@ namespace Backend
 
         public async Task<bool> TryInitFromSavedToken()
         {
+            Logger.Information("trying logging in from saved token");
             var tokenData = GetSavedToken();
-            return await InitSpotify(tokenData);
+            var success = await InitSpotify(tokenData);
+            if(success)
+                Logger.Information("logged in from saved token");
+            else
+                Logger.Information("failed to log in from saved token");
+            return success;
         }
         private static PKCETokenResponse GetTokenFromString(string[] tokenData)
         {

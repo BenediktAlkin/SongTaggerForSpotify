@@ -20,6 +20,7 @@ namespace Backend
             MetaPlaylists = null;
             LikedPlaylists = null;
             GeneratedPlaylists = null;
+            GraphGeneratorPages = null;
         }
 
 
@@ -87,7 +88,6 @@ namespace Backend
             return Task.Run(() => GeneratedPlaylists = DatabaseOperations.PlaylistsGenerated());
         }
         #endregion
-
 
         #region TagGroups
         public List<Tag> Tags => TagGroups == null ? null : TagGroups.SelectMany(tg => tg.Tags).ToList();

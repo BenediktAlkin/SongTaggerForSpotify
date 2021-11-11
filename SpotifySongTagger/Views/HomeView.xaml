@@ -28,10 +28,10 @@
                        Content="Data is stored in folder"
                        HorizontalAlignment="Center"/>
                 <Label Style="{StaticResource MaterialDesignLabel}" 
-                       Content="{Binding Settings.DatabasePath}"
+                       Content="{Binding ConnectionManager.DbPath}"
                        FontWeight="Bold"
                        HorizontalAlignment="Center"/>
-                <Button Content="Change Data Folder" Click="ChangeDataFolderButton_Click" HorizontalAlignment="Center"></Button>
+                <Button Content="Change Data Folder" Click="ChangeDataFolderButton_Click" HorizontalAlignment="Center"/>
             </StackPanel>
             <!-- logged in view -->
             <StackPanel Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}">
