@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Backend;
+using NUnit.Framework;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,8 +44,10 @@ namespace Tests.Util
                 .ToDictionary(
                 i => NewAlbum(i).Id,
                 i => (NewAlbum(i).Name, Enumerable.Range(1, i).Select(j => ToSimpleTrack(NewTrack(j))).ToList()));
+            
 
-            Client = new SpotifyClientMock().SetUp(Tracks, LikedTracks, Playlists, LikedPlaylists, PlaylistTracks, Albums);
+            InitSpotify(Tracks, LikedTracks, Playlists, LikedPlaylists, PlaylistTracks, Albums);
+            Client = ConnectionManager.Instance.Spotify;
         }
 
         [Test]

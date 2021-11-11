@@ -1,5 +1,11 @@
-order of taggroup
-instructions
+run all tests (REQUIRES_DB was changed from default true to false)
+
+code improvements:
+- DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
+- Dialogs should be templated
+- the SpotifyPlayer control ViewModel should be seperate
+- viewmodel tests
+- DatabaseOperationsTests should probably use DatabaseOperations to prepare tests instead of directly inserting into db
 
 minor bugs:
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
@@ -13,7 +19,6 @@ minor bugs:
 
 future
 - change path to db file
-- tag groups
 - search function (search for track and tag it)
 - audio features viewer/filter
 - top tracks

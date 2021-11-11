@@ -22,73 +22,72 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <!-- logged in view -->
-            <StackPanel>
-                <!-- user info -->
-                <StackPanel Orientation="Horizontal" Margin="8">
-                    <Label Style="{StaticResource MaterialDesignLabel}"
-                       Content="Logged in as"
-                       Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
-                    <Label Style="{StaticResource MaterialDesignLabel}" 
-                       Content="{Binding DataContainer.User.Id}"
+            <!-- folder path -->
+            <StackPanel Margin="8" HorizontalAlignment="Center">
+                <Label Style="{StaticResource MaterialDesignLabel}"
+                       Content="Data is stored in folder"
+                       HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource MaterialDesignLabel}" 
+                       Content="{Binding Settings.DatabasePath}"
                        FontWeight="Bold"
-                       Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"/>
+                       HorizontalAlignment="Center"/>
+                <Button Content="Change Data Folder" Click="ChangeDataFolderButton_Click" HorizontalAlignment="Center"></Button>
+            </StackPanel>
+            <!-- logged in view -->
+            <StackPanel Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}">
+                <!-- file name -->
+                <StackPanel Margin="8" HorizontalAlignment="Center">
+                    <Label Style="{StaticResource MaterialDesignLabel}"
+                       Content="Data is stored in file"
+                       HorizontalAlignment="Center"/>
+                    <Label Style="{StaticResource MaterialDesignLabel}" 
+                       Content="{Binding DataContainer.DbFileName}"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
                 </StackPanel>
-                <!-- import button --><!--
-                <Button Click="ImportButton_Click" Margin="8"
-                    Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
-                    Width="128"
-                    Content="Import Tags"/>
-                --><!-- export button --><!--
-                <Button Click="ExportButton_Click" Margin="8"
-                    Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
-                    Width="128"
-                    Content="Export Tags"/>-->
 
+                <!-- user info -->
+                <StackPanel Margin="8" HorizontalAlignment="Center">
+                    <Label Style="{StaticResource MaterialDesignLabel}" Content="Logged in as" HorizontalContentAlignment="Center"/>
+                    <Label Style="{StaticResource MaterialDesignLabel}" Content="{Binding DataContainer.User.DisplayName}" FontWeight="Bold"  HorizontalContentAlignment="Center"/>
+                </StackPanel>
 
                 <!-- logout button -->
-                <Button Click="LogoutButton_Click" Margin="8"
-                    Visibility="{Binding DataContainer.User, Converter={StaticResource NullVisibilityConverter}}"
+                <Button Click="LogoutButton_Click" Margin="8" Width="128" Content="Logout"/>
+            </StackPanel>
+
+            <!-- not logged in view -->
+            <StackPanel Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}">
+                <!-- remember me checkbox -->
+                <StackPanel Margin="8" Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding RememberMe}"/>
+                    <TextBlock Margin="5 0 0 0" Text="Remember me" VerticalAlignment="Center"/>
+                </StackPanel>
+                <!-- login button -->
+                <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                    materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
                     Width="128"
-                    Content="Logout"/>
-
-            </StackPanel>
-
-
-            <!-- remember me checkbox -->
-            <StackPanel Margin="8" Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding RememberMe}" Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"/>
-                <TextBlock 
-                    Margin="5 0 0 0" 
-                    Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}" 
-                    Text="Remember me" 
-                    VerticalAlignment="Center"/>
-            </StackPanel>
-            <!-- login button -->
-            <Button Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}"
-                materialDesign:DialogHost.DialogOpenedAttached="DialogHost_OnDialogOpened"
-                Width="128"
-                Content="Login"
-                IsEnabledChanged="Button_IsEnabledChanged">
-                <Button.CommandParameter>
-                    <StackPanel Margin="16">
-                        <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                    Content="Login"
+                    IsEnabledChanged="Button_IsEnabledChanged">
+                    <Button.CommandParameter>
+                        <StackPanel Margin="16">
+                            <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
                                  HorizontalAlignment="Center" Margin="16"
                                  IsIndeterminate="True"
                                  Value="0" />
-                        <Label Style="{StaticResource MaterialDesignLabel}"
+                            <Label Style="{StaticResource MaterialDesignLabel}"
                            Content="Waiting for login in opened browser window"/>
-                        <Button 
+                            <Button 
                         Style="{StaticResource DialogButton}"
                         IsCancel="True" 
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         HorizontalAlignment="Center"
                         Content="CANCEL"
                         Click="LoginDialog_Cancel"/>
-                    </StackPanel>
-                </Button.CommandParameter>
-            </Button>
+                        </StackPanel>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
         </StackPanel>
 
 

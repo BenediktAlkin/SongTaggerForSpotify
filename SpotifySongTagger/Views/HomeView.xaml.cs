@@ -1,6 +1,8 @@
 ﻿using Backend;
 using MaterialDesignThemes.Wpf;
+using Ookii.Dialogs.Wpf;
 using Serilog;
+using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
 using System;
 using System.Windows;
@@ -76,6 +78,15 @@ namespace SpotifySongTagger.Views
             var result = dialog.ShowDialog();
             if (result == true)
                 await DatabaseOperations.ExportTags(dialog.FileName);
+        }
+
+        private void ChangeDataFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            // dialog from Microsoft.WindowsAPICodePack-Shell
+            var dialog = new VistaFolderBrowserDialog();
+            dialog.SelectedPath = Settings.Instance.DatabasePath;
+            if (dialog.ShowDialog().Value)
+                ViewModel.ChangeDatabasePath(dialog.SelectedPath);
         }
     }
 }

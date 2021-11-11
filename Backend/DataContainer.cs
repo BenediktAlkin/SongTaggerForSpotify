@@ -28,8 +28,13 @@ namespace Backend
         public PrivateUser User
         {
             get => user;
-            set => SetProperty(ref user, value, nameof(User));
+            set
+            {
+                SetProperty(ref user, value, nameof(User));
+                NotifyPropertyChanged(nameof(DbFileName));
+            }
         }
+        public string DbFileName => User == null ? string.Empty : $"{User.Id}.sqlite";
 
         #region playlists
         public delegate void PlaylistsUpdatedEvenHandler();
@@ -84,7 +89,7 @@ namespace Backend
         #endregion
 
 
-        #region tags
+        #region TagGroups
         public List<Tag> Tags => TagGroups == null ? null : TagGroups.SelectMany(tg => tg.Tags).ToList();
         private ObservableCollection<TagGroup> tagGroups;
         public ObservableCollection<TagGroup> TagGroups
@@ -157,6 +162,21 @@ namespace Backend
         {
             TagGroups.Remove(tagGroup);
             NotifyPropertyChanged(nameof(Tags));
+        }
+
+        public void SwapTagGroupOrder(TagGroup a, TagGroup b)
+        {
+            var temp = a.Order;
+            a.Order = b.Order;
+            b.Order = temp;
+            var aIdx = TagGroups.IndexOf(a);
+            var bIdx = TagGroups.IndexOf(b);
+            if(aIdx != -1 && bIdx != -1)
+            {
+                TagGroups[aIdx] = b;
+                TagGroups[bIdx] = a;
+                NotifyPropertyChanged(nameof(Tags));
+            }
         }
         #endregion
 

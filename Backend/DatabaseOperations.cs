@@ -142,6 +142,7 @@ namespace Backend
             Logger.Information($"loaded {tagGroups.Count} TagGroups with {tagGroups.SelectMany(tg => tg.Tags).Count()} tags");
             return tagGroups;
         }
+        public static bool IsValidTagGroupName(string name) => !string.IsNullOrWhiteSpace(name);
         public static bool AddTagGroup(TagGroup tagGroup)
         {
             if (tagGroup == null)
@@ -149,7 +150,7 @@ namespace Backend
                 Logger.Information("can't add tagGroup (is null)");
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(tagGroup.Name))
+            if (!IsValidTagGroupName(tagGroup.Name))
             {
                 Logger.Information("can't add tagGroup (name null/empty/whitespace)");
                 return false;
@@ -268,6 +269,31 @@ namespace Backend
             db.SaveChanges();
 
             Logger.Information($"changed tag {dbTag.Name} to tagGroup {dbTagGroup.Name}");
+            return true;
+        }
+        public static bool SwapTagGroupOrder(TagGroup a, TagGroup b)
+        {
+            if(a == null || b == null)
+            {
+                Logger.Information("can't swap TagGroups (is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbA = db.TagGroups.FirstOrDefault(tg => tg.Id == a.Id);
+            var dbB = db.TagGroups.FirstOrDefault(tg => tg.Id == b.Id);
+            if(dbA == null || dbB == null)
+            {
+                Logger.Information("can't swap TagGroups (not in db)");
+                return false;
+            }
+
+            var temp = dbA.Order;
+            dbA.Order = dbB.Order;
+            dbB.Order = temp;
+            db.SaveChanges();
+
+            Logger.Information($"swapped order of TagGroups {dbA.Name} and {dbB.Name}");
             return true;
         }
         #endregion

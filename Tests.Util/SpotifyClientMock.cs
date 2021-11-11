@@ -19,6 +19,7 @@ namespace Tests.Util
         private List<SimplePlaylist> Playlists { get; } = new();
         private Dictionary<string, List<FullTrack>> PlaylistTracks { get; } = new();
         private Dictionary<string, (string, List<SimpleTrack>)> Albums { get; } = new();
+        private PrivateUser User { get; set; }
 
 
         private static string ToPageUri(string actionType, string action, int offset, int limit, string param = null)
@@ -124,9 +125,11 @@ namespace Tests.Util
             List<SimplePlaylist> playlists,
             List<SimplePlaylist> likedPlaylists,
             Dictionary<string, List<FullTrack>> playlistTracks,
-            Dictionary<string, (string, List<SimpleTrack>)> albums)
+            Dictionary<string, (string, List<SimpleTrack>)> albums,
+            PrivateUser user)
         {
-            Tracks.AddRange(tracks);
+            if(tracks != null)
+                Tracks.AddRange(tracks);
             if(likedTracks != null)
                 LikedTracks.AddRange(likedTracks);
             if(playlists != null)
@@ -139,7 +142,7 @@ namespace Tests.Util
             if(albums != null)
                 foreach (var item in albums)
                     Albums[item.Key] = item.Value;
-
+            User = user;
 
             var mock = new Mock<ISpotifyClient>();
             // paginate
@@ -329,12 +332,16 @@ namespace Tests.Util
                 .Returns((string trackId, TrackRequest req) => 
                 Task.FromResult(Tracks.FirstOrDefault(t => t.Id == trackId)));
 
+            var userMock = new Mock<IUserProfileClient>();
+            userMock.Setup(user => user.Current())
+                .Returns(() => Task.FromResult(User));
 
             mock.SetupGet(client => client.Library).Returns(libraryMock.Object);
             mock.SetupGet(client => client.Playlists).Returns(playlistsMock.Object);
             mock.SetupGet(client => client.Follow).Returns(followMock.Object);
             mock.SetupGet(client => client.Albums).Returns(albumMock.Object);
             mock.SetupGet(client => client.Tracks).Returns(trackMock.Object);
+            mock.SetupGet(client => client.UserProfile).Returns(userMock.Object);
 
 
             SpotifyClient = mock.Object;

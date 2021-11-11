@@ -165,7 +165,7 @@ namespace SpotifySongTagger.Views
             ViewModel.NewTagGroupName = textBox.Text;
             //Log.Information("TextChanged");
             // binding would sometimes bug and not bind properly
-            var textBinding = NewTagGroupNameTextBox.GetBindingExpression(TextBox.TextProperty);
+            var textBinding = textBox.GetBindingExpression(TextBox.TextProperty);
             var validationRule = textBinding.ParentBinding.ValidationRules[0];
             var validationError = new ValidationError(validationRule, textBox.GetBindingExpression(TextBox.TextProperty));
             var validationResult = validationRule.Validate(ViewModel.NewTagGroupName, null);
@@ -246,6 +246,21 @@ namespace SpotifySongTagger.Views
             var frameworkElement = sender as FrameworkElement;
             ViewModel.ClickedTagGroup = frameworkElement.DataContext as TagGroup;
             ViewModel.NewTagGroupName = ViewModel.ClickedTagGroup.Name;
+        }
+
+        private void MoveTagGroupUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            var tagGroup = frameworkElement.DataContext as TagGroup;
+            ViewModel.MoveUp(tagGroup);
+            Log.Information($"moved {tagGroup.Name} up");
+        }
+        private void MoveTagGroupDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            var tagGroup = frameworkElement.DataContext as TagGroup;
+            ViewModel.MoveDown(tagGroup);
+            Log.Information($"moved {tagGroup.Name} down");
         }
         #endregion
 

@@ -13,8 +13,8 @@ namespace Tests.Util
 {
     public class BaseTests
     {
-        protected bool REQUIRES_DB { get; set; } = true;
-        protected bool LOG_DB_QUERIES { get; set; } = false;
+        protected bool REQUIRES_DB { get; set; }
+        protected bool LOG_DB_QUERIES { get; set; }
 
 
         // convenience getters
@@ -48,16 +48,18 @@ namespace Tests.Util
         }
 
         protected static void InitSpotify(
-            List<FullTrack> tracks,
+            List<FullTrack> tracks = null,
             List<FullTrack> likedTracks = null,
             List<SimplePlaylist> playlists = null,
             List<SimplePlaylist> likedPlaylists = null,
             Dictionary<string, List<FullTrack>> playlistTracks = null,
-            Dictionary<string, (string, List<SimpleTrack>)> albums = null)
+            Dictionary<string, (string, List<SimpleTrack>)> albums = null,
+            PrivateUser user = null)
         {
-            var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks, albums);
-            ConnectionManager.Instance.InitSpotify(client);
-            DataContainer.Instance.User = new PrivateUser { Id = "TestId", Country = "TestCountry", Product = "TestProduct" };
+            if (user == null)
+                user = new PrivateUser { Id = "TestId", DisplayName = "TestName", Country = "TestCountry", Product = "TestProduct" };
+            var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks, albums, user);
+            ConnectionManager.Instance.InitSpotify(client).Wait();
         }
 
 

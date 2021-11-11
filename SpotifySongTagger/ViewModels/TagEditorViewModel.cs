@@ -260,9 +260,16 @@ namespace SpotifySongTagger.ViewModels
         public string NewTagGroupName
         {
             get => newTagGroupName;
-            set => SetProperty(ref newTagGroupName, value, nameof(NewTagGroupName));
+            set
+            {
+                SetProperty(ref newTagGroupName, value, nameof(NewTagGroupName));
+                NotifyPropertyChanged(nameof(CanAddTagGroup));
+                NotifyPropertyChanged(nameof(CanEditTagGroup));
+            }
         }
         public TagGroup ClickedTagGroup { get; set; }
+        public bool CanAddTagGroup => DatabaseOperations.IsValidTagGroupName(NewTagGroupName);
+        public bool CanEditTagGroup => DatabaseOperations.IsValidTagGroupName(NewTagGroupName);
         public void AddTagGroup()
         {
             var tagGroup = new TagGroup { Name = NewTagGroupName };
@@ -279,6 +286,9 @@ namespace SpotifySongTagger.ViewModels
         public void DeleteTagGroup()
         {
             if (ClickedTagGroup == null) return;
+            if(ClickedTagGroup.Id == Backend.Constants.DEFAULT_TAGGROUP_ID)
+                MessageQueue.Enqueue("Can't delete default Tag Group");
+
             var tags = ClickedTagGroup.Tags;
             if (DatabaseOperations.DeleteTagGroup(ClickedTagGroup))
             {
@@ -306,6 +316,26 @@ namespace SpotifySongTagger.ViewModels
             }
             if (DatabaseOperations.ChangeTagGroup(tag, tagGroup))
                 DataContainer.Instance.ChangeTagGroup(tag, tagGroup);
+        }
+        public void MoveUp(TagGroup tagGroup)
+        {
+            var idx = DataContainer.Instance.TagGroups.IndexOf(tagGroup);
+            if (idx != -1 && idx != 0)
+            {
+                var prevTagGroup = DataContainer.Instance.TagGroups[idx - 1];
+                if (DatabaseOperations.SwapTagGroupOrder(tagGroup, prevTagGroup))
+                    DataContainer.Instance.SwapTagGroupOrder(tagGroup, prevTagGroup);
+            }
+        }
+        public void MoveDown(TagGroup tagGroup)
+        {
+            var idx = DataContainer.Instance.TagGroups.IndexOf(tagGroup);
+            if (idx != -1 && idx != DataContainer.Instance.TagGroups.Count - 1)
+            {
+                var nextTagGroup = DataContainer.Instance.TagGroups[idx + 1];
+                if (DatabaseOperations.SwapTagGroupOrder(tagGroup, nextTagGroup))
+                    DataContainer.Instance.SwapTagGroupOrder(tagGroup, nextTagGroup);
+            }
         }
         #endregion
 

@@ -35,20 +35,24 @@ namespace Backend
         private ConnectionManager() { }
 
         #region Database
-        public static DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, Action<string> logTo = null)
+        private static DbContextOptionsBuilder<DatabaseContext> GetOptionsBuilder(string dbName, string dbPath, Action<string> logTo)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={dbName}.sqlite");
+            var filePath = $"{dbName}.sqlite";
+            if (dbPath != null)
+                filePath = Path.Combine(dbPath, filePath);
+
+            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>().UseSqlite($"Data Source={filePath}");
             if (logTo != null)
                 optionsBuilder.LogTo(logTo, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.LogTo(Logger.Information, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.EnableSensitiveDataLogging();
             return optionsBuilder;
         }
-        public static void InitDb(string dbName, bool dropDb=false, Action<string> logTo = null)
+        public static void InitDb(string dbName, string dbPath=null, bool dropDb=false, Action<string> logTo = null)
         {
-            OptionsBuilder = GetOptionsBuilder(dbName, logTo);
+            OptionsBuilder = GetOptionsBuilder(dbName, dbPath, logTo);
             // recreate/create/update database if necessary
-            Logger.Information("initializing database");
+            Logger.Information($"initializing database path={dbPath} name={dbName}");
             using var _ = ConnectionManager.NewContext(true, dropDb);
             Logger.Information("initialized database");
         }
@@ -67,6 +71,39 @@ namespace Backend
                 throw;
             }
         }
+
+        public static bool MoveDatabaseFile(string oldFolder, string newFolder)
+        {
+            if(DataContainer.Instance.User == null)
+            {
+                Logger.Information("can't move database file (no user logged in)");
+                return false;
+            }
+
+            var fileName = DataContainer.Instance.DbFileName;
+            try
+            {
+                var src = Path.Combine(oldFolder, fileName);
+                var dst = Path.Combine(newFolder, fileName);
+                File.Move(src, dst, true);
+                Log.Information($"moved database file ({fileName}) from {oldFolder} to {newFolder}");
+                try
+                {
+                    ConnectionManager.InitDb(DataContainer.Instance.User.Id, dbPath: newFolder);
+                }
+                catch(Exception e)
+                {
+                    Log.Information($"failed to initialize database after moving database file: {e.Message}");
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information($"failed to move database file ({fileName}) from {oldFolder} to {newFolder}: {e.Message}");
+                return false;
+            }
+            return true;
+        }
         #endregion
 
 
@@ -74,8 +111,6 @@ namespace Backend
         public ISpotifyClient Spotify { get; private set; }
 
 
-        // option to set spotifyClient from outside (mostly for testing with mocked spotify client)
-        public void InitSpotify(ISpotifyClient spotifyClient) => Instance.Spotify = spotifyClient;
         public async Task<bool> TryInitFromSavedToken()
         {
             var tokenData = GetSavedToken();
@@ -151,6 +186,11 @@ namespace Backend
         {
             var client = CreateSpotifyClient(tokenData);
             if (client == null) return false;
+
+            return await InitSpotify(client);
+        }
+        public async Task<bool> InitSpotify(ISpotifyClient client)
+        {
             try
             {
                 DataContainer.Instance.User = await client.UserProfile.Current();

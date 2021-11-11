@@ -168,6 +168,30 @@ namespace Backend.Tests
             Assert.AreEqual(1, dbTagGroups.First(tg => tg.Id == targetTagGroup.Id).Tags.Count);
         }
         [Test]
+        public void TagGroups_ChangeOrder()
+        {
+            var tagGroups = InsertTagGroups(2);
+
+            Assert.IsFalse(DatabaseOperations.SwapTagGroupOrder(null, tagGroups[1])); // tagGroup is null
+            Assert.IsFalse(DatabaseOperations.SwapTagGroupOrder(tagGroups[0], null)); // tagGroup is null
+            Assert.IsFalse(DatabaseOperations.SwapTagGroupOrder(new TagGroup { Name = "asdf" }, tagGroups[1])); // tagGroup is not in db
+            Assert.IsFalse(DatabaseOperations.SwapTagGroupOrder(tagGroups[0], new TagGroup { Name = "asdf" })); // tagGroup is not in db
+
+            // change [default, 0, 1] to [default, 1, 0]
+            Assert.IsTrue(DatabaseOperations.SwapTagGroupOrder(tagGroups[0], tagGroups[1])); // success
+            var orderedTagGroups = DatabaseOperations.GetTagGroups();
+            Assert.AreEqual(Constants.DEFAULT_TAGGROUP_ID, orderedTagGroups[0].Id);
+            Assert.AreEqual(tagGroups[0].Id, orderedTagGroups[2].Id);
+            Assert.AreEqual(tagGroups[1].Id, orderedTagGroups[1].Id);
+
+            // change [default, 1, 0] to [0, 1, default]
+            Assert.IsTrue(DatabaseOperations.SwapTagGroupOrder(new TagGroup { Id=Constants.DEFAULT_TAGGROUP_ID }, tagGroups[0])); // success
+            orderedTagGroups = DatabaseOperations.GetTagGroups();
+            Assert.AreEqual(Constants.DEFAULT_TAGGROUP_ID, orderedTagGroups[2].Id);
+            Assert.AreEqual(tagGroups[0].Id, orderedTagGroups[0].Id);
+            Assert.AreEqual(tagGroups[1].Id, orderedTagGroups[1].Id);
+        }
+        [Test]
         public void Tags_ChangeTagGroup()
         {
             var tag = InsertTags(1)[0];

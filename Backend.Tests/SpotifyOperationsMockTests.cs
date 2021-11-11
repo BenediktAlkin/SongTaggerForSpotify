@@ -148,5 +148,36 @@ namespace Backend.Tests
             Assert.AreEqual(likedPlaylists.Count, spotifyPlaylists.Count);
             Assert.AreEqual(uniqueTracks, spotifyTracks.Count);
         }
+        [Test]
+        public async Task GetUser_DefaultTestUser()
+        {
+            InitSpotify(null, null, null, null, null, null);
+
+            var user = await SpotifyClient.UserProfile.Current();
+            Assert.IsNotNull(user);
+            Assert.IsNotNull(user.Id);
+            Assert.IsNotNull(user.DisplayName);
+            Assert.IsNotNull(user.Country);
+            Assert.IsNotNull(user.Product);
+        }
+        [Test]
+        [TestCase("SomeId", "SomeDisplayName", "SomeCountry", "SomeProduct")]
+        public async Task GetUser(string id, string displayName, string country, string product)
+        {
+            InitSpotify(null, null, null, null, null, null, new PrivateUser
+            {
+                Id = id,
+                DisplayName = displayName,
+                Country = country,
+                Product = product,
+            });
+
+            var user = await SpotifyClient.UserProfile.Current();
+            Assert.IsNotNull(user);
+            Assert.AreEqual(id, user.Id);
+            Assert.AreEqual(displayName, user.DisplayName);
+            Assert.AreEqual(country, user.Country);
+            Assert.AreEqual(product, user.Product);
+        }
     }
 }
