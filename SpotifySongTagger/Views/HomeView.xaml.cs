@@ -5,6 +5,7 @@ using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,10 +15,10 @@ namespace SpotifySongTagger.Views
     {
         public HomeViewModel ViewModel { get; set; }
 
-        public HomeView()
+        public HomeView(ISnackbarMessageQueue messageQueue)
         {
             InitializeComponent();
-            ViewModel = new HomeViewModel();
+            ViewModel = new HomeViewModel(messageQueue);
             DataContext = ViewModel;
         }
 
@@ -55,38 +56,13 @@ namespace SpotifySongTagger.Views
                 button.IsEnabled = true;
         }
 
-        private async void ImportButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Microsoft.Win32.SaveFileDialog();
-            dialog.FileName = "";
-            dialog.DefaultExt = "";
-            dialog.Filter = $"SpotifySongTagger export (*.json)|*.json";
-            dialog.OverwritePrompt = false;
-
-            var result = dialog.ShowDialog();
-            if (result == true)
-                await DatabaseOperations.ImportTags(dialog.FileName);
-        }
-
-        private async void ExportButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Microsoft.Win32.SaveFileDialog();
-            dialog.FileName = "tags";
-            dialog.DefaultExt = ".json";
-            dialog.Filter = $"SpotifySongTagger export (*.json)|*.json";
-
-            var result = dialog.ShowDialog();
-            if (result == true)
-                await DatabaseOperations.ExportTags(dialog.FileName);
-        }
-
         private void ChangeDataFolderButton_Click(object sender, RoutedEventArgs e)
         {
             // dialog from https://github.com/ookii-dialogs/ookii-dialogs-wpf
             var dialog = new VistaFolderBrowserDialog();
             dialog.SelectedPath = ConnectionManager.Instance.DbPath + '\\';
             if (dialog.ShowDialog().Value)
-                ViewModel.ChangeDatabasePath(dialog.SelectedPath);
+                ViewModel.ChangeDatabasePath(dialog.SelectedPath); 
         }
     }
 }
