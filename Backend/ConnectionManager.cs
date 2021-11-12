@@ -101,68 +101,53 @@ namespace Backend
             }
             return true;
         }
-        public bool ChangeDatabaseFolder(string newFolder)
+        public enum ChangeDatabaseFolderResult { Failed, ChangedPath, CopiedToNewFolder, UseExistingDbInNewFolder }
+        public ChangeDatabaseFolderResult ChangeDatabaseFolder(string newFolder)
         {
+            var oldFolder = DbPath;
+
             // change DbPath and write it to config file (behavior when logged in and when not logged in)
             Logger.Information($"changing database folder from {DbPath} to {newFolder}");
             if (!Directory.Exists(newFolder))
             {
                 Logger.Information("failed to change database folder (directory does not exist)");
-                return false;
+                return ChangeDatabaseFolderResult.Failed;
             }
             if (!SaveDbPath(newFolder))
             {
                 Logger.Information("failed to change database folder (SaveDbPath failed)");
-                return false;
+                return ChangeDatabaseFolderResult.Failed;
             }
             DbPath = GetDbPath();
-            return true;
-        }
-        public bool ChangeDatabaseFolder(string newFolder, bool copyCurrentDb)
-        {
-            var oldFolder = DbPath;
-            var success = ChangeDatabaseFolder(newFolder);
-            if (!success) return false;
+
 
             // finished if not logged in
-            if (DataContainer.Instance.User == null) return true;
+            if (DataContainer.Instance.User == null) return ChangeDatabaseFolderResult.ChangedPath;
 
 
-            // copy current db to new directory when user is logged in
-            if(copyCurrentDb)
+            var fileName = DataContainer.Instance.DbFileName;
+            var src = Path.Combine(oldFolder, fileName);
+            var dst = Path.Combine(newFolder, fileName);
+
+            // if no db file is in target directory --> copy current db
+            ChangeDatabaseFolderResult result; 
+            if (!File.Exists(dst))
             {
-                var fileName = DataContainer.Instance.DbFileName;
-                var src = Path.Combine(oldFolder, fileName);
-                var dst = Path.Combine(newFolder, fileName);
-
-                // handle overwriting (rename existing db to <name>_conflict_<current_millis>.sqlite)
-                if (File.Exists(dst))
-                {
-                    try
-                    {
-                        var newName = $"{DataContainer.Instance.User.Id}_conflict_{DateTime.Now.Ticks}";
-                        File.Move(dst, Path.Combine(newFolder, newName));
-                        Logger.Information($"renamed conflicting database file {fileName} to {newName}");
-                    }
-                    catch(Exception e)
-                    {
-                        Logger.Information($"failed to rename conflicting database file {fileName} in new folder: {e.Message}");
-                        return false;
-                    }
-                }
-
                 // copy to new directory
                 try
                 {
                     File.Copy(src, dst);
                     Logger.Information($"copied database file ({fileName}) from {oldFolder} to {newFolder}");
+                    result = ChangeDatabaseFolderResult.CopiedToNewFolder;
                 }
                 catch (Exception e)
                 {
                     Logger.Information($"failed to copy database file ({fileName}) from {oldFolder} to {newFolder}: {e.Message}");
-                    return false;
+                    return ChangeDatabaseFolderResult.Failed;
                 }
             }
+            else
+                result = ChangeDatabaseFolderResult.UseExistingDbInNewFolder;
 
             // initialize db
             try
@@ -172,9 +157,9 @@ namespace Backend
             catch (Exception e)
             {
                 Logger.Information($"failed to initialize database after moving database file: {e.Message}");
-                return false;
+                return ChangeDatabaseFolderResult.Failed;
             }
-            return true;
+            return result;
         }
 
 

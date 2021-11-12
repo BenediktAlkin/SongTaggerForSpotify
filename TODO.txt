@@ -1,8 +1,3 @@
-update readme
-clear datacontainer when path is changed
-test db path change
-check what errors are thrown when api and sst are open and dbfile is moved
-
 code improvements:
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
 - Dialogs should be templated
@@ -22,7 +17,6 @@ minor bugs:
 - DatabaseOperations inserts with duplicate id throw exception (wrap with try catch)
 
 future
-- change path to db file
 - search function (search for track and tag it)
 - audio features viewer/filter
 - top tracks

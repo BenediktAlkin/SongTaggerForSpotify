@@ -44,10 +44,14 @@ Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are
 ![Combine charts example](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/combine%20charts.png)
 
 ## Backup/Restore/Delete your Tags/PlaylistGenerators
-All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which is located either in "C:\Users\\<WINDOWS_USER>\AppData\Roaming\Song Tagger for Spotify" (if you installed the program) or in the directory of your portable version. 
-* Backup by copying this file somewhere (cloud, external storage, ...)
-* Restore your data by copying this file into the same directory on a new machine
-* Delete all your data by simply deleting this file
+All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which is located by default either in "C:\Users\\<WINDOWS_USER>\AppData\Roaming\Song Tagger for Spotify" (if you installed the program) or in the directory of your portable version.
+
+You can change the path where your database file is located in the app. The database file name is tied to your spotify username and **can't** be changed.
+Changing the path where your database file is located will:
+* copy the current database into the new directory if there does not already exist a file called "<SPOTIFY_USERNAME>.sqlite" in the new directory
+* use the existing database file in the new directory if there already exists a file called "<SPOTIFY_USERNAME>.sqlite" in the new directory. The old database file will remain in the old directory.
+
+Only the database file of the logged in user will be copied (important if you use the app with multiple users).
 
 ## Limitations
 * Playlist folders are not supported by the [Spotify API](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)

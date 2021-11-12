@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <!-- folder path -->
-            <StackPanel  Margin="0 0 0 50" HorizontalAlignment="Center">
+            <StackPanel Margin="0 0 0 50" HorizontalAlignment="Center">
                 <Label Style="{StaticResource MaterialDesignLabel}"
                        Content="Data is stored in folder"
                        HorizontalAlignment="Center"/>
@@ -36,9 +36,9 @@
             <!-- logged in view -->
             <StackPanel Visibility="{Binding Path=DataContainer.User, Converter={StaticResource NullVisibilityConverter}}">
                 <!-- file name -->
-                <StackPanel Margin="8" HorizontalAlignment="Center">
+                <StackPanel Margin="0 0 0 50" HorizontalAlignment="Center">
                     <Label Style="{StaticResource MaterialDesignLabel}"
-                       Content="Data is stored in file"
+                       Content="Data is stored in database file"
                        HorizontalAlignment="Center"/>
                     <Label Style="{StaticResource MaterialDesignLabel}" 
                        Content="{Binding DataContainer.DbFileName}"
@@ -46,20 +46,20 @@
                        HorizontalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- user info -->
-                <StackPanel Margin="8" HorizontalAlignment="Center">
+                <!-- user info & logout button -->
+                <StackPanel HorizontalAlignment="Center">
+                    <!-- user info -->
                     <Label Style="{StaticResource MaterialDesignLabel}" Content="Logged in as" HorizontalContentAlignment="Center"/>
                     <Label Style="{StaticResource MaterialDesignLabel}" Content="{Binding DataContainer.User.DisplayName}" FontWeight="Bold"  HorizontalContentAlignment="Center"/>
+                    <!-- logout button -->
+                    <Button Click="LogoutButton_Click" Width="128" Content="Logout"/>
                 </StackPanel>
-
-                <!-- logout button -->
-                <Button Click="LogoutButton_Click" Margin="8" Width="128" Content="Logout"/>
             </StackPanel>
 
             <!-- not logged in view -->
             <StackPanel Visibility="{Binding DataContainer.User, Converter={StaticResource InvertedNullVisibilityConverter}}">
                 <!-- remember me checkbox -->
-                <StackPanel Margin="8" Orientation="Horizontal">
+                <StackPanel Margin="8" Orientation="Horizontal" HorizontalAlignment="Center">
                     <CheckBox IsChecked="{Binding RememberMe}"/>
                     <TextBlock Margin="5 0 0 0" Text="Remember me" VerticalAlignment="Center"/>
                 </StackPanel>
