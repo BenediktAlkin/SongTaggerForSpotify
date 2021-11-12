@@ -76,14 +76,14 @@
                                  IsIndeterminate="True"
                                  Value="0" />
                             <Label Style="{StaticResource MaterialDesignLabel}"
-                           Content="Waiting for login in opened browser window"/>
+                                Content="Waiting for login in opened browser window"/>
                             <Button 
-                        Style="{StaticResource DialogButton}"
-                        IsCancel="True" 
-                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                        HorizontalAlignment="Center"
-                        Content="CANCEL"
-                        Click="LoginDialog_Cancel"/>
+                                Style="{StaticResource DialogButton}"
+                                IsCancel="True" 
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                HorizontalAlignment="Center"
+                                Content="CANCEL"
+                                Click="LoginDialog_Cancel"/>
                         </StackPanel>
                     </Button.CommandParameter>
                 </Button>
