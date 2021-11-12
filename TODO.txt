@@ -15,6 +15,7 @@ minor bugs:
 - RemoveNode had strange case where output result of input nodes was null that could not be reproduced
 - RemoveNode had strange case where upon deleting input the input node would still be displayed as input (not sure if it was stored in db also)
 - DatabaseOperations inserts with duplicate id throw exception (wrap with try catch)
+- if databasefolder is changed while SST is running, it crashes
 
 future
 - search function (search for track and tag it)
