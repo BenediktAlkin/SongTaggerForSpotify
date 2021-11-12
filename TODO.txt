@@ -22,4 +22,3 @@ future
 - audio features viewer/filter
 - top tracks
 - settings for treeview expansions
-- import/export (current version has some bugs: sometimes it crashes the app; calling db.SaveChanges() after export deleted all artist/tag associations)
