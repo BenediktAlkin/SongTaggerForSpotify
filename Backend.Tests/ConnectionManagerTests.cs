@@ -13,9 +13,38 @@ namespace Backend.Tests
     public class ConnectionManagerTests : BaseTests
     {
         [Test]
-        public void MoveDatabaseFile()
+        public void ChangeDatabaseFolder_NotLoggedIn()
         {
+            const string DST_FOLDER_NAME = "MoveDatabaseToNotLoggedIn";
+            var dstFolderPath = Path.Combine(Directory.GetCurrentDirectory(), DST_FOLDER_NAME);
+            // change folder back to base path
+            ConnectionManager.Instance.ChangeDatabaseFolder(Directory.GetCurrentDirectory());
+            // remove previous run files
+            if (Directory.Exists(DST_FOLDER_NAME))
+                Directory.Delete(DST_FOLDER_NAME, true);
+
+            // dst folder does not exist
+            Assert.IsFalse(ConnectionManager.Instance.ChangeDatabaseFolder(dstFolderPath));
+
+            Directory.CreateDirectory(DST_FOLDER_NAME);
+            Assert.IsTrue(ConnectionManager.Instance.ChangeDatabaseFolder(dstFolderPath, true));
+            Assert.AreEqual(dstFolderPath, File.ReadAllText(ConnectionManager.DB_FOLDER_FILE));
+            Assert.AreEqual(dstFolderPath, ConnectionManager.Instance.DbPath);
+        }
+
+        [Test]
+        public void ChangeDatabaseFolder_NoOverwriting()
+        {
+            const string DST_FOLDER_NAME = "MoveDatabaseTo";
             const string USER_ID = "MoveDatabaseTestUserId";
+
+            // change folder back to base path
+            ConnectionManager.Instance.ChangeDatabaseFolder(Directory.GetCurrentDirectory());
+            // remove previous run files
+            if (Directory.Exists(DST_FOLDER_NAME))
+                Directory.Delete(DST_FOLDER_NAME, true);
+            File.Delete($"{USER_ID}.sqlite");
+
             InitSpotify(user: new PrivateUser { Id = USER_ID });
             
             // check if dbfile exists
@@ -24,17 +53,58 @@ namespace Backend.Tests
             DatabaseOperations.AddTag(new Entities.Tag { Name = "TestTag" });
             Assert.AreEqual(1, DatabaseOperations.GetTagsWithGroups().Count);
 
-            // move file
-            const string DST_FOLDER_NAME = "MoveDatabaseTo";
+            // change directory
             Directory.CreateDirectory(DST_FOLDER_NAME);
             var dstFolderPath = Path.Combine(Directory.GetCurrentDirectory(), DST_FOLDER_NAME);
-            ConnectionManager.Instance.ChangeDatabaseFolder(dstFolderPath);
+            ConnectionManager.Instance.ChangeDatabaseFolder(dstFolderPath, true);
 
-            // check if dbfile was moved
-            Assert.IsFalse(File.Exists(DataContainer.Instance.DbFileName));
+            // check if dbfile was copied
+            Assert.IsTrue(File.Exists(DataContainer.Instance.DbFileName));
             Assert.IsTrue(File.Exists(Path.Combine(dstFolderPath, DataContainer.Instance.DbFileName)));
             // check if data is preserved
             Assert.AreEqual(1, DatabaseOperations.GetTagsWithGroups().Count);
+            // in new directory there should be 1 file
+            Assert.AreEqual(1, Directory.GetFiles(DST_FOLDER_NAME).Length);
+        }
+
+        [Test]
+        public void ChangeDatabaseFolder_WithOverwriting()
+        {
+            const string DST_FOLDER_NAME = "MoveDatabaseToOverwriting";
+            const string USER_ID = "MoveDatabaseOverwriteTestUserId";
+
+            // change folder back to base path
+            ConnectionManager.Instance.ChangeDatabaseFolder(Directory.GetCurrentDirectory());
+            // remove previous run files
+            if (Directory.Exists(DST_FOLDER_NAME))
+                Directory.Delete(DST_FOLDER_NAME, true);
+            File.Delete($"{USER_ID}.sqlite");
+
+            InitSpotify(user: new PrivateUser { Id = USER_ID });
+
+            // check if dbfile exists
+            Assert.IsTrue(File.Exists(DataContainer.Instance.DbFileName));
+            // insert some data
+            DatabaseOperations.AddTag(new Entities.Tag { Name = "TestTag" });
+            Assert.AreEqual(1, DatabaseOperations.GetTagsWithGroups().Count);
+            // copy it to output directory
+            Directory.CreateDirectory(DST_FOLDER_NAME);
+            File.Copy(DataContainer.Instance.DbFileName, Path.Combine(DST_FOLDER_NAME, DataContainer.Instance.DbFileName));
+
+            // add some more data
+            DatabaseOperations.AddTag(new Entities.Tag { Name = "TestTag2" });
+
+            // change directory
+            var dstFolderPath = Path.Combine(Directory.GetCurrentDirectory(), DST_FOLDER_NAME);
+            ConnectionManager.Instance.ChangeDatabaseFolder(dstFolderPath, true);
+
+            // check if dbfile was copied
+            Assert.IsTrue(File.Exists(DataContainer.Instance.DbFileName));
+            Assert.IsTrue(File.Exists(Path.Combine(dstFolderPath, DataContainer.Instance.DbFileName)));
+            // check if data is preserved
+            Assert.AreEqual(2, DatabaseOperations.GetTagsWithGroups().Count);
+            // in new directory there should be 2 file (the db file + the conflicting db file)
+            Assert.AreEqual(2, Directory.GetFiles(DST_FOLDER_NAME).Length);
         }
     }
 }

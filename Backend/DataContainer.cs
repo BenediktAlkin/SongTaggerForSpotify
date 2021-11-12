@@ -16,6 +16,10 @@ namespace Backend
         public void Clear()
         {
             User = null;
+            ClearData();
+        }
+        public void ClearData()
+        {
             TagGroups = null;
             MetaPlaylists = null;
             LikedPlaylists = null;

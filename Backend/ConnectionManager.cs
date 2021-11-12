@@ -23,7 +23,7 @@ namespace Backend
         private const string API_TOKEN_FILE = "token_api.txt";
         private const int API_PORT = 63847;
 
-        private const string DB_FOLDER_FILE = "db_folder.txt";
+        public const string DB_FOLDER_FILE = "db_folder.txt";
 
 
         public bool IsApi { get; set; }
@@ -32,16 +32,7 @@ namespace Backend
         private string SERVER_URL => string.Format(SERVER_URL_TEMPLATE, API_PORT);
         private string CALLBACK_URL => string.Format(CALLBACK_URL_TEMPLATE, SERVER_URL);
 
-        private static ILogger logger;
-        protected static ILogger Logger
-        {
-            get
-            {
-                if (logger == null)
-                    logger = Log.ForContext("SourceContext", "CM");
-                return logger;
-            }
-        }
+        protected static ILogger Logger { get; } = Log.ForContext("SourceContext", "CM");
         public static ConnectionManager Instance { get; } = new();
         private ConnectionManager()
         {
@@ -180,7 +171,7 @@ namespace Backend
             }
             catch (Exception e)
             {
-                Log.Information($"failed to initialize database after moving database file: {e.Message}");
+                Logger.Information($"failed to initialize database after moving database file: {e.Message}");
                 return false;
             }
             return true;
@@ -194,7 +185,7 @@ namespace Backend
                 Logger.Information("failed to initialize db (no user is logged in)");
                 return;
             }
-            DataContainer.Instance.Clear();
+            DataContainer.Instance.ClearData();
             // set default dbName (only tests use a different dbName)
             if (dbName == null)
                 dbName = DataContainer.Instance.User.Id;
@@ -334,7 +325,7 @@ namespace Backend
         private HttpListener Server { get; set; }
         public void Logout()
         {
-            Log.Information("logging out");
+            Logger.Information("logging out");
             if (File.Exists(TOKEN_FILE))
             {
                 try
@@ -349,7 +340,7 @@ namespace Backend
 
             DataContainer.Instance.Clear();
             Instance.Spotify = null;
-            Log.Information("logged out");
+            Logger.Information("logged out");
         }
         public void CancelLogin()
         {

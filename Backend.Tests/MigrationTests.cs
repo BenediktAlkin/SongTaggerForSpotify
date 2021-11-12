@@ -31,14 +31,15 @@ namespace Backend.Tests
         [TestCase("TagGroups")]
         public void UpdatesToLatestVersion(string dbName)
         {
-            ConnectionManager.InitDb(dbName, dbPath: "res");
+            ConnectionManager.Instance.ChangeDatabaseFolder("res");
+            ConnectionManager.Instance.InitDb(dbName);
             AssertDbIsValid();
         }
 
         [Test]
         public void CreateNewDb()
         {
-            ConnectionManager.InitDb($"MigrationNewDb");
+            ConnectionManager.Instance.InitDb($"MigrationNewDb");
             AssertDbIsValid();
         }
     }

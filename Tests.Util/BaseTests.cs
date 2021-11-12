@@ -38,7 +38,7 @@ namespace Tests.Util
             if (REQUIRES_DB)
             {
                 Action<string> logTo = LOG_DB_QUERIES ? DatabaseQueryLogger.Instance.Information : null;
-                ConnectionManager.InitDb(TEST_USER_ID, dropDb:true, logTo: logTo);
+                ConnectionManager.Instance.InitDb(TEST_USER_ID, dropDb:true, logTo: logTo);
             }
 
             idCounter = 1;
@@ -62,7 +62,6 @@ namespace Tests.Util
                 user = new PrivateUser { Id = TEST_USER_ID, DisplayName = "TestUserName", Country = "TestUserCountry", Product = "TestUserProduct" };
             var client = new SpotifyClientMock().SetUp(tracks, likedTracks, playlists, likedPlaylists, playlistTracks, albums, user);
             ConnectionManager.Instance.InitSpotify(client).Wait();
-            ConnectionManager.InitDb();
         }
 
 

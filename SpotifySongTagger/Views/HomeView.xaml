@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <!-- folder path -->
-            <StackPanel Margin="8" HorizontalAlignment="Center">
+            <StackPanel  Margin="0 0 0 50" HorizontalAlignment="Center">
                 <Label Style="{StaticResource MaterialDesignLabel}"
                        Content="Data is stored in folder"
                        HorizontalAlignment="Center"/>

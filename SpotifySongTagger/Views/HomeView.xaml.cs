@@ -82,9 +82,9 @@ namespace SpotifySongTagger.Views
 
         private void ChangeDataFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            // dialog from Microsoft.WindowsAPICodePack-Shell
+            // dialog from https://github.com/ookii-dialogs/ookii-dialogs-wpf
             var dialog = new VistaFolderBrowserDialog();
-            dialog.SelectedPath = ConnectionManager.Instance.DbPath;
+            dialog.SelectedPath = ConnectionManager.Instance.DbPath + '\\';
             if (dialog.ShowDialog().Value)
                 ViewModel.ChangeDatabasePath(dialog.SelectedPath);
         }

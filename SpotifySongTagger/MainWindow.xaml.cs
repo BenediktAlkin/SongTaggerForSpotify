@@ -31,12 +31,6 @@ namespace SpotifySongTagger
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var logConfig = new LoggerConfiguration()
-                .WriteTo.File(formatter: new LogFormatter("UI"), @"log_frontend.log");
-#if DEBUG
-            logConfig = logConfig.WriteTo.Trace(formatter: new LogFormatter("UI"));
-#endif
-            Log.Logger = logConfig.CreateLogger();
             SetTheme(Settings.Instance.IsDarkTheme);
 
             if (!ViewModel.CheckedForUpdates)
@@ -73,11 +67,6 @@ namespace SpotifySongTagger
             ViewModel.IsLoggingIn = true;
             await ConnectionManager.Instance.TryInitFromSavedToken();
             ViewModel.IsLoggingIn = false;
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Log.CloseAndFlush();
         }
 
         private void UIElement_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

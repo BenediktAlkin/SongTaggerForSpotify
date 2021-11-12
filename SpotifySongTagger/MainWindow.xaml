@@ -21,7 +21,6 @@
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Style="{StaticResource MaterialDesignWindow}"
         Loaded="Window_Loaded"
-        Closed="Window_Closed"
         Name="MainWindowWindow">
 
     <Window.Resources>
