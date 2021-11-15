@@ -15,7 +15,7 @@ namespace Backend
         private static ISpotifyClient Spotify => ConnectionManager.Instance.Spotify;
 
         private static Func<object, bool> TrackIsValid { get; } = t => t is FullTrack ft && !ft.IsLocal && ft.IsPlayable;
-        private static Track ToTrack(FullTrack track)
+        public static Track ToTrack(FullTrack track)
         {
             return new Track
             {

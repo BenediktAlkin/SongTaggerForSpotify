@@ -88,6 +88,12 @@ namespace Backend
             get => trackName;
             set => SetProperty(ref trackName, value, nameof(TrackName));
         }
+        private FullTrack track;
+        public FullTrack Track
+        {
+            get => track;
+            set => SetProperty(ref track, value, nameof(Track));
+        }
         private string artistsString;
         public string ArtistsString
         {
@@ -176,6 +182,7 @@ namespace Backend
                 bestImg = track.Album.Images.First();
             AlbumUrl = bestImg.Url;
             HasAlbumUrl = true;
+            Track = track;
             TrackId = track.Id;
             TrackName = track.Name;
             ArtistsString = string.Join(", ", track.Artists.Select(a => a.Name));

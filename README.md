@@ -63,7 +63,6 @@ Only the database file of the logged in user will be copied (important if you us
 * Only Spotify Premium users can play songs from the song tagger application (the currently playing song is still displayed for non-premium users)
 * [local files](https://support.spotify.com/us/article/local-files/) are not supported by the [Spotify API](https://developer.spotify.com/documentation/general/guides/local-files-spotify-playlists/#limitations)
 * [unavailable songs](https://community.spotify.com/t5/iOS-iPhone-iPad/Song-unavailable/td-p/4816227#:~:text=The%20greyed%20out%20tracks%20just,to%20the%20individual%20music%20companies.) are currently not supported
-* Seeking to a position in the currently playing song seems to be currently [broken](https://community.spotify.com/t5/Spotify-for-Developers/API-Seek-to-Position-Bug-Broken/td-p/5288708) in the Spotify API
 
 ## API
 A HTTP API is available and documented [here](https://github.com/BenediktAlkin/SongTaggerForSpotify/blob/main/BackendAPI/documentation.md).

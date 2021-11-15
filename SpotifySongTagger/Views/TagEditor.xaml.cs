@@ -61,6 +61,14 @@ namespace SpotifySongTagger.Views
             //Log.Information($"Assigned {tag} to {trackVM.Track.Name}");
             e.Handled = true;
         }
+
+        private void SongInfo_Drop(object sender, DragEventArgs e)
+        {
+            // assign tag to currently playing track
+            var tag = e.Data.GetData(DataFormats.StringFormat) as string;
+            ViewModel.AssignTagToCurrentlyPlayingTrack(tag);
+            e.Handled = true;
+        }
         #endregion
 
         private void AssignedTag_DeleteClick(object sender, RoutedEventArgs e)

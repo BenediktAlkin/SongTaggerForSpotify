@@ -651,6 +651,8 @@
             
             <!-- Song info -->
             <Grid 
+                AllowDrop="True"
+                Drop="SongInfo_Drop"
                 Visibility="{Binding Settings.HidePlayer, Converter={StaticResource InverseBoolToVisConverter}}"
                 Grid.Row="1" Grid.Column="0" 
                 Background="{DynamicResource MaterialDesignCardBackground}" 

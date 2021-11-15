@@ -165,6 +165,21 @@ namespace SpotifySongTagger.ViewModels
             if (DatabaseOperations.AssignTag(track, tag))
                 track.Tags.Add(tag);
         }
+        public void AssignTagToCurrentlyPlayingTrack(string tagName)
+        {
+            var trackId = PlayerManager.TrackId;
+            // search for trackVM if the currently playing track is in the currently selected playlist
+            var trackVM = TrackVMs == null ? null : TrackVMs.Where(tvm => tvm.Track.Id == trackId).FirstOrDefault();
+            Track track;
+            if (trackVM != null)
+                track = trackVM.Track;
+            else
+                // track is not in currently selected playlist --> tag does not need to be added in UI
+                track = SpotifyOperations.ToTrack(PlayerManager.Track);
+            // add track to db if it is not already in db
+            DatabaseOperations.AddTrack(track);
+            AssignTag(track, tagName);
+        }
         public void RemoveAssignment(Tag tag)
         {
             if (DatabaseOperations.DeleteAssignment(SelectedTrackVM.Track, tag))

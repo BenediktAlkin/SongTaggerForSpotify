@@ -18,6 +18,24 @@
                         <Property Name="DisplayName" Value="MoveDatabaseFile" />
                       </Rule>
                     </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.ConnectionManagerTests.ChangeDatabaseFolder_CopiedToNewFolder" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="ChangeDatabaseFolder_CopiedToNewFolder" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.ConnectionManagerTests.ChangeDatabaseFolder_NotLoggedIn" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="ChangeDatabaseFolder_NotLoggedIn" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Backend.Tests.ConnectionManagerTests.ChangeDatabaseFolder_WithOverwriting" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="ChangeDatabaseFolder_WithOverwriting" />
+                      </Rule>
+                    </Rule>
                   </Rule>
                 </Rule>
                 <Rule Match="All">
