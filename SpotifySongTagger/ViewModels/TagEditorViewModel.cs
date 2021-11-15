@@ -167,6 +167,7 @@ namespace SpotifySongTagger.ViewModels
         }
         public void AssignTagToCurrentlyPlayingTrack(string tagName)
         {
+            if (PlayerManager.Track == null) return;
             var trackId = PlayerManager.TrackId;
             // search for trackVM if the currently playing track is in the currently selected playlist
             var trackVM = TrackVMs == null ? null : TrackVMs.Where(tvm => tvm.Track.Id == trackId).FirstOrDefault();
