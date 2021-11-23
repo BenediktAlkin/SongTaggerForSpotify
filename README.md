@@ -67,6 +67,9 @@ Only the database file of the logged in user will be copied (important if you us
 ## API
 A HTTP API is available and documented [here](https://github.com/BenediktAlkin/SongTaggerForSpotify/blob/main/BackendAPI/documentation.md).
 
+## Tagging in Spotify Desktop
+It is also possible to tag stuff straight from the Spotify context menu. 
+Check [Tagify](https://github.com/vokinpirks/Tagify) out.
 
 ## Donate
 Song Tagger for Spotify is free and open source! 
