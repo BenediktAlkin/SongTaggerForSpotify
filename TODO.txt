@@ -19,7 +19,8 @@ minor bugs:
 - if databasefolder is changed while SST is running, it crashes
 
 future
-- search function (search for track and tag it)
-- audio features viewer/filter
-- top tracks
 - settings for treeview expansions
+- search function (search for track and tag it)
+- playlists suggested by spotify as extra PlaylistGroup (daily mixes, radios, recently played playlists)
+- display counter for playlists/playlist categories in TagEditor
+- audio features viewer/filter
