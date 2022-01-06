@@ -19,6 +19,7 @@ minor bugs:
 - if databasefolder is changed while SST is running, it crashes
 
 future
+- support easy multiple accounts staying logged in
 - settings for treeview expansions
 - search function (search for track and tag it)
 - playlists suggested by spotify as extra PlaylistGroup (daily mixes, radios, recently played playlists)
