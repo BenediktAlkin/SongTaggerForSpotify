@@ -107,7 +107,7 @@ jobs:
         run: dotnet publish ${{ env.api_name }} --configuration ${{ env.build_config }} -o "${{ env.application_name }}/${{ matrix.name }}" -r ${{ matrix.RID }} --no-self-contained
       # zip {application_name}/{matrix.name} into a zip file where the root folder has name {application_name}
       - name: zip portable build
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: "${{ env.application_name }}/${{ matrix.name }}"
           dest: "Releases/${{ env.application_name }}-${{ matrix.name }}.zip"
