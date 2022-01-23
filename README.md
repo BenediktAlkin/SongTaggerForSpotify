@@ -4,11 +4,13 @@
 
 ## Setup instructions
 Download either the installer (SongTaggerForSpotify-Installer.msi) or the portable version (SongTaggerForSpotify-Portable.zip) from [latest release](https://github.com/BenediktAlkin/SongTaggerForSpotify/releases). 
-* Installer: allow unknown publisher --> click through the setup program --> run "Song Tagger for Spotify" from your desktop or start menu
+* Installer: run the installer --> allow unknown publisher --> click through the setup program --> run "Song Tagger for Spotify" from your desktop or start menu
 * Portable: extract the zip folder --> run SpotifySongTagger.exe
 
 If you don't have a .NET 5 runtime installed you will be asked to install it. You can download it [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) (under "Run desktop apps" select "Download x64").
 
+## Mac/Linux support
+Currently Mac/Linux are not supported, the app only runs on Windows.
 
 ## What is song tagging?
 Attaching a tag to a song allows you more flexibility when managing songs you like. A tag can be anything you'd like it to be: music genres, language of the lyrics, the event/movie where you discovered a song or how much you like a song. 
