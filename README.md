@@ -55,6 +55,8 @@ Changing the path where your database file is located will:
 
 Only the database file of the logged in user will be copied (important if you use the app with multiple users).
 
+You can easily use Song Tagger for Spotify on multiple devices by setting up some filesharing service (OneDrive, Google Drive, Dropbox, ...) and changing the database path to some synchronized folder.
+
 ## Limitations
 * Playlist folders are not supported by the [Spotify API](https://developer.spotify.com/documentation/general/guides/working-with-playlists/#folders)
   * Liked playlists can only be viewed unorganized. They can still be tagged normally but do not appear in any folder structure (e.g. if you have a folder called "Discover" with the playlist "Discover Weekly" it will be shown only as "Discover Weekly" instead of "Discover/Discover Weekly")
