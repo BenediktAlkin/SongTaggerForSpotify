@@ -7,7 +7,7 @@ using Util;
 
 namespace Backend.Entities
 {
-    public class TagGroup : NotifyPropertyChangedBase
+    public class TagGroup : NotifyPropertyChangedBase, IEquatable<TagGroup>
     {
         public int Id { get; set; }
 
@@ -23,5 +23,9 @@ namespace Backend.Entities
         public IList<Tag> Tags { get; set; } = new ObservableCollection<Tag>();
 
         public override string ToString() => Name;
+
+        public override bool Equals(object obj) => obj is TagGroup other ? Equals(other) : false;
+        public bool Equals(TagGroup other) => Id == other.Id;
+        public override int GetHashCode() => Id.GetHashCode();
     }
 }

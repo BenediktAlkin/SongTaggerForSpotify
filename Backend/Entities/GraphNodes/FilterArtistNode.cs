@@ -42,6 +42,7 @@ namespace Backend.Entities.GraphNodes
                 ValidArtists = null;
             else
                 ValidArtists = InputResult[0].SelectMany(track => track.Artists).Distinct().OrderBy(tag => tag.Name).ToList();
+            Logger.Information($"OnInputResultChanged for {this} (ValidArtistsCount={ValidArtists?.Count})");
         }
 
         protected override bool CanAddInput(GraphNode input) => !Inputs.Any();
