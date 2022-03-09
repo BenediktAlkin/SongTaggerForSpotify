@@ -186,7 +186,7 @@
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.2"
+        "ProductVersion" = "8:1.1.3"
         "Manufacturer" = "8:Benedikt Alkin"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
