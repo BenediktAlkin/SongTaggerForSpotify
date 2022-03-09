@@ -165,7 +165,7 @@ jobs:
       - name: Publish setup
         shell: cmd
         run: |
-          msbuild ${{ env.main_project_name }}_minimal.sln Setup/Setup.vdproj /Build ${{ env.build_config }}
+          msbuild ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
       
       # get release.upload_url
       - name: get release.upload_url
