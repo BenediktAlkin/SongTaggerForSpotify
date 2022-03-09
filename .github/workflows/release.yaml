@@ -11,6 +11,8 @@ env:
   updater_name: Updater
   api_name: BackendAPI
   build_config: Release
+  # if this is devenv.exe instead it will not terminate
+  # on windows-2022 this has another path and also doesn't terminate
   MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
 
 jobs:
@@ -133,7 +135,7 @@ jobs:
 
   create_release_installer:
     needs: update_version_in_source
-    runs-on: windows-latest
+    runs-on: windows-2019
     
     steps:
       - name: checkout
@@ -159,7 +161,7 @@ jobs:
           dotnet-version: 5.0.x
 
       # publish setup project to Setup/{build_config}
-      - name: Publish setup
+      - name: publish setup
         shell: cmd
         run: |
           "%MSBUILD_PATH%" ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
