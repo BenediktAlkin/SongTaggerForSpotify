@@ -11,7 +11,6 @@ env:
   updater_name: Updater
   api_name: BackendAPI
   build_config: Release
-  MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
 
 jobs:
   update_version_in_source:
@@ -158,11 +157,15 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
+      # add msbuild to PATH
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
       # publish setup project to Setup/{build_config}
       - name: Publish setup
         shell: cmd
         run: |
-          "%MSBUILD_PATH%" ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+          msbuild ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
       
       # get release.upload_url
       - name: get release.upload_url
