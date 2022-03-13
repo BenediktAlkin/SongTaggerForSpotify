@@ -26,3 +26,4 @@ future
 - playlists suggested by spotify as extra PlaylistGroup (daily mixes, radios, recently played playlists)
 - display counter for playlists/playlist categories in TagEditor
 - audio features viewer/filter
+- collapse tag groups
