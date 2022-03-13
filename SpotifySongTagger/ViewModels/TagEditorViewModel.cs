@@ -39,7 +39,7 @@ namespace SpotifySongTagger.ViewModels
             var updatePlaybackInfoTask = BaseViewModel.PlayerManager.UpdatePlaybackInfo();
 
             // update treeview on playlists refresh (e.g. when sync library updates sourceplaylists)
-            BaseViewModel.DataContainer.OnPlaylistsUpdated += () => NotifyPropertyChanged(nameof(PlaylistCategories));
+            BaseViewModel.DataContainer.OnPlaylistsUpdated += NotifyPlaylistTreeNodesChanged;
 
             // load playlists
             var sourcePlaylistsTask = BaseViewModel.DataContainer.LoadSourcePlaylists();
@@ -57,7 +57,9 @@ namespace SpotifySongTagger.ViewModels
             BaseViewModel.PlayerManager.OnVolumeChanged -= SetVolumeSpotify;
             BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
             BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
+            BaseViewModel.DataContainer.OnPlaylistsUpdated -= NotifyPlaylistTreeNodesChanged;
         }
+        private void NotifyPlaylistTreeNodesChanged() => NotifyPropertyChanged(nameof(PlaylistTreeNodes));
         #endregion
 
         #region track
@@ -80,22 +82,29 @@ namespace SpotifySongTagger.ViewModels
             get => trackVMs;
             set => SetProperty(ref trackVMs, value, nameof(TrackVMs));
         }
-        public async Task LoadTracks(Playlist playlist)
+        public async Task LoadTracks(PlaylistOrTag playlistOrTag)
         {
-            Log.Information($"loading tracks from playlist {playlist?.Name}");
+            Log.Information($"loading tracks from {playlistOrTag}");
             IsLoadingTracks = true;
             TrackVMs = null;
             List<Track> tracks;
-            if (DataContainer.GeneratedPlaylists.Contains(playlist))
-                tracks = await Task.Run(async () => await DatabaseOperations.GeneratedPlaylistTracks(playlist.Id));
-            else if (Backend.Constants.META_PLAYLIST_IDS.Contains(playlist.Id))
-                tracks = await Task.Run(() => DatabaseOperations.MetaPlaylistTracks(playlist.Id));
+            if (playlistOrTag.Playlist != null)
+            {
+                var playlist = playlistOrTag.Playlist;
+                if (DataContainer.GeneratedPlaylists.Contains(playlist))
+                    tracks = await Task.Run(async () => await DatabaseOperations.GeneratedPlaylistTracks(playlist.Id));
+                else if (Backend.Constants.META_PLAYLIST_IDS.Contains(playlist.Id))
+                    tracks = await Task.Run(() => DatabaseOperations.MetaPlaylistTracks(playlist.Id));
+                else
+                    tracks = await Task.Run(() => DatabaseOperations.PlaylistTracks(playlist.Id));
+            }
             else
-                tracks = await Task.Run(() => DatabaseOperations.PlaylistTracks(playlist.Id));
+                tracks = await Task.Run(() => DatabaseOperations.TagPlaylistTracks(playlistOrTag.Tag.Id));
+            
 
             var newTrackVMs = tracks.Select(t => new TrackViewModel(t)).ToList();
             // check if the playlist is still selected
-            if (SelectedPlaylist.Id == playlist.Id)
+            if (SelectedPlaylistOrTag == playlistOrTag)
             {
                 await LoadTagsTask;
                 // tags of tracks dont have the same reference to tag as they come from a different db context
@@ -118,7 +127,7 @@ namespace SpotifySongTagger.ViewModels
 
                 TrackVMs = newTrackVMs;
                 IsLoadingTracks = false;
-                Log.Information($"loaded {TrackVMs.Count} tracks from playlist {playlist?.Name}");
+                Log.Information($"loaded {TrackVMs.Count} tracks from {playlistOrTag}");
             }
         }
         private void UpdatePlayingTrack(string newId)
@@ -132,17 +141,18 @@ namespace SpotifySongTagger.ViewModels
 
         #region playlist selection
         // for some reason this does not work when it is static
-        public List<PlaylistCategory> PlaylistCategories => new()
+        public List<PlaylistTreeNode> PlaylistTreeNodes => new()
         {
-            new PlaylistCategory("Meta Playlists", true, DataContainer.MetaPlaylists),
-            new PlaylistCategory("Liked Playlists", false, DataContainer.LikedPlaylists),
-            new PlaylistCategory("Generated Playlists", false, DataContainer.GeneratedPlaylists),
+            new PlaylistTreeNode("Meta Playlists", true, DataContainer.MetaPlaylists),
+            new PlaylistTreeNode("Liked Playlists", false, DataContainer.LikedPlaylists),
+            new PlaylistTreeNode("Generated Playlists", false, DataContainer.GeneratedPlaylists),
+            new PlaylistTreeNode("Tag Playlists", false, DataContainer.TagGroups),
         };
-        private Playlist selectedPlaylist;
-        public Playlist SelectedPlaylist
+        private PlaylistOrTag selectedPlaylistOrTag;
+        public PlaylistOrTag SelectedPlaylistOrTag
         {
-            get => selectedPlaylist;
-            set => SetProperty(ref selectedPlaylist, value, nameof(SelectedPlaylist));
+            get => selectedPlaylistOrTag;
+            set => SetProperty(ref selectedPlaylistOrTag, value, nameof(SelectedPlaylistOrTag));
         }
         private bool loadedPlaylists;
         public bool LoadedPlaylists
@@ -423,5 +433,23 @@ namespace SpotifySongTagger.ViewModels
             MessageQueue.Enqueue(msg);
         }
     }
-    public record PlaylistCategory(string Name, bool IsExpanded, IEnumerable<Playlist> Playlists);
+    public record PlaylistTreeNode(string Name, bool IsExpanded, IEnumerable<object> Children);
+    public class PlaylistOrTag : IEquatable<PlaylistOrTag>
+    {
+        public Playlist Playlist { get; }
+        public Tag Tag { get; }
+        public PlaylistOrTag(Playlist playlist) => Playlist = playlist;
+        public PlaylistOrTag(Tag tag) => Tag = tag;
+
+        public override string ToString()
+        {
+            if (Playlist != null)
+                return $"Playlist {Playlist}";
+            return $"Tag {Tag}";
+        }
+
+        public override bool Equals(object obj) => obj is PlaylistOrTag other ? Equals(other) : false;
+        public bool Equals(PlaylistOrTag other) => Playlist == other.Playlist && Tag == other.Tag;
+        public override int GetHashCode() => Playlist != null ? Playlist.GetHashCode() : Tag.GetHashCode();
+    }
 }

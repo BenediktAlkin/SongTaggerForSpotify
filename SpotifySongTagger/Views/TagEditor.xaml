@@ -43,22 +43,28 @@
             <!-- playlists -->
             <TreeView 
                 Grid.Row="0" 
-                ItemsSource="{Binding PlaylistCategories}"
+                ItemsSource="{Binding PlaylistTreeNodes}"
                 SelectedItemChanged="Playlists_SelectionChanged" 
                 Visibility="{Binding LoadedPlaylists, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TreeView.Resources>
                     <Style TargetType="TreeViewItem" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
                         <Style.Triggers>
-                            <!-- expand PlaylistCategories -->
-                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistCategory">
+                            <!-- expand PlaylistTreeNode -->
+                            <DataTrigger Binding="{Binding Converter={StaticResource ObjectToTypeNameConverter}}" Value="PlaylistTreeNode">
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                    <HierarchicalDataTemplate DataType="{x:Type viewmodels:PlaylistCategory}" ItemsSource="{Binding Playlists}">
+                    <HierarchicalDataTemplate DataType="{x:Type viewmodels:PlaylistTreeNode}" ItemsSource="{Binding Children}">
+                        <TextBlock Text="{Binding Name}" Margin="3,2" />
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type backend:TagGroup}" ItemsSource="{Binding Tags}">
                         <TextBlock Text="{Binding Name}" Margin="3,2" />
                     </HierarchicalDataTemplate>
                     <DataTemplate DataType="{x:Type backend:Playlist}">
+                        <TextBlock Text="{Binding Name}" Margin="3 2" />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type backend:Tag}">
                         <TextBlock Text="{Binding Name}" Margin="3 2" />
                     </DataTemplate>
                 </TreeView.Resources>
@@ -76,7 +82,7 @@
             <StackPanel 
                 Grid.Column="1" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Visibility="{Binding SelectedPlaylist, Converter={StaticResource InverseNullableToVisibilityConverter}}">
+                Visibility="{Binding SelectedPlaylistOrTag, Converter={StaticResource InverseNullableToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="1. Sync your Spotify library with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                     <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
@@ -95,7 +101,7 @@
                 Grid.Column="1"
                 ItemsSource="{Binding TrackVMs}" 
                 SelectedItem="{Binding SelectedTrackVM}"
-                Visibility="{Binding SelectedPlaylist, Converter={StaticResource NullableToVisibilityConverter}}"
+                Visibility="{Binding SelectedPlaylistOrTag, Converter={StaticResource NullableToVisibilityConverter}}"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 HeadersVisibility="All"
                 AllowDrop="True"

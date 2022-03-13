@@ -83,17 +83,22 @@ namespace SpotifySongTagger.Views
         {
             // clear tracks
             var treeView = sender as TreeView;
-            var playlist = treeView.SelectedItem as Playlist;
-            if (treeView.SelectedItem == null || playlist == null)
+            PlaylistOrTag playlistOrTag = null;
+            if (treeView.SelectedItem is Playlist playlist)
+                playlistOrTag = new PlaylistOrTag(playlist);
+            else if (treeView.SelectedItem is Tag tag)
+                playlistOrTag = new PlaylistOrTag(tag);
+            
+            if (treeView.SelectedItem == null || playlistOrTag == null)
             {
-                ViewModel.SelectedPlaylist = null;
+                ViewModel.SelectedPlaylistOrTag = null;
                 ViewModel.TrackVMs = null;
                 return;
             }
 
             // load new tracks
-            ViewModel.SelectedPlaylist = playlist;
-            await ViewModel.LoadTracks(playlist);
+            ViewModel.SelectedPlaylistOrTag = playlistOrTag;
+            await ViewModel.LoadTracks(playlistOrTag);
         }
 
 

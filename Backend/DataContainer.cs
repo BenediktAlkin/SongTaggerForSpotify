@@ -103,6 +103,8 @@ namespace Backend
             {
                 SetProperty(ref tagGroups, value, nameof(TagGroups));
                 NotifyPropertyChanged(nameof(Tags));
+                // TagGroups are used to populate a TreeView for TagPlaylists
+                OnPlaylistsUpdated?.Invoke();
             }
         }
 

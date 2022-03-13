@@ -1040,6 +1040,19 @@ namespace Backend
             var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
             return query.Where(t => spotifyTrackIds.Contains(t.Id)).ToList();
         }
+        public static List<Track> TagPlaylistTracks(int tagId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        {
+            using var db = ConnectionManager.NewContext();
+            var tag = db.Tags.FirstOrDefault(t => t.Id == tagId);
+            if(tag == null)
+            {
+                Logger.Error($"Couldn't find Tag with TagId {tagId}");
+                return new();
+            }
+
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, true);
+            return query.Where(t => t.Tags.Contains(new Tag { Id = tagId })).ToList();
+        }
         private static IQueryable<Track> GetTrackIncludeQuery(DatabaseContext db, bool includeAlbums, bool includeArtists, bool includeTags)
         {
             IQueryable<Track> query = db.Tracks
