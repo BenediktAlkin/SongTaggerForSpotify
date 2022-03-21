@@ -51,6 +51,7 @@ namespace SpotifySongTagger.ViewModels
             new MenuItem("Login", typeof(HomeView), true),
             new MenuItem("Song Tagger", typeof(TagEditor), true),
             new MenuItem("Playlist Generator", typeof(PlaylistGenerator), true),
+            new MenuItem("Song Metadata", typeof(MetadataViewer), true),
         };
         private MenuItem selectedItem;
         public MenuItem SelectedItem

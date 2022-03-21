@@ -1007,10 +1007,11 @@ namespace Backend
         #endregion
 
         #region get playlist tracks
-        public static List<Track> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
+        public static List<Track> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, 
+            bool includeAudioFeatures = false, bool includeArtistGenres = false)
         {
             using var db = ConnectionManager.NewContext();
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures, includeArtistGenres);
             return playlistId switch
             {
                 Constants.ALL_SONGS_PLAYLIST_ID => query.ToList(),
@@ -1019,13 +1020,15 @@ namespace Backend
                 _ => new()
             };
         }
-        public static List<Track> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
+        public static List<Track> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, 
+            bool includeAudioFeatures = false, bool includeArtistGenres = false)
         {
             using var db = ConnectionManager.NewContext();
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures, includeArtistGenres);
             return query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToList();
         }
-        public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
+        public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, 
+            bool includeAudioFeatures = false, bool includeArtistGenres = false)
         {
             using var db = ConnectionManager.NewContext();
             var playlistOutputNode = db.PlaylistOutputNodes.FirstOrDefault(p => p.GeneratedPlaylistId == id);
@@ -1038,10 +1041,11 @@ namespace Backend
             var spotifyTrackIds = spotifyTracks.Select(t => t.Id);
 
             // replace spotify track with db track
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures, includeArtistGenres);
             return query.Where(t => spotifyTrackIds.Contains(t.Id)).ToList();
         }
-        public static List<Track> TagPlaylistTracks(int tagId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
+        public static List<Track> TagPlaylistTracks(int tagId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, 
+            bool includeAudioFeatures = false, bool includeArtistGenres = false)
         {
             using var db = ConnectionManager.NewContext();
             var tag = db.Tags.FirstOrDefault(t => t.Id == tagId);
@@ -1051,21 +1055,24 @@ namespace Backend
                 return new();
             }
 
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, true, includeAudioFeatures);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, true, includeAudioFeatures, includeArtistGenres);
             return query.Where(t => t.Tags.Contains(new Tag { Id = tagId })).ToList();
         }
-        private static IQueryable<Track> GetTrackIncludeQuery(DatabaseContext db, bool includeAlbums, bool includeArtists, bool includeTags, bool includeAudioFeatures)
+        private static IQueryable<Track> GetTrackIncludeQuery(DatabaseContext db, bool includeAlbums, bool includeArtists, bool includeTags, 
+            bool includeAudioFeatures, bool includeArtistGenres)
         {
             IQueryable<Track> query = db.Tracks
                 .Include(t => t.Playlists);
             if (includeAlbums)
                 query = query.Include(t => t.Album);
-            if (includeArtists)
+            if (includeArtists || includeArtistGenres)
                 query = query.Include(t => t.Artists);
             if (includeTags)
                 query = query.Include(t => t.Tags);
             if (includeAudioFeatures)
                 query = query.Include(t => t.AudioFeatures);
+            if (includeArtistGenres)
+                query = query.Include(t => t.Artists).ThenInclude(a => a.Genres);
             return query;
         }
         #endregion

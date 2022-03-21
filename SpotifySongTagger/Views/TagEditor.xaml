@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:backend="clr-namespace:Backend.Entities;assembly=Backend"
              xmlns:viewmodels="clr-namespace:SpotifySongTagger.ViewModels"
+             xmlns:utils="clr-namespace:SpotifySongTagger.Utils"
              xmlns:validationRules="clr-namespace:SpotifySongTagger.ValidationRules" 
              xmlns:converters="clr-namespace:SpotifySongTagger.Converters"
              mc:Ignorable="d" 
@@ -55,7 +56,7 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                    <HierarchicalDataTemplate DataType="{x:Type viewmodels:PlaylistTreeNode}" ItemsSource="{Binding Children}">
+                    <HierarchicalDataTemplate DataType="{x:Type utils:PlaylistTreeNode}" ItemsSource="{Binding Children}">
                         <TextBlock Text="{Binding Name}" Margin="3,2" />
                     </HierarchicalDataTemplate>
                     <HierarchicalDataTemplate DataType="{x:Type backend:TagGroup}" ItemsSource="{Binding Tags}">
