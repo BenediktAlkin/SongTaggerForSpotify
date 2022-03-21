@@ -134,7 +134,7 @@ namespace Backend.Tests
             var concatNode = new ConcatNode() { Id = NewId() };
             foreach (var playlist in Playlists)
                 concatNode.AddInput(new PlaylistInputLikedNode { Id = NewId(), Playlist = playlist });
-            var yearFilterNode = new FilterYearNode { Id = NewId(), YearFrom = yearFrom, YearTo = yearTo };
+            var yearFilterNode = new FilterYearNode { Id = NewId(), ValueFrom = yearFrom, ValueTo = yearTo };
             yearFilterNode.AddInput(concatNode);
             var outputNode = new PlaylistOutputNode { Id = NewId(), PlaylistName = "somename" };
             outputNode.AddInput(yearFilterNode);

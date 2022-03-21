@@ -1,4 +1,5 @@
 ﻿using Backend.Entities.GraphNodes;
+using Backend.Entities.GraphNodes.AudioFeaturesFilters;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -26,6 +27,20 @@ namespace SpotifySongTagger.Converters
                 nameof(PlaylistInputLikedNode) => name = "Liked Playlist Input",
                 nameof(PlaylistOutputNode) => name = "Playlist Output",
                 nameof(RemoveNode) => name = "Remove",
+
+                nameof(FilterAcousticnessNode) => name = "Acousticness",
+                nameof(FilterDanceabilityNode) => name = "Danceability",
+                nameof(FilterDurationMsNode) => name = "Duration in ms",
+                nameof(FilterEnergyNode) => name = "Energy",
+                nameof(FilterInstrumentalnessNode) => name = "Instrumentalness",
+                nameof(FilterKeyNode) => name = "Key",
+                nameof(FilterLivenessNode) => name = "Liveness",
+                nameof(FilterLoudnessNode) => name = "Loudness",
+                nameof(FilterModeNode) => name = "Mode",
+                nameof(FilterSpeechinessNode) => name = "Speechiness",
+                nameof(FilterTempoNode) => name = "Tempo",
+                nameof(FilterTimeSignatureNode) => name = "Time Signature",
+                nameof(FilterValenceNode) => name = "Valence",
                 _ => name = "Unknown Node",
             };
 

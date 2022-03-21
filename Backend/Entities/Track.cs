@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Util;
 
@@ -19,7 +20,8 @@ namespace Backend.Entities
 
         public List<Artist> Artists { get; set; }
         public List<Playlist> Playlists { get; set; } = new();
-
+        public string AudioFeaturesId { get; set; }
+        public AudioFeatures AudioFeatures { get; set; }
 
         public IList<Tag> Tags { get; set; } = new ObservableCollection<Tag>();
 

@@ -1,3 +1,7 @@
+current:
+- audio features viewer/filter (test nodes)
+- genres
+
 code improvements:
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
 - Dialogs should be templated
@@ -9,6 +13,7 @@ code improvements:
 - IsRunning does not belong into GraphGeneratorPage (should be in a seperate viewmodel)
 
 minor bugs:
+- readme of tagify mentions something not working
 - click delete GraphGeneratorPage --> cancel dialog --> same GraphGeneratorPage delete icon does nothing
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
 - playlists binding error in tageditor (not initially but after sync)
@@ -25,5 +30,4 @@ future
 - search function (search for track and tag it)
 - playlists suggested by spotify as extra PlaylistGroup (daily mixes, radios, recently played playlists)
 - display counter for playlists/playlist categories in TagEditor
-- audio features viewer/filter
 - collapse tag groups

@@ -272,14 +272,14 @@ namespace SpotifySongTagger.ViewModels.Controls
                 await RefreshInputResults();
             }
         }
-        public async Task FilterYearNode_Edit(FilterYearNode node, int? yearFrom, int? yearTo)
+        public async Task FilterRangeNode_Edit(FilterRangeNode node, int? yearFrom, int? yearTo)
         {
             // update in db
-            if (DatabaseOperations.EditFilterYearNode(node, yearFrom, yearTo))
+            if (DatabaseOperations.EditFilterRangeNode(node, yearFrom, yearTo))
             {
                 // update in ui
-                //node.YearFrom = yearFrom; // not required as binding is directly to the node
-                //node.YearTo = yearTo; // not required as binding is directly to the node
+                //node.ValueFrom = yearFrom; // not required as binding is directly to the node
+                //node.ValueTo = yearTo; // not required as binding is directly to the node
                 await RefreshInputResults();
             }
         }

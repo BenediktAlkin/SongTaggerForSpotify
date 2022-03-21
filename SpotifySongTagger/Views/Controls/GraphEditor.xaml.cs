@@ -214,14 +214,14 @@ namespace SpotifySongTagger.Views.Controls
 
             await ViewModel.RemoveNode_SwapSets(removeNode);
         }
-        private async void YearFilterNode_YearChanged(object sender, TextChangedEventArgs e)
+        private async void FilterRangeNode_ValueChanged(object sender, TextChangedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
             if (Validation.GetErrors(frameworkElement).Count == 0)
             {
-                var filterYearNode = frameworkElement.DataContext as FilterYearNode;
-                if (filterYearNode == null) return;
-                await ViewModel.FilterYearNode_Edit(filterYearNode, filterYearNode.YearFrom, filterYearNode.YearTo);
+                var filterRangeNode = frameworkElement.DataContext as FilterRangeNode;
+                if (filterRangeNode == null) return;
+                await ViewModel.FilterRangeNode_Edit(filterRangeNode, filterRangeNode.ValueFrom, filterRangeNode.ValueTo);
             }
         }
         #endregion

@@ -240,7 +240,7 @@ namespace Backend.Entities.GraphNodes
         public virtual bool RequiresTags => false;
         public virtual bool RequiresArtists => false;
         public virtual bool RequiresAlbums => false;
-
+        public virtual bool RequiresAudioFeatures => false;
 
         public bool AnyForward(Func<GraphNode, bool> predicate) => predicate(this) || Outputs.Any(o => o.AnyForward(predicate));
         public bool AnyBackward(Func<GraphNode, bool> predicate) => predicate(this) || Inputs.Any(i => i.AnyBackward(predicate));

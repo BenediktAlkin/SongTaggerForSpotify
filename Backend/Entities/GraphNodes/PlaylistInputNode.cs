@@ -31,7 +31,8 @@ namespace Backend.Entities.GraphNodes
         {
             if ((to.RequiresArtists && !IncludedArtists) ||
                 (to.RequiresTags && !IncludedTags) ||
-                (to.RequiresAlbums && !IncludedAlbums))
+                (to.RequiresAlbums && !IncludedAlbums) ||
+                (to.RequiresAudioFeatures && !RequiresAudioFeatures))
                 ClearResult();
         }
         protected override bool CanAddInput(GraphNode input) => false;

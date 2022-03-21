@@ -148,7 +148,39 @@ namespace Backend
                 return new();
             }
         }
-
+        public static async Task<List<AudioFeatures>> GetAudioFeatures(List<string> trackIds)
+        {
+            var audioFeatures = new List<AudioFeatures>();
+            try
+            {
+                for (var i = 0; i < trackIds.Count; i += 100)
+                {
+                    var request = new TracksAudioFeaturesRequest(trackIds.Skip(i).Take(100).ToList());
+                    var response = await Spotify.Tracks.GetSeveralAudioFeatures(request);
+                    audioFeatures.AddRange(response.AudioFeatures.Select(af => new AudioFeatures
+                    {
+                        Id = af.Id,
+                        Acousticness = af.Acousticness,
+                        Danceability = af.Danceability,
+                        Energy = af.Energy,
+                        Instrumentalness = af.Instrumentalness,
+                        Key = af.Key,
+                        Liveness = af.Liveness,
+                        Loudness = af.Loudness,
+                        Mode = af.Mode,
+                        Speechiness = af.Speechiness,
+                        Tempo = af.Tempo,
+                        TimeSignature = af.TimeSignature,
+                        Valence = af.Valence,
+                    }));
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error in {nameof(GetAudioFeatures)}: {e.Message}");
+            }
+            return audioFeatures;
+        }
 
 
         public static async Task<(List<Playlist>, Dictionary<string, Track>)> GetFullLibrary(List<string> generatedPlaylistIds)

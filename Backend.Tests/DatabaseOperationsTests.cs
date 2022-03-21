@@ -577,18 +577,18 @@ namespace Backend.Tests
 
             using (var db = ConnectionManager.NewContext())
             {
-                Assert.IsTrue(DatabaseOperations.EditFilterYearNode(nodes[0], 1999, null));
-                Assert.IsTrue(DatabaseOperations.EditFilterYearNode(nodes[1], null, 2000));
-                Assert.IsTrue(DatabaseOperations.EditFilterYearNode(nodes[2], 2010, 2020));
-                Assert.IsFalse(DatabaseOperations.EditFilterYearNode(null, 1990, 2005));
-                Assert.IsFalse(DatabaseOperations.EditFilterYearNode(new FilterYearNode(), 1909, 2100));
+                Assert.IsTrue(DatabaseOperations.EditFilterRangeNode(nodes[0], 1999, null));
+                Assert.IsTrue(DatabaseOperations.EditFilterRangeNode(nodes[1], null, 2000));
+                Assert.IsTrue(DatabaseOperations.EditFilterRangeNode(nodes[2], 2010, 2020));
+                Assert.IsFalse(DatabaseOperations.EditFilterRangeNode(null, 1990, 2005));
+                Assert.IsFalse(DatabaseOperations.EditFilterRangeNode(new FilterYearNode(), 1909, 2100));
 
-                Assert.AreEqual(1999, db.FilterYearNodes.First(gn => gn.Id == nodes[0].Id).YearFrom);
-                Assert.AreEqual(null, db.FilterYearNodes.First(gn => gn.Id == nodes[0].Id).YearTo);
-                Assert.AreEqual(null, db.FilterYearNodes.First(gn => gn.Id == nodes[1].Id).YearFrom);
-                Assert.AreEqual(2000, db.FilterYearNodes.First(gn => gn.Id == nodes[1].Id).YearTo);
-                Assert.AreEqual(2010, db.FilterYearNodes.First(gn => gn.Id == nodes[2].Id).YearFrom);
-                Assert.AreEqual(2020, db.FilterYearNodes.First(gn => gn.Id == nodes[2].Id).YearTo);
+                Assert.AreEqual(1999, db.FilterYearNodes.First(gn => gn.Id == nodes[0].Id).ValueFrom);
+                Assert.AreEqual(null, db.FilterYearNodes.First(gn => gn.Id == nodes[0].Id).ValueTo);
+                Assert.AreEqual(null, db.FilterYearNodes.First(gn => gn.Id == nodes[1].Id).ValueFrom);
+                Assert.AreEqual(2000, db.FilterYearNodes.First(gn => gn.Id == nodes[1].Id).ValueTo);
+                Assert.AreEqual(2010, db.FilterYearNodes.First(gn => gn.Id == nodes[2].Id).ValueFrom);
+                Assert.AreEqual(2020, db.FilterYearNodes.First(gn => gn.Id == nodes[2].Id).ValueTo);
             }
         }
 

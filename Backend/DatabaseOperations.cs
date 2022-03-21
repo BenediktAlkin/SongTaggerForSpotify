@@ -554,6 +554,7 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.PlaylistInputMetaNodes).Include(gn => gn.Playlist));
             nodes.AddRange(BaseQuery(db.PlaylistOutputNodes));
             nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
+            nodes.AddRange(BaseQuery(db.FilterRangeNodes));
             return nodes;
         }
         public static List<IRunnableGraphNode> GetRunnableGraphNodes(GraphGeneratorPage ggp)
@@ -716,30 +717,30 @@ namespace Backend
                 $"oldRemoveSet={node.RemoveSet} newBaseSet={dbNode.BaseSet} newRemoveSet={dbNode.RemoveSet}");
             return true;
         }
-        public static bool EditFilterYearNode(FilterYearNode node, int? newFrom, int? newTo)
+        public static bool EditFilterRangeNode(FilterRangeNode node, int? newFrom, int? newTo)
         {
             if (node == null)
             {
-                Logger.Information("can't update FilterYearNode (is null)");
+                Logger.Information($"can't update {nameof(FilterRangeNode)} (is null)");
                 return false;
             }
 
             using var db = ConnectionManager.NewContext();
-            var dbNode = db.FilterYearNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            var dbNode = db.FilterRangeNodes.FirstOrDefault(gn => gn.Id == node.Id);
             if (dbNode == null)
             {
-                Logger.Information("can't update FilterYearNode (not in db)");
+                Logger.Information($"can't update {nameof(FilterRangeNode)} (not in db)");
                 return false;
             }
 
-            var oldFrom = dbNode.YearFrom;
-            var oldTo = dbNode.YearTo;
-            dbNode.YearFrom = newFrom;
-            dbNode.YearTo = newTo;
+            var oldFrom = dbNode.ValueFrom;
+            var oldTo = dbNode.ValueTo;
+            dbNode.ValueFrom = newFrom;
+            dbNode.ValueTo = newTo;
             db.SaveChanges();
 
-            Logger.Information($"updated FilterYearNode oldFrom={oldFrom} oldTo={oldTo} " +
-                $"newFrom={node.YearFrom} newTo={dbNode.YearTo}");
+            Logger.Information($"updated {nameof(FilterRangeNode)} oldFrom={oldFrom} oldTo={oldTo} " +
+                $"newFrom={node.ValueFrom} newTo={dbNode.ValueTo}");
             return true;
         }
 
@@ -1006,10 +1007,10 @@ namespace Backend
         #endregion
 
         #region get playlist tracks
-        public static List<Track> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        public static List<Track> MetaPlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
         {
             using var db = ConnectionManager.NewContext();
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures);
             return playlistId switch
             {
                 Constants.ALL_SONGS_PLAYLIST_ID => query.ToList(),
@@ -1018,13 +1019,13 @@ namespace Backend
                 _ => new()
             };
         }
-        public static List<Track> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        public static List<Track> PlaylistTracks(string playlistId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
         {
             using var db = ConnectionManager.NewContext();
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures);
             return query.Where(t => t.Playlists.Select(p => p.Id).Contains(playlistId)).ToList();
         }
-        public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        public static async Task<List<Track>> GeneratedPlaylistTracks(string id, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
         {
             using var db = ConnectionManager.NewContext();
             var playlistOutputNode = db.PlaylistOutputNodes.FirstOrDefault(p => p.GeneratedPlaylistId == id);
@@ -1037,23 +1038,23 @@ namespace Backend
             var spotifyTrackIds = spotifyTracks.Select(t => t.Id);
 
             // replace spotify track with db track
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, includeTags, includeAudioFeatures);
             return query.Where(t => spotifyTrackIds.Contains(t.Id)).ToList();
         }
-        public static List<Track> TagPlaylistTracks(int tagId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true)
+        public static List<Track> TagPlaylistTracks(int tagId, bool includeAlbums = true, bool includeArtists = true, bool includeTags = true, bool includeAudioFeatures = false)
         {
             using var db = ConnectionManager.NewContext();
             var tag = db.Tags.FirstOrDefault(t => t.Id == tagId);
-            if(tag == null)
+            if (tag == null)
             {
                 Logger.Error($"Couldn't find Tag with TagId {tagId}");
                 return new();
             }
 
-            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, true);
+            var query = GetTrackIncludeQuery(db, includeAlbums, includeArtists, true, includeAudioFeatures);
             return query.Where(t => t.Tags.Contains(new Tag { Id = tagId })).ToList();
         }
-        private static IQueryable<Track> GetTrackIncludeQuery(DatabaseContext db, bool includeAlbums, bool includeArtists, bool includeTags)
+        private static IQueryable<Track> GetTrackIncludeQuery(DatabaseContext db, bool includeAlbums, bool includeArtists, bool includeTags, bool includeAudioFeatures)
         {
             IQueryable<Track> query = db.Tracks
                 .Include(t => t.Playlists);
@@ -1063,6 +1064,8 @@ namespace Backend
                 query = query.Include(t => t.Artists);
             if (includeTags)
                 query = query.Include(t => t.Tags);
+            if (includeAudioFeatures)
+                query = query.Include(t => t.AudioFeatures);
             return query;
         }
         #endregion
@@ -1140,24 +1143,6 @@ namespace Backend
                 // add artist to the dbContext
                 albumDict[track.Album.Id] = track.Album;
                 db.Albums.Add(track.Album);
-            }
-        }
-        private static void ReplaceTagWithDbTag(DatabaseContext db, Dictionary<int, Tag> tagDict, Track track)
-        {
-            for (var i = 0; i < track.Tags.Count; i++)
-            {
-                var tag = track.Tags[i];
-                if (tagDict.TryGetValue(tag.Id, out var addedTag))
-                {
-                    // replace artist with the artist that is already added to the dbContext
-                    track.Tags[i] = addedTag;
-                }
-                else
-                {
-                    // add artist to the dbContext
-                    tagDict[tag.Id] = tag;
-                    db.Tags.Add(tag);
-                }
             }
         }
 
@@ -1288,9 +1273,29 @@ namespace Backend
                 Logger.Information("Update liked playlist names");
                 var allPlaylistsDict = allPlaylists.ToDictionary(p => p.Id, p => p);
                 foreach (var spotifyPlaylist in spotifyPlaylists)
-                    allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
+                {
+                    // if a playlist is empty it is not in the db
+                    if (allPlaylistsDict.ContainsKey(spotifyPlaylist.Id))
+                        allPlaylistsDict[spotifyPlaylist.Id].Name = spotifyPlaylist.Name;
+                    else
+                        Logger.Information($"Playlist with Id={spotifyPlaylist.Id} isn't updated because it is empty");
+                }
                 db.SaveChanges();
                 Logger.Information("Finished updating liked playlist names");
+
+
+                // load AudioFeatures
+                Logger.Information("Loading AudioFeatures");
+                var tracksWithoutAudioFeatures = db.Tracks.Where(t => t.AudioFeaturesId == null).ToList();
+                var trackIdsWithoutAudioFeatures = tracksWithoutAudioFeatures.Select(t => t.Id).ToList();
+                var audioFeatures = await SpotifyOperations.GetAudioFeatures(trackIdsWithoutAudioFeatures);
+                // set Id (this is done because not every song is guaranteed to have audio features as the audio feature
+                // loading was added at some point leading to databases before the update not having audiofeatures)
+                foreach (var trackWithoutAudioFeatures in tracksWithoutAudioFeatures)
+                    trackWithoutAudioFeatures.AudioFeaturesId = trackWithoutAudioFeatures.Id;
+                db.AudioFeatures.AddRange(audioFeatures);
+                db.SaveChanges();
+                Logger.Information("Finished loading AudioFeatures");
             }, cancellationToken);
             await SyncLibraryTask;
 

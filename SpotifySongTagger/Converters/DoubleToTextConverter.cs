@@ -20,6 +20,12 @@ namespace SpotifySongTagger.Converters
             return $"{doubleStr}{Suffix}";
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Binding.DoNothing;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var valueStr = (value ?? "").ToString();
+            if (double.TryParse(valueStr, out var parsedValue))
+                return parsedValue;
+            return null;
+        }
     }
 }

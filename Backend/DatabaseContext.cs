@@ -1,5 +1,6 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using Backend.Entities.GraphNodes.AudioFeaturesFilters;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -66,7 +67,19 @@ namespace Backend
             RegisterInheritedType<PlaylistInputLikedNode>();
             RegisterInheritedType<PlaylistInputMetaNode>();
             RegisterInheritedType<PlaylistOutputNode>();
-            RegisterInheritedType<RemoveNode>();
+            RegisterInheritedType<FilterAcousticnessNode>();
+            RegisterInheritedType<FilterDanceabilityNode>();
+            RegisterInheritedType<FilterDurationMsNode>();
+            RegisterInheritedType<FilterEnergyNode>();
+            RegisterInheritedType<FilterInstrumentalnessNode>();
+            RegisterInheritedType<FilterKeyNode>();
+            RegisterInheritedType<FilterLivenessNode>();
+            RegisterInheritedType<FilterLoudnessNode>();
+            RegisterInheritedType<FilterModeNode>();
+            RegisterInheritedType<FilterSpeechinessNode>();
+            RegisterInheritedType<FilterTempoNode>();
+            RegisterInheritedType<FilterTimeSignatureNode>();
+            RegisterInheritedType<FilterValenceNode>();
 
             // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
             foreach (var metaPlaylistId in Constants.META_PLAYLIST_IDS)
@@ -129,6 +142,7 @@ namespace Backend
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TagGroup> TagGroups { get; set; }
         public DbSet<Track> Tracks { get; set; }
+        public DbSet<AudioFeatures> AudioFeatures { get; set; }
         public DbSet<GraphNode> GraphNodes { get; set; }
         public DbSet<GraphGeneratorPage> GraphGeneratorPages { get; set; }
 
@@ -146,5 +160,6 @@ namespace Backend
         public DbSet<PlaylistInputNode> PlaylistInputNodes { get; set; }
         public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
         public DbSet<RemoveNode> RemoveNodes { get; set; }
+        public DbSet<FilterRangeNode> FilterRangeNodes { get; set; }
     }
 }
