@@ -1182,7 +1182,7 @@ namespace Backend
                 var dbTracks = db.Tracks.Include(t => t.Tags).Include(t => t.Playlists).ToDictionary(t => t.Id, t => t);
                 cancellationToken.ThrowIfCancellationRequested();
                 var dbPlaylists = db.Playlists.ToDictionary(pl => pl.Id, pl => pl);
-                var dbArtists = db.Artists.ToDictionary(a => a.Id, a => a);
+                var dbArtists = db.Artists.Include(a => a.Genres).ToDictionary(a => a.Id, a => a);
                 cancellationToken.ThrowIfCancellationRequested();
                 var dbAlbums = db.Albums.ToDictionary(a => a.Id, a => a);
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1296,6 +1296,33 @@ namespace Backend
                 db.AudioFeatures.AddRange(audioFeatures);
                 db.SaveChanges();
                 Logger.Information("Finished loading AudioFeatures");
+
+                // load Artist Genres
+                Logger.Information("Loading Artist Genres");
+                // TODO i think genres are not constant but they might be ("A list of the genres the artist is associated with. If not yet classified, the array is empty.")
+                var genresByName = db.Genres.ToDictionary(g => g.Name, g => g);
+                var artistIds = dbArtists.Keys.ToList();
+                var spotifyArtists = await SpotifyOperations.GetArtists(artistIds);
+                for (var i = 0; i < artistIds.Count; i++)
+                {
+                    var dbGenresOfArtist = new List<Genre>();
+                    foreach(var genreName in spotifyArtists[i].Genres)
+                    {
+                        if (!genresByName.TryGetValue(genreName, out var dbGenre))
+                        {
+                            var newGenre = new Genre { Name = genreName };
+                            db.Genres.Add(newGenre);
+                            genresByName[genreName] = newGenre;
+                            dbGenresOfArtist.Add(newGenre);
+                        }
+                        else
+                            dbGenresOfArtist.Add(dbGenre);
+                    }
+                    dbArtists[artistIds[i]].Genres = dbGenresOfArtist;
+                }
+                db.SaveChanges();
+                Logger.Information("Finished loading Artist Genres");
+
             }, cancellationToken);
             await SyncLibraryTask;
 

@@ -9,6 +9,7 @@ namespace Backend.Entities
         public string Name { get; set; }
 
         public List<Track> Tracks { get; set; }
+        public List<Genre> Genres { get; set; }
 
         public override string ToString() => Name;
         public override bool Equals(object obj) => obj is Artist other ? Equals(other) : false;

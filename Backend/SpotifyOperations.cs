@@ -303,5 +303,18 @@ namespace Backend
             Logger.Information($"synchronized PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
             return true;
         }
+
+        public static async Task<List<FullArtist>> GetArtists(List<string> artistIds)
+        {
+            const int BATCH_SIZE = 50;
+            var artists = new List<FullArtist>();
+            for (var i=0;i<artistIds.Count;i += BATCH_SIZE)
+            {
+                var request = new ArtistsRequest(artistIds.Skip(i).Take(BATCH_SIZE).ToList());
+                var response = await Spotify.Artists.GetSeveral(request);
+                artists.AddRange(response.Artists);
+            }
+            return artists;
+        }
     }
 }
