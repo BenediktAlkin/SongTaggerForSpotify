@@ -161,7 +161,11 @@ namespace Backend
         public DbSet<PlaylistInputNode> PlaylistInputNodes { get; set; }
         public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
         public DbSet<RemoveNode> RemoveNodes { get; set; }
+
         public DbSet<FilterRangeNode> FilterRangeNodes { get; set; }
         public DbSet<FilterKeyNode> FilterKeyNodes { get; set; }
+        public DbSet<FilterModeNode> FilterModeNodes { get; set; }
+        public DbSet<FilterTimeSignatureNode> FilterTimeSignatureNodes { get; set; }
+
     }
 }

@@ -318,17 +318,7 @@ namespace SpotifySongTagger.ViewModels.Controls
                 await RefreshInputResults();
             }
         }
-        public async Task FilterKeyNode_KeyChanged(FilterKeyNode node, int? key)
-        {
-            if (key == null) return;
-            // update in db
-            if (DatabaseOperations.EditFilterKeyNode(node, key))
-            {
-                // update in ui
-                //node.Key = key; // not required as binding is directly to the node
-                await RefreshInputResults();
-            }
-        }
+        
         public async Task PlaylistInputNode_PlaylistChanged(PlaylistInputNode node, Playlist playlist)
         {
             if (playlist == null) return;
@@ -340,7 +330,42 @@ namespace SpotifySongTagger.ViewModels.Controls
                 await RefreshInputResults();
             }
         }
+        #endregion
 
+        #region AudioFeatures GraphNode updates
+        public async Task FilterKeyNode_KeyChanged(FilterKeyNode node, int? key)
+        {
+            if (key == null) return;
+            // update in db
+            if (DatabaseOperations.EditFilterKeyNode(node, key))
+            {
+                // update in ui
+                //node.Key = key; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
+        public async Task FilterModeNode_ModeChanged(FilterModeNode node, int? mode)
+        {
+            if (mode == null) return;
+            // update in db
+            if (DatabaseOperations.EditFilterModeNode(node, mode))
+            {
+                // update in ui
+                //node.Mode = mode; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
+        public async Task FilterTimeSignatureNode_TimeSignatureChanged(FilterTimeSignatureNode node, int? timeSignature)
+        {
+            if (timeSignature == null) return;
+            // update in db
+            if (DatabaseOperations.EditFilterTimeSignatureNode(node, timeSignature))
+            {
+                // update in ui
+                //node.TimeSignature= timeSignature; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
         #endregion
 
     }

@@ -199,15 +199,6 @@ namespace SpotifySongTagger.Views.Controls
 
             await ViewModel.FilterArtistNode_ArtistChanged(node, node.Artist);
         }
-        private async void FilterKeyNode_KeyChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ViewModel == null) return;
-            var frameworkElement = sender as FrameworkElement;
-            var node = frameworkElement.DataContext as FilterKeyNode;
-            if (node == null) return;
-
-            await ViewModel.FilterKeyNode_KeyChanged(node, node.Key);
-        }
         private async void PlaylistInputNode_PlaylistChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ViewModel == null) return;
@@ -233,6 +224,36 @@ namespace SpotifySongTagger.Views.Controls
                 if (filterRangeNode == null) return;
                 await ViewModel.FilterRangeNode_Edit(filterRangeNode, filterRangeNode.ValueFrom, filterRangeNode.ValueTo);
             }
+        }
+        #endregion
+
+        #region update AudioFeatures GraphNode properties
+        private async void FilterKeyNode_KeyChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as FilterKeyNode;
+            if (node == null) return;
+
+            await ViewModel.FilterKeyNode_KeyChanged(node, node.Key);
+        }
+        private async void FilterModeNode_ModeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as FilterModeNode;
+            if (node == null) return;
+
+            await ViewModel.FilterModeNode_ModeChanged(node, node.Mode);
+        }
+        private async void FilterTimeSignatureNode_TimeSignatureChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as FilterTimeSignatureNode;
+            if (node == null) return;
+
+            await ViewModel.FilterTimeSignatureNode_TimeSignatureChanged(node, node.TimeSignature);
         }
         #endregion
     }

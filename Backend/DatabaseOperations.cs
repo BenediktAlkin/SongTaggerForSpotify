@@ -557,6 +557,8 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
             nodes.AddRange(BaseQuery(db.FilterRangeNodes));
             nodes.AddRange(BaseQuery(db.FilterKeyNodes));
+            nodes.AddRange(BaseQuery(db.FilterModeNodes));
+            nodes.AddRange(BaseQuery(db.FilterTimeSignatureNodes));
             return nodes;
         }
         public static List<IRunnableGraphNode> GetRunnableGraphNodes(GraphGeneratorPage ggp)
@@ -844,28 +846,6 @@ namespace Backend
             return true;
         }
 
-        public static bool EditFilterKeyNode(FilterKeyNode node, int? key)
-        {
-            if (node == null)
-            {
-                Logger.Information("can't update FilterKeyNode (node is null)");
-                return false;
-            }
-
-            using var db = ConnectionManager.NewContext();
-            var dbNode = db.FilterKeyNodes.FirstOrDefault(gn => gn.Id == node.Id);
-            if (dbNode == null)
-            {
-                Logger.Information("can't update FilterKeyNode (not in db)");
-                return false;
-            }
-
-            var oldKey = dbNode.Key;
-            dbNode.Key = key;
-            db.SaveChanges();
-            Logger.Information($"updated FilterKeyNode oldKey={oldKey} newKey={key}");
-            return true;
-        }
         public static bool EditPlaylistInputNode(PlaylistInputNode node, Playlist playlist)
         {
             if (node == null)
@@ -897,6 +877,75 @@ namespace Backend
             db.SaveChanges();
             Logger.Information($"updated PlaylistInputNode oldPlaylistId={oldPlaylistId} " +
                 $"newPlaylistId={dbNode.PlaylistId} newPlalist={dbPlaylist}");
+            return true;
+        }
+        #endregion
+
+        #region AudioFeature GraphNodes
+        public static bool EditFilterKeyNode(FilterKeyNode node, int? key)
+        {
+            if (node == null)
+            {
+                Logger.Information("can't update FilterKeyNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterKeyNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("can't update FilterKeyNode (not in db)");
+                return false;
+            }
+
+            var oldKey = dbNode.Key;
+            dbNode.Key = key;
+            db.SaveChanges();
+            Logger.Information($"updated FilterKeyNode oldKey={oldKey} newKey={key}");
+            return true;
+        }
+        public static bool EditFilterModeNode(FilterModeNode node, int? mode)
+        {
+            if (node == null)
+            {
+                Logger.Information("can't update FilterModeNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterModeNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("can't update FilterModeNode (not in db)");
+                return false;
+            }
+
+            var oldMode = dbNode.Mode;
+            dbNode.Mode = mode;
+            db.SaveChanges();
+            Logger.Information($"updated FilterModeNode oldMode={oldMode} newMode={mode}");
+            return true;
+        }
+        public static bool EditFilterTimeSignatureNode(FilterTimeSignatureNode node, int? timeSignature)
+        {
+            if (node == null)
+            {
+                Logger.Information("can't update FilterTimeSignatureNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterTimeSignatureNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("can't update FilterTimeSignatureNode (not in db)");
+                return false;
+            }
+
+            var oldTimeSignature = dbNode.TimeSignature;
+            dbNode.TimeSignature = timeSignature;
+            db.SaveChanges();
+            Logger.Information($"updated FilterTimeSignatureNode oldTimeSignature={oldTimeSignature} newTimeSignature={timeSignature}");
             return true;
         }
         #endregion

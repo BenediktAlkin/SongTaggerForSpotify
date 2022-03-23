@@ -21,6 +21,8 @@
         <converters:IntToTextConverter x:Key="IntToTextConverter"/>
         <converters:DoubleToTextConverter x:Key="DoubleToTextConverter"/>
         <converters:PitchConverter x:Key="PitchConverter"/>
+        <converters:ModeConverter x:Key="ModeConverter"/>
+        <converters:TimeSignatureConverter x:Key="TimeSignatureConverter"/>
         <materialDesign:NullableToVisibilityConverter x:Key="InvertedNullVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed" />
     </UserControl.Resources>
 
@@ -228,6 +230,9 @@
                             </StackPanel>
                         </StackPanel>
                     </DataTemplate>
+                    <!-- plain node view -->
+                    <DataTemplate x:Key="PlainNodeView"/>
+                    <!-- AUDIO FEATURE FILTER NODES -->
                     <!-- FilterKeyNodeView -->
                     <DataTemplate x:Key="FilterKeyNodeView">
                         <ComboBox materialDesign:HintAssist.Hint="Key"
@@ -250,8 +255,50 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </DataTemplate>
-                    <!-- plain node view -->
-                    <DataTemplate x:Key="PlainNodeView"/>
+                    <!-- FilterKeyNodeView -->
+                    <DataTemplate x:Key="FilterModeNodeView">
+                        <ComboBox materialDesign:HintAssist.Hint="Mode"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding ValidModes}"
+                            SelectedItem="{Binding Mode}"
+                            SelectionChanged="FilterModeNode_ModeChanged"
+                            Margin="0 0 0 20">
+                            <ComboBox.Text>
+                                <Binding Path="Mode">
+                                    <Binding.ValidationRules>
+                                        <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.Text>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource ModeConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </DataTemplate>
+                    <!-- FilterKeyNodeView -->
+                    <DataTemplate x:Key="FilterTimeSignatureNodeView">
+                        <ComboBox materialDesign:HintAssist.Hint="Time Signature"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding ValidTimeSignatures}"
+                            SelectedItem="{Binding TimeSignature}"
+                            SelectionChanged="FilterTimeSignatureNode_TimeSignatureChanged"
+                            Margin="0 0 0 20">
+                            <ComboBox.Text>
+                                <Binding Path="TimeSignature">
+                                    <Binding.ValidationRules>
+                                        <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.Text>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource TimeSignatureConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </DataTemplate>
                 </ItemsControl.Resources>
                 <!-- canvas -->
                 <ItemsControl.ItemsPanel>
@@ -370,7 +417,7 @@
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterModeNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeIntView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterModeNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterSpeechinessNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
@@ -379,7 +426,7 @@
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterTimeSignatureNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeIntView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterTimeSignatureNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterValenceNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />

@@ -8,6 +8,7 @@ current:
 - metadata viewer maybe change to %
 
 code improvements:
+- DatabaseOperations has a lot of redundancy in methods like EditFilterKeyNode
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
 - Dialogs should be templated
 - the SpotifyPlayer control ViewModel should be seperate
