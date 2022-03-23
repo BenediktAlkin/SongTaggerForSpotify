@@ -1,8 +1,11 @@
 current:
+- redo migrations to not have 1000 small migrations
 - graph nodes for filters are not ready yet
 - graph node for genre filter
 - audio features viewer/filter (test nodes)
 - genres (test)
+- metadata viewer center numbers
+- metadata viewer maybe change to %
 
 code improvements:
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
@@ -14,6 +17,12 @@ code improvements:
 - PlayerManager has properties of FullTrack and a FullTrack object (redundant)
 - IsRunning does not belong into GraphGeneratorPage (should be in a seperate viewmodel)
 
+possible bugs:
+- RemoveNode had strange case where output result of input nodes was null that could not be reproduced
+  - I reproduced it once, where the error was that after propagating the result the UI fired set the value of a KeyFilterNode to the exact same value as it was before
+    This lead to it calling "PropagateForward(gn => gn.ClearResult(), applyToSelf: false)". I added to all methods of this pattern a "if (value == tag) return;" check
+    Not 100% sure though if this is the bug that occoured in the past or not.
+
 minor bugs:
 - readme of tagify mentions something not working
 - click delete GraphGeneratorPage --> cancel dialog --> same GraphGeneratorPage delete icon does nothing
@@ -21,12 +30,12 @@ minor bugs:
 - playlists binding error in tageditor (not initially but after sync)
 - newtag datacontext bugs sometimes (validator not working; NewTagText set null but not updated in ui) --> ugly workaround was implemented
 - set progress/volume fires twice (when not dragged)
-- RemoveNode had strange case where output result of input nodes was null that could not be reproduced
 - RemoveNode had strange case where upon deleting input the input node would still be displayed as input (not sure if it was stored in db also)
 - DatabaseOperations inserts with duplicate id throw exception (wrap with try catch)
 - if databasefolder is changed while SST is running, it crashes
 
 future
+- add a property that "blacklists" a song in all playlists (like my "remove-from-charts" tag right now)
 - support easy multiple accounts staying logged in
 - settings for treeview expansions
 - search function (search for track and tag it)

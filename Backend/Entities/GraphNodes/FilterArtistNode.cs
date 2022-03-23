@@ -12,6 +12,7 @@ namespace Backend.Entities.GraphNodes
             get => artistId;
             set
             {
+                if (value == artistId) return;
                 SetProperty(ref artistId, value, nameof(ArtistId));
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
@@ -23,6 +24,7 @@ namespace Backend.Entities.GraphNodes
             get => artist;
             set
             {
+                if (value == artist) return;
                 SetProperty(ref artist, value, nameof(Artist));
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);

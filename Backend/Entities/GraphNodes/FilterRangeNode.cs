@@ -10,6 +10,7 @@ namespace Backend.Entities.GraphNodes
             get => valueFrom;
             set
             {
+                if (value == valueFrom) return;
                 SetProperty(ref valueFrom, value, nameof(ValueFrom));
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);
@@ -21,6 +22,7 @@ namespace Backend.Entities.GraphNodes
             get => valueTo;
             set
             {
+                if (value == valueTo) return;
                 SetProperty(ref valueTo, value, nameof(ValueTo));
                 OutputResult = null;
                 PropagateForward(gn => gn.ClearResult(), applyToSelf: false);

@@ -1,4 +1,5 @@
 ﻿using Backend.Entities.GraphNodes;
+using Backend.Entities.GraphNodes.AudioFeaturesFilters;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
@@ -197,6 +198,15 @@ namespace SpotifySongTagger.Views.Controls
             if (node == null) return;
 
             await ViewModel.FilterArtistNode_ArtistChanged(node, node.Artist);
+        }
+        private async void FilterKeyNode_KeyChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as FilterKeyNode;
+            if (node == null) return;
+
+            await ViewModel.FilterKeyNode_KeyChanged(node, node.Key);
         }
         private async void PlaylistInputNode_PlaylistChanged(object sender, SelectionChangedEventArgs e)
         {

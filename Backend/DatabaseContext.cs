@@ -162,5 +162,6 @@ namespace Backend
         public DbSet<PlaylistOutputNode> PlaylistOutputNodes { get; set; }
         public DbSet<RemoveNode> RemoveNodes { get; set; }
         public DbSet<FilterRangeNode> FilterRangeNodes { get; set; }
+        public DbSet<FilterKeyNode> FilterKeyNodes { get; set; }
     }
 }

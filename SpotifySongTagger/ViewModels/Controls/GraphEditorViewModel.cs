@@ -1,6 +1,7 @@
 ﻿using Backend;
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using Backend.Entities.GraphNodes.AudioFeaturesFilters;
 using Serilog;
 using SpotifySongTagger.Utils;
 using System;
@@ -314,6 +315,17 @@ namespace SpotifySongTagger.ViewModels.Controls
             {
                 // update in ui
                 //node.Artist = artist; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
+        public async Task FilterKeyNode_KeyChanged(FilterKeyNode node, int? key)
+        {
+            if (key == null) return;
+            // update in db
+            if (DatabaseOperations.EditFilterKeyNode(node, key))
+            {
+                // update in ui
+                //node.Key = key; // not required as binding is directly to the node
                 await RefreshInputResults();
             }
         }

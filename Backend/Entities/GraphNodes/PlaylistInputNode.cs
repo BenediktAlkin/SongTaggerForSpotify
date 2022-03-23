@@ -39,6 +39,7 @@ namespace Backend.Entities.GraphNodes
         protected bool IncludedArtists { get; set; }
         protected bool IncludedTags { get; set; }
         protected bool IncludedAlbums { get; set; }
+        protected bool IncludedAudioFeatures { get; set; }
 
         protected override void MapInputToOutput() => OutputResult = InputResult[0];
         protected override void CalculateInputResultImpl()
@@ -52,6 +53,7 @@ namespace Backend.Entities.GraphNodes
             IncludedArtists = AnyForward(gn => gn.RequiresArtists);
             IncludedTags = AnyForward(gn => gn.RequiresTags);
             IncludedAlbums = AnyForward(gn => gn.RequiresAlbums);
+            IncludedAudioFeatures = AnyForward(gn => gn.RequiresAudioFeatures);
 
             var tracks = GetTracks();
             InputResult = new List<List<Track>> { tracks };

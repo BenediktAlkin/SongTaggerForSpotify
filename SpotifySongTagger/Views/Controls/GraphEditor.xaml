@@ -20,6 +20,7 @@
         <converters:ObjectToStringConverter x:Key="ObjectToStringConverter"/>
         <converters:IntToTextConverter x:Key="IntToTextConverter"/>
         <converters:DoubleToTextConverter x:Key="DoubleToTextConverter"/>
+        <converters:PitchConverter x:Key="PitchConverter"/>
         <materialDesign:NullableToVisibilityConverter x:Key="InvertedNullVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed" />
     </UserControl.Resources>
 
@@ -227,6 +228,28 @@
                             </StackPanel>
                         </StackPanel>
                     </DataTemplate>
+                    <!-- FilterKeyNodeView -->
+                    <DataTemplate x:Key="FilterKeyNodeView">
+                        <ComboBox materialDesign:HintAssist.Hint="Key"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding ValidKeys}"
+                            SelectedItem="{Binding Key}"
+                            SelectionChanged="FilterKeyNode_KeyChanged"
+                            Margin="0 0 0 20">
+                            <ComboBox.Text>
+                                <Binding Path="Key">
+                                    <Binding.ValidationRules>
+                                        <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.Text>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource PitchConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </DataTemplate>
                     <!-- plain node view -->
                     <DataTemplate x:Key="PlainNodeView"/>
                 </ItemsControl.Resources>
@@ -338,7 +361,7 @@
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterKeyNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeIntView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterKeyNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterLivenessNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />

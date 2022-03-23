@@ -1,5 +1,6 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using Backend.Entities.GraphNodes.AudioFeaturesFilters;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
@@ -555,6 +556,7 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.PlaylistOutputNodes));
             nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
             nodes.AddRange(BaseQuery(db.FilterRangeNodes));
+            nodes.AddRange(BaseQuery(db.FilterKeyNodes));
             return nodes;
         }
         public static List<IRunnableGraphNode> GetRunnableGraphNodes(GraphGeneratorPage ggp)
@@ -839,6 +841,29 @@ namespace Backend
             db.SaveChanges();
             Logger.Information($"updated FilterArtistNode oldArtistId={oldArtistId} " +
                 $"newArtistId={dbNode.ArtistId} newArtist={dbArtist}");
+            return true;
+        }
+
+        public static bool EditFilterKeyNode(FilterKeyNode node, int? key)
+        {
+            if (node == null)
+            {
+                Logger.Information("can't update FilterKeyNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterKeyNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("can't update FilterKeyNode (not in db)");
+                return false;
+            }
+
+            var oldKey = dbNode.Key;
+            dbNode.Key = key;
+            db.SaveChanges();
+            Logger.Information($"updated FilterKeyNode oldKey={oldKey} newKey={key}");
             return true;
         }
         public static bool EditPlaylistInputNode(PlaylistInputNode node, Playlist playlist)
