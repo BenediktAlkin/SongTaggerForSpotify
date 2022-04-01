@@ -8,7 +8,6 @@
              xmlns:backend="clr-namespace:Backend.Entities;assembly=Backend"
              xmlns:viewmodels="clr-namespace:SpotifySongTagger.ViewModels"
              xmlns:utils="clr-namespace:SpotifySongTagger.Utils"
-             xmlns:validationRules="clr-namespace:SpotifySongTagger.ValidationRules" 
              xmlns:converters="clr-namespace:SpotifySongTagger.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -96,6 +95,7 @@
                     <TextBlock Text="Sync your Spotify library with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                     <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
                 </StackPanel>
+                <TextBlock Text="TODO descriptions" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="Read more about different types of metadata " VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                     <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextDecorations="Underline">
@@ -104,6 +104,7 @@
                             RequestNavigate="Hyperlink_RequestNavigate">here</Hyperlink>
                     </TextBlock>
                 </StackPanel>
+                
             </StackPanel>
             <!-- tracks -->
             <DataGrid 
@@ -186,13 +187,13 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="200" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Acousticness, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.AcousticnessPercent}" 
                         Header="Acousticness"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto"/>
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Danceability, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.DanceabilityPercent}" 
                         Header="Danceability"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
@@ -204,13 +205,13 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Energy, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.EnergyPercent}" 
                         Header="Energy"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Instrumentalness, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.InstrumentalnessPercent}" 
                         Header="Instrumentalness"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
@@ -222,13 +223,13 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Liveness, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.LivenessPercent}" 
                         Header="Liveness"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Loudness, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.Loudness, StringFormat=N0}" 
                         Header="Loudness"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
@@ -240,7 +241,7 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Speechiness, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.SpeechinessPercent}" 
                         Header="Speechiness"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
@@ -258,7 +259,7 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Valence, StringFormat=N2}" 
+                        Binding="{Binding Track.AudioFeatures.ValencePercent}" 
                         Header="Valence"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"

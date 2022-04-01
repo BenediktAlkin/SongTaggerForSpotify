@@ -42,7 +42,7 @@ namespace Backend.Entities.GraphNodes
             else
                 OutputResult = InputResult[0];
         }
-        protected abstract double? GetValue(Track t);
+        protected abstract int? GetValue(Track t);
         public override bool IsValid => true;
     }
 }

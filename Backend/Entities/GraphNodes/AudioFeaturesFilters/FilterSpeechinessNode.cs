@@ -8,7 +8,7 @@ namespace Backend.Entities.GraphNodes.AudioFeaturesFilters
 {
     public class FilterSpeechinessNode : FilterRangeNode
     {
-        protected override double? GetValue(Track t) => t.AudioFeatures.Speechiness;
+        protected override int? GetValue(Track t) => t.AudioFeatures.SpeechinessPercent;
         public override bool RequiresAudioFeatures => true;
     }
 }

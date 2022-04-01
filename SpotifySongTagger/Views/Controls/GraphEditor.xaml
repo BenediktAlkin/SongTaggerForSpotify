@@ -19,7 +19,6 @@
         <converters:ObjectToTypeNameConverter x:Key="ObjectToTypeNameConverter"/>
         <converters:ObjectToStringConverter x:Key="ObjectToStringConverter"/>
         <converters:IntToTextConverter x:Key="IntToTextConverter"/>
-        <converters:DoubleToTextConverter x:Key="DoubleToTextConverter"/>
         <converters:PitchConverter x:Key="PitchConverter"/>
         <converters:ModeConverter x:Key="ModeConverter"/>
         <converters:TimeSignatureConverter x:Key="TimeSignatureConverter"/>
@@ -96,8 +95,8 @@
                             </ComboBox.Text>
                         </ComboBox>
                     </DataTemplate>
-                    <!-- FilterRangeIntView -->
-                    <DataTemplate x:Key="FilterRangeIntView">
+                    <!-- FilterRangeView -->
+                    <DataTemplate x:Key="FilterRangeView">
                         <Grid Margin="0 0 0 12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -119,35 +118,6 @@
                                     <Binding Path="ValueTo" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource IntToTextConverter}">
                                         <Binding.ValidationRules>
                                             <validationRules:IsIntValidationRule ValidatesOnTargetUpdated="True" />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                        </Grid>
-                    </DataTemplate>
-                    <!-- FilterRangeDobuleView -->
-                    <DataTemplate x:Key="FilterRangeDoubleView">
-                        <Grid Margin="0 0 0 12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" materialDesign:HintAssist.Hint="From" TextChanged="FilterRangeNode_ValueChanged">
-                                <TextBox.Text>
-                                    <Binding Path="ValueFrom" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource DoubleToTextConverter}">
-                                        <Binding.ValidationRules>
-                                            <validationRules:IsDoubleValidationRule ValidatesOnTargetUpdated="True" />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <TextBlock Grid.Column="1" Text="-" Margin="5"/>
-                            <TextBox Grid.Column="2" materialDesign:HintAssist.Hint="To" TextChanged="FilterRangeNode_ValueChanged">
-                                <TextBox.Text>
-                                    <Binding Path="ValueTo" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource DoubleToTextConverter}">
-                                        <Binding.ValidationRules>
-                                            <validationRules:IsDoubleValidationRule ValidatesOnTargetUpdated="True" />
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
@@ -374,7 +344,7 @@
                                                         <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterYearNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeIntView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="IntersectNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource PlainNodeView}" />
@@ -393,43 +363,43 @@
                                                     </DataTrigger>
                                                     <!-- AudioFeaturesFilters -->
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterAcousticnessNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterDanceabilityNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterDurationMsNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeIntView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterEnergyNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterInstrumentalnessNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterKeyNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterKeyNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterLivenessNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterLoudnessNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterModeNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterModeNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterSpeechinessNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterTempoNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterTimeSignatureNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterTimeSignatureNodeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterValenceNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeDoubleView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

@@ -8,6 +8,6 @@ namespace Backend.Entities.GraphNodes.AudioFeaturesFilters
 {
     public class FilterDurationMsNode : FilterRangeNode
     {
-        protected override double? GetValue(Track t) => t.DurationMs;
+        protected override int? GetValue(Track t) => t.DurationMs;
     }
 }
