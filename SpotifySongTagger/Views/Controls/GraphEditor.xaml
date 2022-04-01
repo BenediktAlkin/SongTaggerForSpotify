@@ -22,6 +22,7 @@
         <converters:PitchConverter x:Key="PitchConverter"/>
         <converters:ModeConverter x:Key="ModeConverter"/>
         <converters:TimeSignatureConverter x:Key="TimeSignatureConverter"/>
+        <converters:DurationConverter x:Key="DurationConverter"/>
         <materialDesign:NullableToVisibilityConverter x:Key="InvertedNullVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed" />
     </UserControl.Resources>
 
@@ -118,6 +119,35 @@
                                     <Binding Path="ValueTo" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource IntToTextConverter}">
                                         <Binding.ValidationRules>
                                             <validationRules:IsIntValidationRule ValidatesOnTargetUpdated="True" />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </Grid>
+                    </DataTemplate>
+                    <!-- FilterDurationView -->
+                    <DataTemplate x:Key="FilterDurationView">
+                        <Grid Margin="0 0 0 12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" materialDesign:HintAssist.Hint="0:00" TextChanged="FilterRangeNode_ValueChanged">
+                                <TextBox.Text>
+                                    <Binding Path="ValueFrom" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource DurationConverter}">
+                                        <Binding.ValidationRules>
+                                            <validationRules:IsValidDurationValidationRule ErrorText="Invalid duration" ValidatesOnTargetUpdated="True"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <TextBlock Grid.Column="1" Text="-" Margin="5"/>
+                            <TextBox Grid.Column="2" materialDesign:HintAssist.Hint="9:59" TextChanged="FilterRangeNode_ValueChanged">
+                                <TextBox.Text>
+                                    <Binding Path="ValueTo" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource DurationConverter}">
+                                        <Binding.ValidationRules>
+                                            <validationRules:IsValidDurationValidationRule ErrorText="Invalid duration" ValidatesOnTargetUpdated="True"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
@@ -386,7 +416,7 @@
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterDurationMsNode">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterDurationView}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterEnergyNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />

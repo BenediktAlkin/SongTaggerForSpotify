@@ -30,7 +30,7 @@ namespace SpotifySongTagger.Converters
 
                 nameof(FilterAcousticnessNode) => name = "Acousticness",
                 nameof(FilterDanceabilityNode) => name = "Danceability",
-                nameof(FilterDurationMsNode) => name = "Duration in ms",
+                nameof(FilterDurationMsNode) => name = "Duration [m:ss]",
                 nameof(FilterEnergyNode) => name = "Energy",
                 nameof(FilterInstrumentalnessNode) => name = "Instrumentalness",
                 nameof(FilterKeyNode) => name = "Key",
@@ -38,7 +38,7 @@ namespace SpotifySongTagger.Converters
                 nameof(FilterLoudnessNode) => name = "Loudness",
                 nameof(FilterModeNode) => name = "Mode",
                 nameof(FilterSpeechinessNode) => name = "Speechiness",
-                nameof(FilterTempoNode) => name = "Tempo",
+                nameof(FilterTempoNode) => name = "Tempo (BPM)",
                 nameof(FilterTimeSignatureNode) => name = "Time Signature",
                 nameof(FilterValenceNode) => name = "Valence",
                 nameof(FilterGenreNode) => name = "Genre",
