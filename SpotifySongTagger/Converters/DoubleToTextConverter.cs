@@ -13,9 +13,14 @@ namespace SpotifySongTagger.Converters
         {
             string doubleStr;
             if (value is double mb)
+            {
                 doubleStr = mb.ToString(Format);
+                if (doubleStr == "-0")
+                    doubleStr = "0";
+            }
             else
                 doubleStr = default(double).ToString(Format);
+
 
             return $"{doubleStr}{Suffix}";
         }

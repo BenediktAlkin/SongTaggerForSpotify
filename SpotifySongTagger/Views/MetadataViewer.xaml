@@ -39,9 +39,9 @@
                 <materialDesign:NullableToVisibilityConverter x:Key="InverseNullableToVisibilityConverter" NullValue="Visible" NotNullValue="Collapsed"/>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="9*"/>
                 <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -87,25 +87,68 @@
             <GridSplitter Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1" />
             
             <!-- instructions -->
-            <StackPanel 
-                Grid.Column="1" 
+            <ScrollViewer
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
                 HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Visibility="{Binding SelectedPlaylistOrTag, Converter={StaticResource InverseNullableToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal" Margin="10">
-                    <TextBlock Text="Sync your Spotify library with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
-                    <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
-                </StackPanel>
-                <TextBlock Text="TODO descriptions" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
-                <StackPanel Orientation="Horizontal" Margin="10">
-                    <TextBlock Text="Read more about different types of metadata " VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextDecorations="Underline">
+                Visibility="{Binding SelectedPlaylistOrTag, Converter={StaticResource InverseNullableToVisibilityConverter}}"
+                VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5 5 5 15">
+                        <TextBlock Text="Sync your Spotify library with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                        <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <!-- general attributes -->
+                    <TextBlock Text="Duration [mm:ss]" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Genre - genre associated with the artist(s) of a song" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Tempo - Beats per Minute (BPM)" Margin="5 5 5 25" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <!-- percentages -->
+                    <TextBlock Text="Danceability [%] - how suitable a track is for dancing" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Energy [%] - songs with high energy are typically fast/loud/noisy" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Instrumentalness [%] - if above 50% the song is likely to contain no vocals" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Liveness [%] - values above 80% are likely to be recordings of live performances" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Speechiness [%] - &lt;33% &#x2192; music | 33-66% &#x2192; music and speech | &gt;66% &#x2192; speech" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Valence [%] - musical positiveness (happy songs have high valence, sad songs have low valence)" Margin="5 5 5 25" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <!-- features that don't contain a lot of useful information -->
+                    <TextBlock Text="Acousticness [%]" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Loudness [dB] - relative volume averaged over the whole song (maximum value is 0)" Margin="5 5 5 25" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <!-- musical -->
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Text="Key - " Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextDecorations="Underline">
                         <Hyperlink 
-                            NavigateUri="https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features"
-                            RequestNavigate="Hyperlink_RequestNavigate">here</Hyperlink>
-                    </TextBlock>
+                            NavigateUri="https://en.wikipedia.org/wiki/Pitch_class"
+                            RequestNavigate="Hyperlink_RequestNavigate">Pitch Class</Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=" of the track (e.g. C, C#, D, E, ...)" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Text="Mode - " VerticalAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextDecorations="Underline">
+                        <Hyperlink 
+                            NavigateUri="https://en.wikipedia.org/wiki/Minor_scale"
+                            RequestNavigate="Hyperlink_RequestNavigate">minor</Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=" or " VerticalAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextDecorations="Underline">
+                        <Hyperlink 
+                            NavigateUri="https://en.wikipedia.org/wiki/Major_scale"
+                            RequestNavigate="Hyperlink_RequestNavigate">major</Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=" scale" VerticalAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Text="Time Signature - estimated " Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextDecorations="Underline">
+                        <Hyperlink 
+                            NavigateUri="https://en.wikipedia.org/wiki/Time_signature"
+                            RequestNavigate="Hyperlink_RequestNavigate">Time Signature</Hyperlink>
+                        </TextBlock>
+                        <TextBlock Text=" of the track (3/4 - 7/4)" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    </StackPanel>
                 </StackPanel>
-                
-            </StackPanel>
+            </ScrollViewer>
+            
             <!-- tracks -->
             <DataGrid 
                 Grid.Column="1"
@@ -167,16 +210,22 @@
                         Header="Artists"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="200"/>
+                        Width="150"/>
                     <DataGridTextColumn 
                         Binding="{Binding Track.Album.Name}" 
                         Header="Album"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="Auto" />
+                        Width="100" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.Album.ReleaseYear}" 
                         Header="Year"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="Auto" />
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.DurationString}" 
+                        Header="Duration"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
@@ -187,20 +236,15 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="200" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.AcousticnessPercent}" 
-                        Header="Acousticness"
-                        IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="Auto"/>
-                    <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.DanceabilityPercent}" 
-                        Header="Danceability"
+                        Binding="{Binding Track.AudioFeatures.Tempo, StringFormat=N0}" 
+                        Header="Tempo (BPM)"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
+                    <!-- percent features -->
                     <DataGridTextColumn 
-                        Binding="{Binding Track.DurationString}" 
-                        Header="Duration"
+                        Binding="{Binding Track.AudioFeatures.DanceabilityPercent}" 
+                        Header="Danceability"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
@@ -217,26 +261,8 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Key, Converter={StaticResource PitchConverter}}" 
-                        Header="Key"
-                        IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="Auto" />
-                    <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.LivenessPercent}" 
                         Header="Liveness"
-                        IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="Auto" />
-                    <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Loudness, StringFormat=N0}" 
-                        Header="Loudness"
-                        IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="Auto" />
-                    <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Mode, Converter={StaticResource ModeConverter}}" 
-                        Header="Mode"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
@@ -247,20 +273,40 @@
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.Tempo, StringFormat=N0}" 
-                        Header="Tempo (BPM)"
+                        Binding="{Binding Track.AudioFeatures.ValencePercent}" 
+                        Header="Valence"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="Auto" />
+                    <!-- "useless" features -->
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.AudioFeatures.AcousticnessPercent}" 
+                        Header="Acousticness"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="Auto"/>
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.AudioFeatures.Loudness, StringFormat=N0}" 
+                        Header="Loudness"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="Auto" />
+                    <!-- musical features -->
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.AudioFeatures.Key, Converter={StaticResource PitchConverter}}" 
+                        Header="Key"
+                        IsReadOnly="True"
+                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        Width="Auto" />
+                    <DataGridTextColumn 
+                        Binding="{Binding Track.AudioFeatures.Mode, Converter={StaticResource ModeConverter}}" 
+                        Header="Mode"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.TimeSignature, Converter={StaticResource TimeSignatureConverter}}" 
                         Header="Time Signature"
-                        IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
-                        Width="Auto" />
-                    <DataGridTextColumn 
-                        Binding="{Binding Track.AudioFeatures.ValencePercent}" 
-                        Header="Valence"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />

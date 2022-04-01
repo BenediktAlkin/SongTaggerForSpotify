@@ -67,20 +67,23 @@ namespace SpotifySongTagger.ViewModels
             }),
             new NodeTypeCategory("Advanced Filters", "remove all songs that do not match a filter", false, new[]
             {
-                new NodeType("Acousticness", "filter by release year", typeof(FilterAcousticnessNode)),
-                new NodeType("Danceability", "filter by release year", typeof(FilterDanceabilityNode)),
                 new NodeType("Duration in ms", "filter by release year", typeof(FilterDurationMsNode)),
+                new NodeType("Genre", "filter by genre", typeof(FilterGenreNode)),
+                new NodeType("Tempo (BPM)", "filter by release year", typeof(FilterTempoNode)),
+
+                new NodeType("Danceability", "filter by release year", typeof(FilterDanceabilityNode)),
                 new NodeType("Energy", "filter by release year", typeof(FilterEnergyNode)),
                 new NodeType("Instrumentalness", "filter by release year", typeof(FilterInstrumentalnessNode)),
-                new NodeType("Key", "filter by release year", typeof(FilterKeyNode)),
                 new NodeType("Liveness", "filter by release year", typeof(FilterLivenessNode)),
-                new NodeType("Loudness", "filter by release year", typeof(FilterLoudnessNode)),
-                new NodeType("Mode", "filter by release year", typeof(FilterModeNode)),
                 new NodeType("Speechiness", "filter by release year", typeof(FilterSpeechinessNode)),
-                new NodeType("Tempo", "filter by release year", typeof(FilterTempoNode)),
-                new NodeType("Time Signature", "filter by release year", typeof(FilterTimeSignatureNode)),
                 new NodeType("Valence", "filter by release year", typeof(FilterValenceNode)),
-                new NodeType("Genre", "filter by genre", typeof(FilterGenreNode)),
+                
+                new NodeType("Acousticness", "filter by release year", typeof(FilterAcousticnessNode)),
+                new NodeType("Loudness", "filter by release year", typeof(FilterLoudnessNode)),
+                
+                new NodeType("Key", "filter by release year", typeof(FilterKeyNode)),
+                new NodeType("Mode", "filter by release year", typeof(FilterModeNode)),
+                new NodeType("Time Signature", "filter by release year", typeof(FilterTimeSignatureNode)),
             }),
         };
         #endregion
