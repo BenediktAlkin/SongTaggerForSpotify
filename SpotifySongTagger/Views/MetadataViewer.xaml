@@ -99,7 +99,7 @@
                         <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
                     </StackPanel>
                     <!-- general attributes -->
-                    <TextBlock Text="Duration [mm:ss]" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Duration [m:ss]" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
                     <TextBlock Text="Genre - genre associated with the artist(s) of a song" Margin="5" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
                     <TextBlock Text="Tempo - Beats per Minute (BPM)" Margin="5 5 5 25" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
                     <!-- percentages -->
