@@ -32,7 +32,8 @@ namespace Backend
 
         public enum PlayerError
         {
-            RequiresSpotifyPremium
+            RequiresSpotifyPremium,
+            RequiresOpenSpotifyPlayer,
         }
 
         public delegate void PlayerErrorEventHandler(PlayerError error);
@@ -250,7 +251,7 @@ namespace Backend
             if (!IsPremiumUser)
             {
                 Logger.Information("can't pause playback (no spotify premium)");
-                OnPlayerError?.Invoke(PlayerError.RequiresSpotifyPremium);
+                OnPlayerError?.Invoke(PlayerError.RequiresOpenSpotifyPlayer);
                 return;
             }
             if (Spotify == null) return;
@@ -342,6 +343,7 @@ namespace Backend
                 if (availableDevicesResponse.Devices.Count == 0)
                 {
                     Logger.Error($"can't update playing track (no device is available)");
+                    OnPlayerError?.Invoke(PlayerError.RequiresOpenSpotifyPlayer);
                     return;
                 }
 

@@ -13,24 +13,15 @@ using System.Windows.Documents;
 
 namespace SpotifySongTagger.ViewModels
 {
-    public class MetadataViewerViewModel : BaseViewModel
+    public class MetadataViewerViewModel : SpotifyPlayerViewModel
     {
-        private ISnackbarMessageQueue MessageQueue { get; set; }
-        public MetadataViewerViewModel(ISnackbarMessageQueue messageQueue)
-        {
-            MessageQueue = messageQueue;
-        }
+        public MetadataViewerViewModel(ISnackbarMessageQueue messageQueue) 
+            : base(messageQueue) { }
 
         #region load/unload
-        public void OnLoaded()
+        public override void OnLoaded()
         {
-            // register PlayerManager error handling
-            BaseViewModel.PlayerManager.OnPlayerError += OnPlayerError;
-
-            // register player updates
-            BaseViewModel.PlayerManager.OnTrackChanged += UpdatePlayingTrack;
-            BaseViewModel.PlayerManager.OnProgressChanged += SetProgressSpotify;
-            BaseViewModel.PlayerManager.OnVolumeChanged += SetVolumeSpotify;
+            base.OnLoaded(); 
 
             // start updates for player
             BaseViewModel.PlayerManager.StartUpdateTrackInfoTimer();
@@ -46,12 +37,10 @@ namespace SpotifySongTagger.ViewModels
             var generatedPlaylistsTask = BaseViewModel.DataContainer.LoadGeneratedPlaylists();
             Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result => LoadedPlaylists = true);
         }
-        public void OnUnloaded()
+        public override void OnUnloaded()
         {
-            BaseViewModel.PlayerManager.OnPlayerError -= OnPlayerError;
-            BaseViewModel.PlayerManager.OnTrackChanged -= UpdatePlayingTrack;
-            BaseViewModel.PlayerManager.OnProgressChanged -= SetProgressSpotify;
-            BaseViewModel.PlayerManager.OnVolumeChanged -= SetVolumeSpotify;
+            base.OnUnloaded();
+
             BaseViewModel.PlayerManager.StopUpdateTrackInfoTimer();
             BaseViewModel.PlayerManager.StopUpdatePlaybackInfoTimer();
             BaseViewModel.DataContainer.OnPlaylistsUpdated -= NotifyPlaylistTreeNodesChanged;
@@ -72,12 +61,6 @@ namespace SpotifySongTagger.ViewModels
         {
             get => selectedTrackVM;
             set => SetProperty(ref selectedTrackVM, value, nameof(SelectedTrackVM));
-        }
-        private List<TrackViewModel> trackVMs;
-        public List<TrackViewModel> TrackVMs
-        {
-            get => trackVMs;
-            set => SetProperty(ref trackVMs, value, nameof(TrackVMs));
         }
         public async Task LoadTracks(PlaylistOrTag playlistOrTag)
         {
@@ -130,12 +113,6 @@ namespace SpotifySongTagger.ViewModels
                 Log.Information($"loaded {TrackVMs.Count} tracks from {playlistOrTag}");
             }
         }
-        private void UpdatePlayingTrack(string newId)
-        {
-            if (TrackVMs == null) return;
-            foreach (var trackVM in TrackVMs)
-                trackVM.IsPlaying = trackVM.Track.Id == newId;
-        }
         #endregion
 
 
@@ -161,69 +138,5 @@ namespace SpotifySongTagger.ViewModels
             set => SetProperty(ref loadedPlaylists, value, nameof(LoadedPlaylists));
         }
         #endregion
-
-        
-        #region Player volume
-        public bool IsDraggingVolume { get; set; }
-        private void SetVolumeSpotify(int newVolume) => SetVolume(newVolume, UpdateSource.Spotify);
-        public void SetVolume(int newVolume, UpdateSource source)
-        {
-            if (IsDraggingVolume && source == UpdateSource.Spotify) return;
-
-            volume = newVolume;
-            VolumeSource = source;
-            NotifyPropertyChanged(nameof(Volume));
-        }
-        public UpdateSource VolumeSource { get; private set; }
-        private int volume;
-        public int Volume
-        {
-            get => volume;
-            set => SetVolume(value, UpdateSource.User);
-        }
-        #endregion
-
-        #region Player progress
-        public bool IsDraggingProgress { get; set; }
-        private void SetProgressSpotify(int newProgress) => SetProgress(newProgress, UpdateSource.Spotify);
-        public void SetProgress(int newProgress, UpdateSource source)
-        {
-            if (IsDraggingProgress && source == UpdateSource.Spotify) return;
-
-            progress = newProgress;
-            ProgressSource = source;
-            NotifyPropertyChanged(nameof(Progress));
-        }
-        public UpdateSource ProgressSource { get; private set; }
-        private int progress;
-        public int Progress
-        {
-            get => progress;
-            set => SetProgress(value, UpdateSource.User);
-        }
-        #endregion
-        private void OnPlayerError(PlayerManager.PlayerError error)
-        {
-            object msg;
-            switch (error)
-            {
-                case PlayerManager.PlayerError.RequiresSpotifyPremium:
-                    var textBlock = new TextBlock { Text = "Requires " };
-                    var link = new Hyperlink() { NavigateUri = new Uri("https://www.spotify.com/us/premium/") };
-                    link.RequestNavigate += (sender, e) => Process.Start(new ProcessStartInfo
-                    {
-                        FileName = e.Uri.ToString(),
-                        UseShellExecute = true
-                    });
-                    link.Inlines.Add(new Run("Spotify Premium"));
-                    textBlock.Inlines.Add(link);
-                    msg = textBlock;
-                    break;
-                default:
-                    msg = "Unknown Error from Spotify Player";
-                    break;
-            }
-            MessageQueue.Enqueue(msg);
-        }
     }
 }
