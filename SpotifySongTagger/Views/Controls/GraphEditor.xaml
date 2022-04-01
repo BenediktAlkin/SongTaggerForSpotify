@@ -269,6 +269,23 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </DataTemplate>
+                    <!-- FilterGenreNodeView -->
+                    <DataTemplate x:Key="FilterGenreNodeView">
+                        <ComboBox materialDesign:HintAssist.Hint="Genre"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            ItemsSource="{Binding ValidGenres}"
+                            SelectedItem="{Binding Genre}"
+                            SelectionChanged="FilterGenreNode_GenreChanged"
+                            Margin="0 0 0 20">
+                            <ComboBox.Text>
+                                <Binding Path="Genre" Converter="{StaticResource ObjectToStringConverter}">
+                                    <Binding.ValidationRules>
+                                        <validationRules:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.Text>
+                        </ComboBox>
+                    </DataTemplate>
                 </ItemsControl.Resources>
                 <!-- canvas -->
                 <ItemsControl.ItemsPanel>
@@ -400,6 +417,9 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterValenceNode">
                                                         <Setter Property="ContentTemplate" Value="{StaticResource FilterRangeView}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding GraphNode, Converter={StaticResource ObjectToTypeNameConverter}}" Value="FilterGenreNode">
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource FilterGenreNodeView}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

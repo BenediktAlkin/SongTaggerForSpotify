@@ -32,7 +32,8 @@ namespace Backend.Entities.GraphNodes
             if ((to.RequiresArtists && !IncludedArtists) ||
                 (to.RequiresTags && !IncludedTags) ||
                 (to.RequiresAlbums && !IncludedAlbums) ||
-                (to.RequiresAudioFeatures && !RequiresAudioFeatures))
+                (to.RequiresAudioFeatures && !IncludedAudioFeatures) ||
+                (to.RequiresGenres && !IncludedGenres))
                 ClearResult();
         }
         protected override bool CanAddInput(GraphNode input) => false;
@@ -40,6 +41,7 @@ namespace Backend.Entities.GraphNodes
         protected bool IncludedTags { get; set; }
         protected bool IncludedAlbums { get; set; }
         protected bool IncludedAudioFeatures { get; set; }
+        protected bool IncludedGenres { get; set; }
 
         protected override void MapInputToOutput() => OutputResult = InputResult[0];
         protected override void CalculateInputResultImpl()
@@ -54,11 +56,13 @@ namespace Backend.Entities.GraphNodes
             IncludedTags = AnyForward(gn => gn.RequiresTags);
             IncludedAlbums = AnyForward(gn => gn.RequiresAlbums);
             IncludedAudioFeatures = AnyForward(gn => gn.RequiresAudioFeatures);
+            IncludedGenres = AnyForward(gn => gn.RequiresGenres);
 
             var tracks = GetTracks();
             InputResult = new List<List<Track>> { tracks };
             Logger.Information($"Calculated InputResult for {this} (count={InputResult?.Count} id={PlaylistId} " +
-                $"IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={IncludedAlbums})");
+                $"IncludedArtist={IncludedArtists} IncludedTags={IncludedTags} IncludeAlbums={IncludedAlbums}" +
+                $"IncludedAudioFeatures={IncludedAudioFeatures} IncludedGenres={IncludedGenres})");
         }
         protected abstract List<Track> GetTracks();
 

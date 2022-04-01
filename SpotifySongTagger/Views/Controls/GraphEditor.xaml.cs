@@ -255,6 +255,15 @@ namespace SpotifySongTagger.Views.Controls
 
             await ViewModel.FilterTimeSignatureNode_TimeSignatureChanged(node, node.TimeSignature);
         }
+        private async void FilterGenreNode_GenreChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            var frameworkElement = sender as FrameworkElement;
+            var node = frameworkElement.DataContext as FilterGenreNode;
+            if (node == null) return;
+
+            await ViewModel.FilterGenreNode_GenreChanged(node, node.Genre);
+        }
         #endregion
     }
 }

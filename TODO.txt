@@ -1,11 +1,7 @@
 current:
 - redo migrations to not have 1000 small migrations
-- graph nodes for filters are not ready yet
-- graph node for genre filter
 - audio features viewer/filter (test nodes)
-- genres (test)
 - metadata viewer center numbers
-- metadata viewer maybe change to %
 
 code improvements:
 - DatabaseOperations has a lot of redundancy in methods like EditFilterKeyNode

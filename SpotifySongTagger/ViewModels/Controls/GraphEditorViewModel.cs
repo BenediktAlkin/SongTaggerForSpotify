@@ -366,6 +366,17 @@ namespace SpotifySongTagger.ViewModels.Controls
                 await RefreshInputResults();
             }
         }
+        public async Task FilterGenreNode_GenreChanged(FilterGenreNode node, Genre genre)
+        {
+            if (genre == null) return;
+            // update in db
+            if (DatabaseOperations.EditFilterGenreNode(node, genre))
+            {
+                // update in ui
+                //node.Genre = genre; // not required as binding is directly to the node
+                await RefreshInputResults();
+            }
+        }
         #endregion
 
     }

@@ -80,6 +80,7 @@ namespace Backend
             RegisterInheritedType<FilterTempoNode>();
             RegisterInheritedType<FilterTimeSignatureNode>();
             RegisterInheritedType<FilterValenceNode>();
+            RegisterInheritedType<FilterGenreNode>();
 
             // "All" and "Untagged Songs" need to be in db for PlaylistInputNode to store reference
             foreach (var metaPlaylistId in Constants.META_PLAYLIST_IDS)
@@ -166,6 +167,7 @@ namespace Backend
         public DbSet<FilterKeyNode> FilterKeyNodes { get; set; }
         public DbSet<FilterModeNode> FilterModeNodes { get; set; }
         public DbSet<FilterTimeSignatureNode> FilterTimeSignatureNodes { get; set; }
+        public DbSet<FilterGenreNode> FilterGenreNodes { get; set; }
 
     }
 }

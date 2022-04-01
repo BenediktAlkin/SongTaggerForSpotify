@@ -248,7 +248,7 @@
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.Tempo, StringFormat=N0}" 
-                        Header="Tempo"
+                        Header="Tempo (BPM)"
                         IsReadOnly="True"
                         ElementStyle="{StaticResource VerticalCenteredTextColumn}"
                         Width="Auto" />

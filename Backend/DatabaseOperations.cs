@@ -559,6 +559,7 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.FilterKeyNodes));
             nodes.AddRange(BaseQuery(db.FilterModeNodes));
             nodes.AddRange(BaseQuery(db.FilterTimeSignatureNodes));
+            nodes.AddRange(BaseQuery(db.FilterGenreNodes).Include(gn => gn.Genre));
             return nodes;
         }
         public static List<IRunnableGraphNode> GetRunnableGraphNodes(GraphGeneratorPage ggp)
@@ -946,6 +947,39 @@ namespace Backend
             dbNode.TimeSignature = timeSignature;
             db.SaveChanges();
             Logger.Information($"updated FilterTimeSignatureNode oldTimeSignature={oldTimeSignature} newTimeSignature={timeSignature}");
+            return true;
+        }
+        public static bool EditFilterGenreNode(FilterGenreNode node, Genre genre)
+        {
+            if (node == null)
+            {
+                Logger.Information("can't update FilterGenreNode (node is null)");
+                return false;
+            }
+
+            using var db = ConnectionManager.NewContext();
+            var dbNode = db.FilterGenreNodes.FirstOrDefault(gn => gn.Id == node.Id);
+            if (dbNode == null)
+            {
+                Logger.Information("can't update FilterGenreNode (not in db)");
+                return false;
+            }
+            Genre dbGenre = null;
+            if (genre != null)
+            {
+                dbGenre = db.Genres.FirstOrDefault(g => g.Id == genre.Id);
+                if (dbGenre == null)
+                {
+                    Logger.Information("can't update FilterGenreNode (genre not in db)");
+                    return false;
+                }
+            }
+
+            var oldGenreId = dbNode.GenreId;
+            dbNode.GenreId = dbGenre?.Id;
+            db.SaveChanges();
+            Logger.Information($"updated FilterGenreNode oldGenreId={oldGenreId} " +
+                $"newGenreId={dbNode.GenreId} newGenre={dbGenre}");
             return true;
         }
         #endregion

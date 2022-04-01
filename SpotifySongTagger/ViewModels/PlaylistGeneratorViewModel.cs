@@ -80,6 +80,7 @@ namespace SpotifySongTagger.ViewModels
                 new NodeType("Tempo", "filter by release year", typeof(FilterTempoNode)),
                 new NodeType("Time Signature", "filter by release year", typeof(FilterTimeSignatureNode)),
                 new NodeType("Valence", "filter by release year", typeof(FilterValenceNode)),
+                new NodeType("Genre", "filter by genre", typeof(FilterGenreNode)),
             }),
         };
         #endregion

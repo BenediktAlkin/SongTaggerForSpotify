@@ -41,6 +41,7 @@ namespace SpotifySongTagger.Converters
                 nameof(FilterTempoNode) => name = "Tempo",
                 nameof(FilterTimeSignatureNode) => name = "Time Signature",
                 nameof(FilterValenceNode) => name = "Valence",
+                nameof(FilterGenreNode) => name = "Genre",
                 _ => name = "Unknown Node",
             };
 

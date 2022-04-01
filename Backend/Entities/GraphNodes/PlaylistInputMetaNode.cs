@@ -7,7 +7,8 @@ namespace Backend.Entities.GraphNodes
         protected override List<Track> GetTracks()
         {
             return DatabaseOperations.MetaPlaylistTracks(Playlist.Id, includeAlbums: IncludedAlbums,
-                includeArtists: IncludedArtists, includeTags: IncludedTags, includeAudioFeatures: IncludedAudioFeatures);
+                includeArtists: IncludedArtists, includeTags: IncludedTags, includeAudioFeatures: IncludedAudioFeatures,
+                includeArtistGenres: IncludedGenres);
         }
     }
 }
