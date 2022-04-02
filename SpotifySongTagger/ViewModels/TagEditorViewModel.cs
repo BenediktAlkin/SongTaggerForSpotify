@@ -19,7 +19,6 @@ namespace SpotifySongTagger.ViewModels
             : base(messageQueue) { }
 
         #region load/unload
-        private Task LoadTagsTask { get; set; }
         public override void OnLoaded()
         {
             base.OnLoaded();
@@ -40,7 +39,7 @@ namespace SpotifySongTagger.ViewModels
             Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result => LoadedPlaylists = true);
 
             // load tags
-            LoadTagsTask = BaseViewModel.DataContainer.LoadTagGroups();
+            _ = BaseViewModel.DataContainer.LoadTagGroups();
         }
         public override void OnUnloaded()
         {
@@ -91,7 +90,7 @@ namespace SpotifySongTagger.ViewModels
             // check if the playlist is still selected
             if (SelectedPlaylistOrTag == playlistOrTag)
             {
-                await LoadTagsTask;
+                await DataContainer.Instance.LoadTagGroups();
                 // tags of tracks dont have the same reference to tag as they come from a different db context
                 foreach (var trackVM in newTrackVMs)
                 {

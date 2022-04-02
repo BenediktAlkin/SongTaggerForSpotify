@@ -108,16 +108,24 @@ namespace Backend
             }
         }
 
+        private Task LoadTagGroupsTask { get; set; }
         public async Task LoadTagGroups()
         {
             if (TagGroups != null) return;
+            if (LoadTagGroupsTask != null)
+            {
+                await LoadTagGroupsTask;
+                return;
+            }
 
             TagGroups = null;
-            await Task.Run(() =>
+            LoadTagGroupsTask = Task.Run(() =>
             {
                 var dbTagGroups = DatabaseOperations.GetTagGroups();
                 TagGroups = new ObservableCollection<TagGroup>(dbTagGroups);
             });
+            await LoadTagGroupsTask;
+            LoadTagGroupsTask = null;
         }
         private void ChangeTagGroupSorted(Tag tag, TagGroup tagGroup)
         {

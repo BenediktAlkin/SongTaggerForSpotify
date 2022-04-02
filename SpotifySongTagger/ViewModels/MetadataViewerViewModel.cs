@@ -36,6 +36,9 @@ namespace SpotifySongTagger.ViewModels
             var sourcePlaylistsTask = BaseViewModel.DataContainer.LoadSourcePlaylists();
             var generatedPlaylistsTask = BaseViewModel.DataContainer.LoadGeneratedPlaylists();
             Task.WhenAll(sourcePlaylistsTask, generatedPlaylistsTask).ContinueWith(result => LoadedPlaylists = true);
+
+            // load tags (required for tag playlists)
+            _ = BaseViewModel.DataContainer.LoadTagGroups();
         }
         public override void OnUnloaded()
         {
