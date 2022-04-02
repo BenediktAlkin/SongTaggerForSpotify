@@ -32,6 +32,7 @@ minor bugs:
 - if databasefolder is changed while SST is running, it crashes
 
 future
+- popularity of a song (play count is not available through the API)
 - add a property that "blacklists" a song in all playlists (like my "remove-from-charts" tag right now)
 - support easy multiple accounts staying logged in
 - settings for treeview expansions

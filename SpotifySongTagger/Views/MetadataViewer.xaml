@@ -167,6 +167,14 @@
                     <Style x:Key="VerticalCenteredTextColumn" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
                         <Setter Property="VerticalAlignment" Value="Center" />
                     </Style>
+                    <Style x:Key="CenteredTextColumn" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="HorizontalAlignment" Value="Center" />
+                    </Style>
+                    <Style x:Key="CenteredHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="HorizontalAlignment" Value="Center" />
+                    </Style>
                 </DataGrid.Resources>
                 <!-- remove outline of a selcted cell -->
                 <DataGrid.CellStyle>
@@ -221,13 +229,15 @@
                         Binding="{Binding Track.Album.ReleaseYear}" 
                         Header="Year"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.DurationString}" 
                         Header="Duration"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.ArtistsGenresString}" 
@@ -239,76 +249,88 @@
                         Binding="{Binding Track.AudioFeatures.Tempo, StringFormat=N0}" 
                         Header="Tempo (BPM)"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <!-- percent features -->
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.DanceabilityPercent}" 
                         Header="Danceability"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.EnergyPercent}" 
                         Header="Energy"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.InstrumentalnessPercent}" 
                         Header="Instrumentalness"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.LivenessPercent}" 
                         Header="Liveness"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.SpeechinessPercent}" 
                         Header="Speechiness"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.ValencePercent}" 
                         Header="Valence"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <!-- "useless" features -->
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.AcousticnessPercent}" 
                         Header="Acousticness"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto"/>
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.Loudness, StringFormat=N0}" 
                         Header="Loudness"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <!-- musical features -->
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.Key, Converter={StaticResource PitchConverter}}" 
                         Header="Key"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.Mode, Converter={StaticResource ModeConverter}}" 
                         Header="Mode"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                     <DataGridTextColumn 
                         Binding="{Binding Track.AudioFeatures.TimeSignature, Converter={StaticResource TimeSignatureConverter}}" 
                         Header="Time Signature"
                         IsReadOnly="True"
-                        ElementStyle="{StaticResource VerticalCenteredTextColumn}"
+                        HeaderStyle="{StaticResource CenteredHeader}"
+                        ElementStyle="{StaticResource CenteredTextColumn}"
                         Width="Auto" />
                 </DataGrid.Columns>
             </DataGrid>
