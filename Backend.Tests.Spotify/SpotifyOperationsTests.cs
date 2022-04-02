@@ -14,6 +14,7 @@ namespace Backend.Tests.Spotify
         public override void SetUp()
         {
             base.SetUp();
+            Assert.IsNotNull(ConnectionManager.Instance.GetSavedToken());
             ConnectionManager.Instance.TryInitFromSavedToken().Wait();
         }
 

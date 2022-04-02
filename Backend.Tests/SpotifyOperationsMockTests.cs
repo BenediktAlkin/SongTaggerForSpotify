@@ -11,6 +11,12 @@ namespace Backend.Tests
 {
     public class SpotifyOperationsMockTests : BaseTests
     {
+        [SetUp]
+        public override void SetUp()
+        {
+            REQUIRES_DB = true;
+            base.SetUp();
+        }
         [Test]
         public async Task GetPlaylistItems()
         {

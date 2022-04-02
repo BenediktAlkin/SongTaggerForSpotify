@@ -8,7 +8,8 @@ namespace Backend.Entities.GraphNodes.AudioFeaturesFilters
 {
     public class FilterLivenessNode : FilterRangeNode
     {
-        protected override int? GetValue(Track t) => t.AudioFeatures.LivenessPercent;
+        // if db is pre-AudioFeatures even including AudioFeatures results in AudioFeature being null
+        protected override int? GetValue(Track t) => t.AudioFeatures?.LivenessPercent;
         public override bool RequiresAudioFeatures => true;
     }
 }

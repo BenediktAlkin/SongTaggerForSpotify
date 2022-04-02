@@ -331,10 +331,57 @@ namespace Tests.Util
             trackMock.Setup(track => track.Get(It.IsAny<string>(), It.IsAny<TrackRequest>()))
                 .Returns((string trackId, TrackRequest req) => 
                 Task.FromResult(Tracks.FirstOrDefault(t => t.Id == trackId)));
+            trackMock.Setup(track => track.GetSeveralAudioFeatures(It.IsAny<TracksAudioFeaturesRequest>()))
+                .Returns((TracksAudioFeaturesRequest req) =>
+                {
+                    var response = new TracksAudioFeaturesResponse
+                    {
+                        // TODO this is not tested yet and is only here to avoid SyncLibrary failing
+                        AudioFeatures = req.Ids.Select(id => new TrackAudioFeatures
+                        {
+                            Id = id,
+                            Acousticness = 0.5f,
+                            AnalysisUrl = "http://some.url/",
+                            Danceability = 0.5f,
+                            DurationMs = 123,
+                            Energy = 0.5f,
+                            Instrumentalness = 0.5f,
+                            Key = 3,
+                            Liveness = 0.5f,
+                            Loudness = 0.5f,
+                            Mode = 0,
+                            Speechiness = 0.5f,
+                            Tempo = 123,
+                            TimeSignature = 4,
+                            TrackHref = "http://some.href/",
+                            Type = "SomeType",
+                            Uri = "http://some.uri",
+                            Valence = 0.5f,
+                        }).ToList(),
+                    };
+                    return Task.FromResult(response);
+                });
 
             var userMock = new Mock<IUserProfileClient>();
             userMock.Setup(user => user.Current())
                 .Returns(() => Task.FromResult(User));
+
+            // TODO this was not tested yet
+            var artistMock = new Mock<IArtistsClient>();
+            artistMock.Setup(artist => artist.GetSeveral(It.IsAny<ArtistsRequest>()))
+                .Returns((ArtistsRequest req) =>
+                {
+                    var response = new ArtistsResponse
+                    {
+                        Artists = req.Ids.Select(id => new FullArtist
+                        {
+                            Id = id, // TODO this is technically not needed (only genres are needed)
+                            Genres = new List<string> { "genre1", "genre2" },
+                            Name = $"{id}.Name", // TODO this is technically not needed (only genres are needed)
+                        }).ToList(),
+                    };
+                    return Task.FromResult(response);
+                });
 
             mock.SetupGet(client => client.Library).Returns(libraryMock.Object);
             mock.SetupGet(client => client.Playlists).Returns(playlistsMock.Object);
@@ -342,6 +389,7 @@ namespace Tests.Util
             mock.SetupGet(client => client.Albums).Returns(albumMock.Object);
             mock.SetupGet(client => client.Tracks).Returns(trackMock.Object);
             mock.SetupGet(client => client.UserProfile).Returns(userMock.Object);
+            mock.SetupGet(client => client.Artists).Returns(artistMock.Object);
 
 
             SpotifyClient = mock.Object;
