@@ -1,7 +1,5 @@
 current:
 - redo migrations to not have 1000 small migrations
-- audio features viewer/filter (test nodes)
-- metadata viewer center numbers
 
 code improvements:
 - DatabaseOperations has a lot of redundancy in methods like EditFilterKeyNode
