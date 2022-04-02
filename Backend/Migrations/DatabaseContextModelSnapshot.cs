@@ -16,21 +16,6 @@ namespace Backend.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.11");
 
-            modelBuilder.Entity("ArtistGenre", b =>
-                {
-                    b.Property<string>("ArtistsId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("GenresId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ArtistsId", "GenresId");
-
-                    b.HasIndex("GenresId");
-
-                    b.ToTable("ArtistGenre");
-                });
-
             modelBuilder.Entity("ArtistTrack", b =>
                 {
                     b.Property<string>("ArtistsId")
@@ -76,66 +61,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Artists");
-                });
-
-            modelBuilder.Entity("Backend.Entities.AudioFeatures", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<float>("Acousticness")
-                        .HasColumnType("REAL");
-
-                    b.Property<float>("Danceability")
-                        .HasColumnType("REAL");
-
-                    b.Property<float>("Energy")
-                        .HasColumnType("REAL");
-
-                    b.Property<float>("Instrumentalness")
-                        .HasColumnType("REAL");
-
-                    b.Property<int>("Key")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<float>("Liveness")
-                        .HasColumnType("REAL");
-
-                    b.Property<float>("Loudness")
-                        .HasColumnType("REAL");
-
-                    b.Property<int>("Mode")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<float>("Speechiness")
-                        .HasColumnType("REAL");
-
-                    b.Property<float>("Tempo")
-                        .HasColumnType("REAL");
-
-                    b.Property<int>("TimeSignature")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<float>("Valence")
-                        .HasColumnType("REAL");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AudioFeatures");
-                });
-
-            modelBuilder.Entity("Backend.Entities.Genre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("Backend.Entities.GraphGeneratorPage", b =>
@@ -264,9 +189,6 @@ namespace Backend.Migrations
                     b.Property<string>("AlbumId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AudioFeaturesId")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("DurationMs")
                         .HasColumnType("INTEGER");
 
@@ -279,9 +201,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlbumId");
-
-                    b.HasIndex("AudioFeaturesId")
-                        .IsUnique();
 
                     b.ToTable("Tracks");
                 });
@@ -344,36 +263,6 @@ namespace Backend.Migrations
                     b.HasDiscriminator().HasValue("AssignTagNode");
                 });
 
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterKeyNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
-
-                    b.Property<int?>("Key")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("FilterKeyNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterModeNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
-
-                    b.Property<int?>("Mode")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("FilterModeNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterTimeSignatureNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
-
-                    b.Property<int?>("TimeSignature")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("FilterTimeSignatureNode");
-                });
-
             modelBuilder.Entity("Backend.Entities.GraphNodes.ConcatNode", b =>
                 {
                     b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
@@ -400,31 +289,6 @@ namespace Backend.Migrations
                     b.HasDiscriminator().HasValue("FilterArtistNode");
                 });
 
-            modelBuilder.Entity("Backend.Entities.GraphNodes.FilterGenreNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
-
-                    b.Property<int?>("GenreId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasIndex("GenreId");
-
-                    b.HasDiscriminator().HasValue("FilterGenreNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.FilterRangeNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
-
-                    b.Property<int?>("ValueFrom")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ValueTo")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("FilterRangeNode");
-                });
-
             modelBuilder.Entity("Backend.Entities.GraphNodes.FilterTagNode", b =>
                 {
                     b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
@@ -442,6 +306,19 @@ namespace Backend.Migrations
                     b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
 
                     b.HasDiscriminator().HasValue("FilterUntaggedNode");
+                });
+
+            modelBuilder.Entity("Backend.Entities.GraphNodes.FilterYearNode", b =>
+                {
+                    b.HasBaseType("Backend.Entities.GraphNodes.GraphNode");
+
+                    b.Property<int?>("YearFrom")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("YearTo")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("FilterYearNode");
                 });
 
             modelBuilder.Entity("Backend.Entities.GraphNodes.IntersectNode", b =>
@@ -493,83 +370,6 @@ namespace Backend.Migrations
                     b.HasDiscriminator().HasValue("RemoveNode");
                 });
 
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterAcousticnessNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterAcousticnessNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterDanceabilityNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterDanceabilityNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterDurationMsNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterDurationMsNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterEnergyNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterEnergyNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterInstrumentalnessNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterInstrumentalnessNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterLivenessNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterLivenessNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterLoudnessNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterLoudnessNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterSpeechinessNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterSpeechinessNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterTempoNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterTempoNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.AudioFeaturesFilters.FilterValenceNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterValenceNode");
-                });
-
-            modelBuilder.Entity("Backend.Entities.GraphNodes.FilterYearNode", b =>
-                {
-                    b.HasBaseType("Backend.Entities.GraphNodes.FilterRangeNode");
-
-                    b.HasDiscriminator().HasValue("FilterYearNode");
-                });
-
             modelBuilder.Entity("Backend.Entities.GraphNodes.PlaylistInputLikedNode", b =>
                 {
                     b.HasBaseType("Backend.Entities.GraphNodes.PlaylistInputNode");
@@ -582,21 +382,6 @@ namespace Backend.Migrations
                     b.HasBaseType("Backend.Entities.GraphNodes.PlaylistInputNode");
 
                     b.HasDiscriminator().HasValue("PlaylistInputMetaNode");
-                });
-
-            modelBuilder.Entity("ArtistGenre", b =>
-                {
-                    b.HasOne("Backend.Entities.Artist", null)
-                        .WithMany()
-                        .HasForeignKey("ArtistsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Entities.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ArtistTrack", b =>
@@ -642,13 +427,7 @@ namespace Backend.Migrations
                         .WithMany("Tracks")
                         .HasForeignKey("AlbumId");
 
-                    b.HasOne("Backend.Entities.AudioFeatures", "AudioFeatures")
-                        .WithOne("Track")
-                        .HasForeignKey("Backend.Entities.Track", "AudioFeaturesId");
-
                     b.Navigation("Album");
-
-                    b.Navigation("AudioFeatures");
                 });
 
             modelBuilder.Entity("GraphNodeGraphNode", b =>
@@ -715,15 +494,6 @@ namespace Backend.Migrations
                     b.Navigation("Artist");
                 });
 
-            modelBuilder.Entity("Backend.Entities.GraphNodes.FilterGenreNode", b =>
-                {
-                    b.HasOne("Backend.Entities.Genre", "Genre")
-                        .WithMany()
-                        .HasForeignKey("GenreId");
-
-                    b.Navigation("Genre");
-                });
-
             modelBuilder.Entity("Backend.Entities.GraphNodes.FilterTagNode", b =>
                 {
                     b.HasOne("Backend.Entities.Tag", "Tag")
@@ -764,11 +534,6 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Entities.Album", b =>
                 {
                     b.Navigation("Tracks");
-                });
-
-            modelBuilder.Entity("Backend.Entities.AudioFeatures", b =>
-                {
-                    b.Navigation("Track");
                 });
 
             modelBuilder.Entity("Backend.Entities.GraphGeneratorPage", b =>
