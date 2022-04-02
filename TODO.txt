@@ -1,6 +1,3 @@
-current:
-- redo migrations to not have 1000 small migrations
-
 code improvements:
 - DatabaseOperations has a lot of redundancy in methods like EditFilterKeyNode
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
@@ -19,6 +16,7 @@ possible bugs:
     Not 100% sure though if this is the bug that occoured in the past or not.
 
 minor bugs:
+- couldn't delete a GraphNode, but moving it updated it in the db
 - readme of tagify mentions something not working
 - click delete GraphGeneratorPage --> cancel dialog --> same GraphGeneratorPage delete icon does nothing
 - graph editor: nodes attach to mouse if mouse is released over e.g. a textbox while dragging a node
