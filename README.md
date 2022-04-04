@@ -46,8 +46,11 @@ Some [examples](https://github.com/BenediktAlkin/SpotifySongTagger#Examples) are
 ![Combine charts example](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/combine%20charts.png)
 
 ## Song Metadata
-Spotify provides some metadata for every song (BPM, danceability, energy, ...). You can look at the metadata of your library from the app and also use the metadata in the playlist generator.
-![Combine charts example](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/QuotaExtensionApplication/MetadataViewer.png)
+Spotify provides some metadata for every song (BPM, danceability, energy, ...). You can take a look at the metadata of your library.
+![View song metadata](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/QuotaExtensionApplication/MetadataViewer.png)
+
+You can also use this metadata in the Playlist Generator to organize your music library.
+![Create new playlists based on song metadata](https://github.com/BenediktAlkin/SpotifySongTagger/blob/main/Examples/high_energy.png)
 
 ## Backup/Restore/Delete your Tags/PlaylistGenerators
 All data is stored in a local database called "<SPOTIFY_USERNAME>.sqlite" which is located by default either in "C:\Users\\<WINDOWS_USER>\AppData\Roaming\Song Tagger for Spotify" (if you installed the program) or in the directory of your portable version.
