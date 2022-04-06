@@ -9,7 +9,12 @@ namespace Backend.Entities.GraphNodes.AudioFeaturesFilters
     public class FilterEnergyNode : FilterRangeNode
     {
         // if db is pre-AudioFeatures even including AudioFeatures results in AudioFeature being null
-        protected override int? GetValue(Track t) => t.AudioFeatures?.EnergyPercent;
+        protected override int? GetValue(Track t)
+        {
+            if (t.AudioFeatures == null)
+                ErrorMessageService.TriggerMissingAudioFeatures();
+            return t.AudioFeatures?.EnergyPercent;
+        }
         public override bool RequiresAudioFeatures => true;
     }
 }

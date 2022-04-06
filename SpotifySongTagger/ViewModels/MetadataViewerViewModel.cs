@@ -114,6 +114,10 @@ namespace SpotifySongTagger.ViewModels
                 TrackVMs = newTrackVMs;
                 IsLoadingTracks = false;
                 Log.Information($"loaded {TrackVMs.Count} tracks from {playlistOrTag}");
+
+                // check if metadata is missing and display a hint if it is missing
+                if (TrackVMs.Select(tvm => tvm.Track.AudioFeatures == null).Any())
+                    MessageQueue.Enqueue(UIComposer.ComposeMissingMetadataText());
             }
         }
         #endregion

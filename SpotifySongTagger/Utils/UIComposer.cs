@@ -11,6 +11,7 @@ namespace SpotifySongTagger.Utils
 {
     public static class UIComposer
     {
+        public static string ComposeMissingMetadataText() => "Detected missing metadata, make sure to sync your library";
         public static TextBlock ComposeRequiresSpotifyPremiumLink()
         {
             var textBlock = new TextBlock { Text = "Requires " };

@@ -5,6 +5,7 @@ using Backend.Entities.GraphNodes.AudioFeaturesFilters;
 using MaterialDesignThemes.Wpf;
 using Serilog;
 using SpotifySongTagger.Converters;
+using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,15 @@ namespace SpotifySongTagger.ViewModels
             MessageQueue = messageQueue;
         }
 
-        public async Task Init()
+        #region Load/Unload
+        public async Task Loaded()
         {
             await DataContainer.LoadGraphGeneratorPages();
             IsReady = true;
+            ErrorMessageService.OnMissingAudioFeatures += DisplayMissingMetadataMessage;
         }
+        public void Unloaded() => ErrorMessageService.OnMissingAudioFeatures -= DisplayMissingMetadataMessage;
+        private void DisplayMissingMetadataMessage() => MessageQueue.Enqueue(UIComposer.ComposeMissingMetadataText());
 
         // PlaylistGenerator is ready when GraphGeneratorPages and SourcePlaylists are loaded
         private bool isReady;
@@ -36,6 +41,7 @@ namespace SpotifySongTagger.ViewModels
             get => isReady;
             set => SetProperty(ref isReady, value, nameof(IsReady));
         }
+        #endregion
 
 
         #region NodeTypes
