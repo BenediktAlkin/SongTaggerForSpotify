@@ -1,3 +1,5 @@
+probably should unset currently viewed playlist after sync is finished (viewed playlist is then an old version)
+
 code improvements:
 - DatabaseOperations has a lot of redundancy in methods like EditFilterKeyNode
 - DatabaseOperations should take Id/Name as parameters instead of the whole object when the whole object is not used (e.g. for edit/delete)
