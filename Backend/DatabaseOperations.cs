@@ -1420,6 +1420,8 @@ namespace Backend
                 var spotifyArtists = await SpotifyOperations.GetArtists(artistIds);
                 for (var i = 0; i < artistIds.Count; i++)
                 {
+                    if (spotifyArtists[i] == null)
+                        continue;
                     var dbGenresOfArtist = new List<Genre>();
                     foreach(var genreName in spotifyArtists[i].Genres)
                     {

@@ -116,7 +116,7 @@ namespace SpotifySongTagger.ViewModels
                 Log.Information($"loaded {TrackVMs.Count} tracks from {playlistOrTag}");
 
                 // check if metadata is missing and display a hint if it is missing
-                if (TrackVMs.Select(tvm => tvm.Track.AudioFeatures == null).Any())
+                if (TrackVMs.Any(tvm => tvm.Track.AudioFeatures == null))
                     MessageQueue.Enqueue(UIComposer.ComposeMissingMetadataText());
             }
         }

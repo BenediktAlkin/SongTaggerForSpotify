@@ -150,6 +150,7 @@ namespace Backend
         }
         public static async Task<List<AudioFeatures>> GetAudioFeatures(List<string> trackIds)
         {
+            var spotifyAudioFeatures = new List<TrackAudioFeatures>();
             var audioFeatures = new List<AudioFeatures>();
             try
             {
@@ -157,22 +158,53 @@ namespace Backend
                 {
                     var request = new TracksAudioFeaturesRequest(trackIds.Skip(i).Take(100).ToList());
                     var response = await Spotify.Tracks.GetSeveralAudioFeatures(request);
-                    audioFeatures.AddRange(response.AudioFeatures.Select(af => new AudioFeatures
+                    spotifyAudioFeatures.AddRange(response.AudioFeatures);
+                }
+
+
+                // audio features can be null
+                // TODO better workaround (the entire UI and FilterNodes are currently designed such that every track has AudioFeatures)
+                for (var i = 0; i < spotifyAudioFeatures.Count; i++)
+                {
+                    var af = spotifyAudioFeatures[i];
+                    if (af == null)
                     {
-                        Id = af.Id,
-                        Acousticness = af.Acousticness,
-                        Danceability = af.Danceability,
-                        Energy = af.Energy,
-                        Instrumentalness = af.Instrumentalness,
-                        Key = af.Key,
-                        Liveness = af.Liveness,
-                        Loudness = af.Loudness,
-                        Mode = af.Mode,
-                        Speechiness = af.Speechiness,
-                        Tempo = af.Tempo,
-                        TimeSignature = af.TimeSignature,
-                        Valence = af.Valence,
-                    }));
+                        audioFeatures.Add(new AudioFeatures
+                        {
+                            Id = trackIds[i],
+                            Acousticness = 0,
+                            Danceability = 0,
+                            Energy = 0,
+                            Instrumentalness = 0,
+                            Key = -1,
+                            Liveness = 0,
+                            Loudness = 0,
+                            Mode = 0,
+                            Speechiness = 0,
+                            Tempo = 0,
+                            TimeSignature = 4,
+                            Valence = 0,
+                        });
+                    }
+                    else
+                    {
+                        audioFeatures.Add(new AudioFeatures
+                        {
+                            Id = af.Id,
+                            Acousticness = af.Acousticness,
+                            Danceability = af.Danceability,
+                            Energy = af.Energy,
+                            Instrumentalness = af.Instrumentalness,
+                            Key = af.Key,
+                            Liveness = af.Liveness,
+                            Loudness = af.Loudness,
+                            Mode = af.Mode,
+                            Speechiness = af.Speechiness,
+                            Tempo = af.Tempo,
+                            TimeSignature = af.TimeSignature,
+                            Valence = af.Valence,
+                        });
+                    }
                 }
             }
             catch (Exception e)
@@ -310,9 +342,33 @@ namespace Backend
             var artists = new List<FullArtist>();
             for (var i=0;i<artistIds.Count;i += BATCH_SIZE)
             {
-                var request = new ArtistsRequest(artistIds.Skip(i).Take(BATCH_SIZE).ToList());
-                var response = await Spotify.Artists.GetSeveral(request);
-                artists.AddRange(response.Artists);
+                try
+                {
+                    var request = new ArtistsRequest(artistIds.Skip(i).Take(BATCH_SIZE).ToList());
+                    var response = await Spotify.Artists.GetSeveral(request);
+                    artists.AddRange(response.Artists);
+                }
+                catch(Exception e)
+                {
+                    // exception is thrown when Artist is not found (?)
+                    for (var j = 0; j < BATCH_SIZE; j++)
+                    {
+                        try
+                        {
+                            var request = new ArtistsRequest(artistIds.Skip(i + j).Take(1).ToList());
+                            var response = await Spotify.Artists.GetSeveral(request);
+                            artists.AddRange(response.Artists);
+                        }
+                        catch (Exception ex)
+                        {
+                            // add null artist such that length is equal to ids
+                            artists.Add(null);
+                            Logger.Error($"Error in GetArtist (probably couldn't find artist) " +
+                                $"ArtistId={artistIds[i+j]} OuterExceptionMessage={e.Message} " +
+                                $"ExceptionMessage={ex.Message}");
+                        }
+                    }
+                }
             }
             return artists;
         }

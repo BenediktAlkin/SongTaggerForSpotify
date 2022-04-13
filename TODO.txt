@@ -1,3 +1,5 @@
+when syncing for the first time, the liked songs dropdown option is not enabled (this was when syncing library in v1.1.3)
+
 probably should unset currently viewed playlist after sync is finished (viewed playlist is then an old version)
 
 code improvements:
