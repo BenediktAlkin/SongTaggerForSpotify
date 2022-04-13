@@ -11,7 +11,6 @@ namespace Backend.Entities
         public string Id { get; set; }
         public Track Track { get; set; }
 
-
         // 0.0 <= Acousticness <= 1.0
         public float Acousticness { get; set; }
         public int AcousticnessPercent => (int)(Acousticness * 100);

@@ -1398,6 +1398,12 @@ namespace Backend
                 db.SaveChanges();
                 Logger.Information("Finished updating liked playlist names");
 
+                // delete old AudioFeatures
+                Logger.Information("deleting old AudioFeatures");
+                var audioFeaturesWithoutSongs = db.AudioFeatures.Include(af => af.Track).Where(af => af.Track == null).ToList();
+                db.RemoveRange(audioFeaturesWithoutSongs);
+                db.SaveChanges();
+                Logger.Information($"deleted {audioFeaturesWithoutSongs.Count} old AudioFeatures");
 
                 // load AudioFeatures
                 Logger.Information("Loading AudioFeatures");
@@ -1410,6 +1416,7 @@ namespace Backend
                     trackWithoutAudioFeatures.AudioFeaturesId = trackWithoutAudioFeatures.Id;
                 db.AudioFeatures.AddRange(audioFeatures);
                 db.SaveChanges();
+                
                 Logger.Information("Finished loading AudioFeatures");
 
                 // load Artist Genres
