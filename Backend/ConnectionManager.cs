@@ -13,7 +13,19 @@ namespace Backend
 {
     public class ConnectionManager : NotifyPropertyChangedBase
     {
-        private const string CLIENT_ID = "c15508ab1a5f453396e3da29d16a506b";
+        public static string CLIENT_ID { get; set; } = "c15508ab1a5f453396e3da29d16a506b";
+        public static string[] SCOPE { get; set; } = new[]
+        {
+            Scopes.PlaylistReadPrivate,
+            Scopes.PlaylistReadCollaborative,
+            Scopes.PlaylistModifyPrivate,
+            Scopes.PlaylistModifyPublic,
+            Scopes.UserLibraryRead,
+            Scopes.UserReadPrivate,
+            Scopes.UserReadEmail,
+            Scopes.UserReadPlaybackState,
+            Scopes.UserModifyPlaybackState,
+        };
         private const string SERVER_URL_TEMPLATE = "http://localhost:{0}/";
         private static readonly string CALLBACK_URL_TEMPLATE = "{0}callback/";
 
@@ -345,18 +357,7 @@ namespace Backend
             {
                 CodeChallengeMethod = "S256",
                 CodeChallenge = challenge,
-                Scope = new[]
-                {
-                        Scopes.PlaylistReadPrivate,
-                        Scopes.PlaylistReadCollaborative,
-                        Scopes.PlaylistModifyPrivate,
-                        Scopes.PlaylistModifyPublic,
-                        Scopes.UserLibraryRead,
-                        Scopes.UserReadPrivate,
-                        Scopes.UserReadEmail,
-                        Scopes.UserReadPlaybackState,
-                        Scopes.UserModifyPlaybackState,
-                    }
+                Scope = SCOPE,
             };
             return (verifier, loginRequest);
         }
