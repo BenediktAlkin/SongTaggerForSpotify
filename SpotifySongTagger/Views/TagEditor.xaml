@@ -96,6 +96,7 @@
                 <TextBlock Text="4. Double click song to play" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                 <TextBlock Text="5. Drag &amp; drop tags onto songs" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                 <TextBlock Text="6. Drag &amp; drop tags onto tag groups" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
+                <TextBlock Text="7. Double click a tag to to tag the playing song" Margin="10" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
             </StackPanel>
             <!-- tracks -->
             <DataGrid 
@@ -505,7 +506,7 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <materialDesign:Chip PreviewMouseDown="Tag_PreviewMouseDown" VerticalAlignment="Center">
+                                                    <materialDesign:Chip PreviewMouseDown="Tag_PreviewMouseDown" PreviewMouseDoubleClick="Tag_MouseDoubleClick" DataContext="{Binding}" VerticalAlignment="Center">
                                                         <!-- tag content -->
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock VerticalAlignment="Center" Text="{Binding Name}"/>

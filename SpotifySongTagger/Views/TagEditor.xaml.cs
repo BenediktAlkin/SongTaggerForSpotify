@@ -71,6 +71,16 @@ namespace SpotifySongTagger.Views
         }
         #endregion
 
+        #region tag double click
+        private void Tag_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var chip = sender as MaterialDesignThemes.Wpf.Chip;
+            var tag = chip.DataContext as Backend.Entities.Tag;
+            ViewModel.AssignTagToCurrentlyPlayingTrack(tag.Name);
+            e.Handled = true;
+        }
+        #endregion
+
         private void AssignedTag_DeleteClick(object sender, RoutedEventArgs e)
         {
             var chip = sender as Chip;
