@@ -549,12 +549,12 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.FilterArtistNodes).Include(gn => gn.Artist));
             nodes.AddRange(BaseQuery(db.FilterTagNodes).Include(gn => gn.Tag));
             nodes.AddRange(BaseQuery(db.FilterUntaggedNodes));
-            nodes.AddRange(BaseQuery(db.FilterYearNodes));
             nodes.AddRange(BaseQuery(db.IntersectNodes));
             nodes.AddRange(BaseQuery(db.PlaylistInputLikedNodes).Include(gn => gn.Playlist));
             nodes.AddRange(BaseQuery(db.PlaylistInputMetaNodes).Include(gn => gn.Playlist));
             nodes.AddRange(BaseQuery(db.PlaylistOutputNodes));
             nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
+            nodes.AddRange(BaseQuery(db.FilterRangeNodes));
             nodes.AddRange(BaseQuery(db.FilterKeyNodes));
             nodes.AddRange(BaseQuery(db.FilterModeNodes));
             nodes.AddRange(BaseQuery(db.FilterTimeSignatureNodes));
