@@ -555,7 +555,6 @@ namespace Backend
             nodes.AddRange(BaseQuery(db.PlaylistInputMetaNodes).Include(gn => gn.Playlist));
             nodes.AddRange(BaseQuery(db.PlaylistOutputNodes));
             nodes.AddRange(BaseQuery(db.RemoveNodes).Include(gn => gn.BaseSet).Include(gn => gn.RemoveSet));
-            nodes.AddRange(BaseQuery(db.FilterRangeNodes));
             nodes.AddRange(BaseQuery(db.FilterKeyNodes));
             nodes.AddRange(BaseQuery(db.FilterModeNodes));
             nodes.AddRange(BaseQuery(db.FilterTimeSignatureNodes));
