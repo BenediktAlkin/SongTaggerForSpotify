@@ -33,6 +33,7 @@
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="0.7*" MinWidth="100"/>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
@@ -76,14 +77,14 @@
                 Style="{StaticResource MaterialDesignCircularProgressBar}"
                 Value="0"
                 IsIndeterminate="True" />
-            
+
             <GridSplitter Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1" />
-            
+
             <!-- instructions -->
             <StackPanel 
                 Grid.Column="1" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Visibility="{Binding SelectedPlaylistOrTag, Converter={StaticResource InverseNullableToVisibilityConverter}}">
+                Visibility="{Binding SelectedPlaylistOrTag, Converter={StaticResource InverseNullableToVisibilityConverter}}" Grid.ColumnSpan="2">
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="1. Sync your Spotify library with" VerticalAlignment="Center" Margin="0 0 5 0" Style="{StaticResource MaterialDesignHeadline4TextBlock}"/>
                     <materialDesign:PackIcon Kind="Sync" Width="48" Height="48" VerticalAlignment="Center"/>
@@ -111,7 +112,7 @@
                 SelectionMode="Single"
                 CanUserReorderColumns="False"
                 MouseDoubleClick="PlayTrack"
-                RowHeaderWidth="0">
+                RowHeaderWidth="0" Grid.ColumnSpan="2">
                 <DataGrid.Resources>
                     <Style x:Key="VerticalCenteredTextColumn" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
                         <Setter Property="VerticalAlignment" Value="Center" />
@@ -192,16 +193,16 @@
                 </DataGrid.Columns>
             </DataGrid>
             <ProgressBar 
-                Grid.Column="1" 
+                Grid.Column="2" 
                 Visibility="{Binding IsLoadingTracks, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Style="{StaticResource MaterialDesignCircularProgressBar}"
                 Value="0"
                 IsIndeterminate="True" />
 
-            <GridSplitter Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1"/>
-            
+            <GridSplitter Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1"/>
+
             <!-- tags -->
-            <Grid Grid.Row="0" Grid.Column="2">
+            <Grid Grid.Row="0" Grid.Column="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -638,7 +639,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-                    
+
                 <!-- load tags progress -->
                 <ProgressBar 
                     Grid.Row="1"
@@ -656,7 +657,7 @@
                 Height="1"
                 VerticalAlignment="Top"
                 Fill="{DynamicResource MaterialDesignDivider}"/>
-            
+
             <!-- Song info -->
             <Grid 
                 AllowDrop="True"
@@ -685,7 +686,7 @@
             <Grid
                 Visibility="{Binding Settings.HidePlayer, Converter={StaticResource InverseBoolToVisConverter}}"
                 Grid.Row="1" Grid.Column="1" 
-                Background="{DynamicResource MaterialDesignCardBackground}">
+                Background="{DynamicResource MaterialDesignCardBackground}" Grid.ColumnSpan="2">
                 <StackPanel VerticalAlignment="Center">
                     <!-- play/pause control -->
                     <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 0 0">
@@ -756,7 +757,7 @@
             <!-- volume control -->
             <Grid
                 Visibility="{Binding Settings.HidePlayer, Converter={StaticResource InverseBoolToVisConverter}}"
-                Grid.Row="1" Grid.Column="2"
+                Grid.Row="1" Grid.Column="3"
                 Background="{DynamicResource MaterialDesignCardBackground}">
                 <Grid Margin="8 0 24 0">
                     <Grid.ColumnDefinitions>
@@ -787,6 +788,20 @@
                         Text="{Binding Value, ElementName=VolumeSlider, Converter={StaticResource VolumeToTextConverter}}" 
                         VerticalAlignment="Center"
                         Margin="10 0 0 0"/>
+                </Grid>
+            </Grid>
+            <Grid 
+                AllowDrop="True"
+                Drop="SongInfo_Drop"
+                Visibility="{Binding Settings.HidePlayer, Converter={StaticResource InverseBoolToVisConverter}}"
+                Grid.Row="1" Grid.Column="1" 
+                Background="{DynamicResource MaterialDesignCardBackground}">
+                <Grid Margin="8" Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding PlayerManager.TagString}" FontWeight="Bold" FontSize="18" Grid.Column="1" TextWrapping="Wrap"/>
                 </Grid>
             </Grid>
         </Grid>
