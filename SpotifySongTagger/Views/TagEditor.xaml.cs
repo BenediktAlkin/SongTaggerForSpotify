@@ -4,11 +4,14 @@ using MaterialDesignThemes.Wpf;
 using Serilog;
 using SpotifySongTagger.Utils;
 using SpotifySongTagger.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Linq;
 using static SpotifySongTagger.ViewModels.TagEditorViewModel;
 
 namespace SpotifySongTagger.Views
@@ -25,7 +28,15 @@ namespace SpotifySongTagger.Views
             InitializeComponent();
             ViewModel = new TagEditorViewModel(messageQueue);
             DataContext = ViewModel;
+
+            BaseViewModel.PlayerManager.OnTrackChanged += UpdatePlayingTrack;
         }
+
+        private void UpdatePlayingTrack(string newId)
+        {
+            SetPlayerTagsForCurrentlyPlayingTrack();
+        }
+
         #region load/unload
         private void UserControl_Loaded(object sender, RoutedEventArgs e) => ViewModel.OnLoaded();
         private void UserControl_Unloaded(object sender, RoutedEventArgs e) => ViewModel.OnUnloaded();
@@ -58,6 +69,7 @@ namespace SpotifySongTagger.Views
             var tag = e.Data.GetData(DataFormats.StringFormat) as string;
             var trackVM = (TrackViewModel)dataGrid.Items.GetItemAt(index);
             AssignTag(trackVM.Track, tag);
+            SetPlayerTagsForCurrentlyPlayingTrack();
             //Log.Information($"Assigned {tag} to {trackVM.Track.Name}");
             e.Handled = true;
         }
@@ -67,6 +79,7 @@ namespace SpotifySongTagger.Views
             // assign tag to currently playing track
             var tag = e.Data.GetData(DataFormats.StringFormat) as string;
             ViewModel.AssignTagToCurrentlyPlayingTrack(tag);
+            SetPlayerTagsForCurrentlyPlayingTrack();
             e.Handled = true;
         }
         #endregion
@@ -77,7 +90,8 @@ namespace SpotifySongTagger.Views
             var chip = sender as MaterialDesignThemes.Wpf.Chip;
             var tag = chip.DataContext as Backend.Entities.Tag;
             ViewModel.AssignTagToCurrentlyPlayingTrack(tag.Name);
-            e.Handled = true;
+            SetPlayerTagsForCurrentlyPlayingTrack();
+            e.Handled = true;   
         }
         #endregion
 
@@ -86,6 +100,7 @@ namespace SpotifySongTagger.Views
             var chip = sender as Chip;
             var tag = chip.DataContext as Tag;
             ViewModel.RemoveAssignment(tag);
+            SetPlayerTagsForCurrentlyPlayingTrack();
         }
 
 
@@ -374,6 +389,23 @@ namespace SpotifySongTagger.Views
             await BaseViewModel.PlayerManager.SetProgress(newProgress);
         }
         #endregion
+
+        private void SetPlayerTagsForCurrentlyPlayingTrack()
+        {
+
+            if (BaseViewModel.PlayerManager.Track == null) return;
+            var trackId = BaseViewModel.PlayerManager.TrackId;
+
+            // get track directly from database
+            var track = DatabaseOperations.GetTrack(trackId);
+            if (track != null) {
+                PlayerManager.Instance.Tags = track.Tags;
+                PlayerManager.Instance.TagString = String.Join(", ", (track.Tags as IEnumerable<Tag>).Select(x => x.Name).ToArray());
+            } else {
+                PlayerManager.Instance.TagString = "";
+            }
+
+        }
 
     }
 }

@@ -415,6 +415,21 @@ namespace Backend
             Logger.Information($"removed tag {dbTag.Name} from track {dbTrack.Name}");
             return true;
         }
+
+        public static Track GetTrack(string trackId)
+        {
+            //track = new Track { Id = trackId };
+            using var db = ConnectionManager.NewContext();
+            // get track from db
+            var dbTrack = db.Tracks.Include(t => t.Tags).FirstOrDefault(t => t.Id == trackId);
+            if (dbTrack == null)
+            {
+                Logger.Information($"can't find track with Id: {trackId}");
+                return null;
+            }
+            return dbTrack;
+        }
+
         public static bool AddTrack(Track track)
         {
             if (track == null)

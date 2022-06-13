@@ -134,6 +134,23 @@ namespace Backend
             set => SetProperty(ref isPlaying, value, nameof(IsPlaying));
         }
 
+        private IList<Tag> tags;
+        public IList<Tag> Tags
+        {
+            get => tags;
+            set => SetProperty(ref tags, value, nameof(tags));
+        }
+
+        private string tagString;
+        public string TagString
+        {
+            get => tagString;
+            set
+            {
+                SetProperty(ref tagString, value, nameof(tagString));
+            }
+        }
+
         private Timer UpdateTrackInfoTimer { get; set; }
         public void StartUpdateTrackInfoTimer()
         {

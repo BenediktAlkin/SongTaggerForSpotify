@@ -150,8 +150,16 @@ namespace SpotifySongTagger.ViewModels
                 Log.Error($"Could not find tagName {tagName} in db");
                 return;
             }
-            if (DatabaseOperations.AssignTag(track, tag))
-                track.Tags.Add(tag);
+            // If tag already exists for this track --> remove it (enable tag switching)
+            if (track.Tags.Contains(tag))
+            {
+                if (DatabaseOperations.DeleteAssignment(track, tag)) track.Tags.Remove(tag);
+
+            } else {
+                // tag does not exists for this track --> add tag
+                if (DatabaseOperations.AssignTag(track, tag))
+                    track.Tags.Add(tag);
+            }
         }
         public void AssignTagToCurrentlyPlayingTrack(string tagName)
         {
@@ -161,13 +169,24 @@ namespace SpotifySongTagger.ViewModels
             var trackVM = TrackVMs == null ? null : TrackVMs.Where(tvm => tvm.Track.Id == trackId).FirstOrDefault();
             Track track;
             if (trackVM != null)
+            {
                 track = trackVM.Track;
-            else
-                // track is not in currently selected playlist --> tag does not need to be added in UI
+                DatabaseOperations.AddTrack(track);
+                AssignTag(track, tagName);
+                return;
+            }
+
+            // track is not in currently selected playlist --> tag does not need to be added in UI
+            track = DatabaseOperations.GetTrack(trackId);
+            if (track == null)
+            {
                 track = SpotifyOperations.ToTrack(PlayerManager.Track);
-            // add track to db if it is not already in db
-            DatabaseOperations.AddTrack(track);
+                // add track to db if it is not already in db
+                DatabaseOperations.AddTrack(track);  
+            }
+
             AssignTag(track, tagName);
+            
         }
         public void RemoveAssignment(Tag tag)
         {
