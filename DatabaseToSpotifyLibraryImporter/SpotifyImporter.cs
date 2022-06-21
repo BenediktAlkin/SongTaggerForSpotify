@@ -33,6 +33,8 @@ namespace DatabaseToSpotifyLibraryImporter
                 var ids = allSongs.Skip(i).Take(limit).ToList();
                 if (!await Spotify.Library.SaveTracks(new LibrarySaveTracksRequest(ids)))
                     Logger.Error($"failed importing songs {i} - {i * limit + limit}");
+                else
+                    Logger.Information($"imported songs {i} - {i * limit + limit}");
             }
             Logger.Information("imported songs");
         }
