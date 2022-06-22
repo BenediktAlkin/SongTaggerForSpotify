@@ -34,7 +34,7 @@ namespace DatabaseToSpotifyLibraryImporter
                 if (!await Spotify.Library.SaveTracks(new LibrarySaveTracksRequest(ids)))
                     Logger.Error($"failed importing songs {i} - {i + limit}");
                 else
-                    Logger.Information($"imported songs {i} - {i + limit}");
+                    Logger.Information($"imported songs {i} - {i + limit}/{allSongs.Count}");
             }
             Logger.Information("imported songs");
         }
