@@ -29,6 +29,9 @@ ConnectionManager.SCOPE = new[]
 if (!await ConnectionManager.Instance.TryInitFromSavedToken())
     await ConnectionManager.Instance.Login(rememberMe: true);
 
+DatabaseCleaner.Clean();
 
-await SpotifyCleaner.ClearLibrary();
-await SpotifyImporter.Import();
+
+// only needed if sync is needed
+// await SpotifyCleaner.ClearLibrary();
+// await SpotifyImporter.Import();
