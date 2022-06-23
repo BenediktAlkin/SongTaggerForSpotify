@@ -283,40 +283,57 @@ namespace Backend
             if (playlistOutputNode.GeneratedPlaylistId == null)
             {
                 // create playlist
-                var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName)
+                try
                 {
-                    Description = "Automatically generated playlist by \"Song Tagger for Spotify\" (https://github.com/BenediktAlkin/SpotifySongTagger)"
-                };
-                var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
+                    var request = new PlaylistCreateRequest(playlistOutputNode.PlaylistName)
+                    {
+                        Description = "Automatically generated playlist by \"Song Tagger for Spotify\" (https://github.com/BenediktAlkin/SpotifySongTagger)"
+                    };
+                    var createdPlaylist = await Spotify.Playlists.Create(DataContainer.Instance.User.Id, request);
 
-                if (DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(playlistOutputNode, createdPlaylist.Id))
-                    playlistOutputNode.GeneratedPlaylistId = createdPlaylist.Id;
+                    if (DatabaseOperations.EditPlaylistOutputNodeGeneratedPlaylistId(playlistOutputNode, createdPlaylist.Id))
+                        playlistOutputNode.GeneratedPlaylistId = createdPlaylist.Id;
+                }
+                catch(Exception e)
+                {
+                    Logger.Error($"Failed to create playlist{Environment.NewLine}{e.Message}");
+                    return false;
+                }
+                
             }
             else
             {
-                var playlistDetails = await Spotify.Playlists.Get(playlistOutputNode.GeneratedPlaylistId);
-                // like playlist if it was unliked
-                var followCheckReq = new FollowCheckPlaylistRequest(new List<string> { DataContainer.Instance.User.Id });
-                if (!(await Spotify.Follow.CheckPlaylist(playlistOutputNode.GeneratedPlaylistId, followCheckReq)).First())
-                    await Spotify.Follow.FollowPlaylist(playlistOutputNode.GeneratedPlaylistId);
-
-                // rename spotify playlist if name changed
-                if (playlistDetails.Name != playlistOutputNode.PlaylistName)
+                try
                 {
-                    var changeNameReq = new PlaylistChangeDetailsRequest { Name = playlistOutputNode.PlaylistName };
-                    await Spotify.Playlists.ChangeDetails(playlistOutputNode.GeneratedPlaylistId, changeNameReq);
-                }
+                    var playlistDetails = await Spotify.Playlists.Get(playlistOutputNode.GeneratedPlaylistId);
+                    // like playlist if it was unliked
+                    var followCheckReq = new FollowCheckPlaylistRequest(new List<string> { DataContainer.Instance.User.Id });
+                    if (!(await Spotify.Follow.CheckPlaylist(playlistOutputNode.GeneratedPlaylistId, followCheckReq)).First())
+                        await Spotify.Follow.FollowPlaylist(playlistOutputNode.GeneratedPlaylistId);
 
-
-                // remove everything
-                if (playlistDetails.Tracks.Total.Value > 0)
-                {
-                    var request = new PlaylistRemoveItemsRequest
+                    // rename spotify playlist if name changed
+                    if (playlistDetails.Name != playlistOutputNode.PlaylistName)
                     {
-                        Positions = Enumerable.Range(0, playlistDetails.Tracks.Total.Value).ToList(),
-                        SnapshotId = playlistDetails.SnapshotId,
-                    };
-                    await Spotify.Playlists.RemoveItems(playlistOutputNode.GeneratedPlaylistId, request);
+                        var changeNameReq = new PlaylistChangeDetailsRequest { Name = playlistOutputNode.PlaylistName };
+                        await Spotify.Playlists.ChangeDetails(playlistOutputNode.GeneratedPlaylistId, changeNameReq);
+                    }
+
+
+                    // remove everything
+                    if (playlistDetails.Tracks.Total.Value > 0)
+                    {
+                        var request = new PlaylistRemoveItemsRequest
+                        {
+                            Positions = Enumerable.Range(0, playlistDetails.Tracks.Total.Value).ToList(),
+                            SnapshotId = playlistDetails.SnapshotId,
+                        };
+                        await Spotify.Playlists.RemoveItems(playlistOutputNode.GeneratedPlaylistId, request);
+                    }
+                }
+                catch(Exception e)
+                {
+                    Logger.Error($"Failed to like/rename/remove_everything from playlist to generate{Environment.NewLine}{e.Message}");
+                    return false;
                 }
             }
 
@@ -324,14 +341,23 @@ namespace Backend
             const int BATCH_SIZE = 100;
             playlistOutputNode.CalculateOutputResult();
             var tracks = playlistOutputNode.OutputResult;
-            for (var i = 0; i < tracks.Count; i += BATCH_SIZE)
+            try
             {
-                var request = new PlaylistAddItemsRequest(
-                    Enumerable.Range(0, Math.Min(tracks.Count - i, BATCH_SIZE))
-                        .Select(j => $"spotify:track:{tracks[i + j].Id}")
-                        .ToList());
-                await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
+                for (var i = 0; i < tracks.Count; i += BATCH_SIZE)
+                {
+                    var request = new PlaylistAddItemsRequest(
+                        Enumerable.Range(0, Math.Min(tracks.Count - i, BATCH_SIZE))
+                            .Select(j => $"spotify:track:{tracks[i + j].Id}")
+                            .ToList());
+                    await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
+                }
             }
+            catch(Exception e)
+            {
+                Logger.Error($"Failed to add track to playlist{Environment.NewLine}{e.Message}");
+                return false;
+            }
+            
             Logger.Information($"synchronized PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
             return true;
         }

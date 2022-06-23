@@ -18,7 +18,13 @@ namespace DatabaseToSpotifyLibraryImporter
         {
             var all = new List<T>();
             await foreach (var item in Spotify.Paginate(page))
+            {
                 all.Add(item);
+                if (all.Count % 100 == 0)
+                    Logger.Information($"fetched {all.Count}/{page.Total}");
+            }
+                
+
             return all;
         }
 

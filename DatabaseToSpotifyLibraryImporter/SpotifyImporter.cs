@@ -32,13 +32,15 @@ namespace DatabaseToSpotifyLibraryImporter
             {
                 var ids = allSongs.Skip(i).Take(limit).ToList();
                 if (!await Spotify.Library.SaveTracks(new LibrarySaveTracksRequest(ids)))
-                    Logger.Error($"failed importing songs {i} - {i * limit + limit}");
+                    Logger.Error($"failed importing songs {i} - {i + limit}");
+                else
+                    Logger.Information($"imported songs {i} - {i + limit}/{allSongs.Count}");
             }
             Logger.Information("imported songs");
         }
         public static async Task ImportLikedPlaylists()
         {
-            const int limit = 50;
+            const int limit = 1;
             using var db = ConnectionManager.NewContext();
             var allPlaylists = db.Playlists.Include(p => p.Tracks).ToList();
 
@@ -54,7 +56,18 @@ namespace DatabaseToSpotifyLibraryImporter
                     for (var j = 0; j < playlist.Tracks.Count; j += limit)
                     {
                         var uris = playlist.Tracks.Skip(j).Take(limit).Select(t => $"spotify:track:{t.Id}").ToList();
-                        await Spotify.Playlists.AddItems(spotifyPlaylist!.Id, new PlaylistAddItemsRequest(uris));
+                        try
+                        {
+                            await Spotify.Playlists.AddItems(spotifyPlaylist.Id, new PlaylistAddItemsRequest(uris));
+                            Logger.Information($"imported songs {j}-{j + limit}/{playlist.Tracks.Count}");
+                        }
+                        catch (Exception ex)
+                        {
+                            var uri_str = uris.Aggregate((s1, s2) => $"{s1}{Environment.NewLine}{s2}");
+                            Logger.Error($"failed to add track(s):{ex}{Environment.NewLine}{uri_str}");
+                        }
+
+
                     }
                 }
                 else
