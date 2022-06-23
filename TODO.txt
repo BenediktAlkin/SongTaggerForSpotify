@@ -1,3 +1,4 @@
+logfile should be periodically cleared
 version number should be changed dynamically and not pushed to git (like in kappaconfig)
 when syncing for the first time, the liked songs dropdown option is not enabled (this was when syncing library in v1.1.3)
 
