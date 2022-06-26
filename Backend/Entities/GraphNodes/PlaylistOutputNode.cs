@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Backend.Errors;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -19,6 +20,6 @@ namespace Backend.Entities.GraphNodes
 
         public override bool IsValid => !string.IsNullOrEmpty(PlaylistName);
 
-        public async Task<bool> Run() => await SpotifyOperations.SyncPlaylistOutputNode(this);
+        public async Task<Error> Run() => await SpotifyOperations.SyncPlaylistOutputNode(this);
     }
 }

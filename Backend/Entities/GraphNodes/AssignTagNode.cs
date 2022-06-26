@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Backend.Errors;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Entities.GraphNodes
@@ -26,6 +27,6 @@ namespace Backend.Entities.GraphNodes
         public override bool IsValid => TagId != null || Tag != null;
         public override bool RequiresTags => true;
 
-        public async Task<bool> Run() => await DatabaseOperations.AssignTags(this);
+        public async Task<Error> Run() => await DatabaseOperations.AssignTags(this);
     }
 }

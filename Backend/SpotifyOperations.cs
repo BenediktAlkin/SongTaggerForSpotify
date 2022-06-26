@@ -1,5 +1,6 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
+using Backend.Errors;
 using Serilog;
 using SpotifyAPI.Web;
 using System;
@@ -271,12 +272,13 @@ namespace Backend
             }
         }
 
-        public static async Task<bool> SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
+        
+        public static async Task<Error> SyncPlaylistOutputNode(PlaylistOutputNode playlistOutputNode)
         {
             if (playlistOutputNode.AnyBackward(gn => !gn.IsValid))
             {
                 Logger.Information($"cannot run PlaylistOutputNode Id={playlistOutputNode.Id} (encountered invalid graphNode)");
-                return false;
+                return SyncPlaylistOutputNodeErrors.ContainsInvalidNode;
             }
             Logger.Information($"synchronizing PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
 
@@ -297,43 +299,75 @@ namespace Backend
                 catch(Exception e)
                 {
                     Logger.Error($"Failed to create playlist{Environment.NewLine}{e.Message}");
-                    return false;
+                    return SyncPlaylistOutputNodeErrors.FailedCreatePlaylist;
                 }
                 
             }
             else
             {
+                FullPlaylist playlistDetails;
                 try
                 {
-                    var playlistDetails = await Spotify.Playlists.Get(playlistOutputNode.GeneratedPlaylistId);
+                    playlistDetails = await Spotify.Playlists.Get(playlistOutputNode.GeneratedPlaylistId);
                     // like playlist if it was unliked
                     var followCheckReq = new FollowCheckPlaylistRequest(new List<string> { DataContainer.Instance.User.Id });
                     if (!(await Spotify.Follow.CheckPlaylist(playlistOutputNode.GeneratedPlaylistId, followCheckReq)).First())
                         await Spotify.Follow.FollowPlaylist(playlistOutputNode.GeneratedPlaylistId);
-
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Failed to like playlist to generate{Environment.NewLine}{e.Message}");
+                    return SyncPlaylistOutputNodeErrors.FailedLike;
+                }
+                try { 
                     // rename spotify playlist if name changed
                     if (playlistDetails.Name != playlistOutputNode.PlaylistName)
                     {
                         var changeNameReq = new PlaylistChangeDetailsRequest { Name = playlistOutputNode.PlaylistName };
                         await Spotify.Playlists.ChangeDetails(playlistOutputNode.GeneratedPlaylistId, changeNameReq);
                     }
-
-
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Failed to rename playlist to generate{Environment.NewLine}{e.Message}");
+                    return SyncPlaylistOutputNodeErrors.FailedRename;
+                }
+                try { 
                     // remove everything
                     if (playlistDetails.Tracks.Total.Value > 0)
                     {
-                        var request = new PlaylistRemoveItemsRequest
+                        var snapshotId = playlistDetails.SnapshotId;
+                        for (var i = 0; i < playlistDetails.Tracks.Total.Value; i += 100)
                         {
-                            Positions = Enumerable.Range(0, playlistDetails.Tracks.Total.Value).ToList(),
-                            SnapshotId = playlistDetails.SnapshotId,
-                        };
-                        await Spotify.Playlists.RemoveItems(playlistOutputNode.GeneratedPlaylistId, request);
+                            var count = Math.Min(playlistDetails.Tracks.Total.Value - i, 100);
+                            var request = new PlaylistRemoveItemsRequest
+                            {
+                                Positions = Enumerable.Range(i, count).ToList(),
+                                SnapshotId = snapshotId,
+                            };
+                            var response = await Spotify.Playlists.RemoveItems(playlistOutputNode.GeneratedPlaylistId, request);
+                            //snapshotId = response.SnapshotId;
+                            Logger.Information($"removed {i}-{i + count} from {playlistDetails.Name}");
+                        }
                     }
                 }
                 catch(Exception e)
                 {
-                    Logger.Error($"Failed to like/rename/remove_everything from playlist to generate{Environment.NewLine}{e.Message}");
-                    return false;
+                    if (e.Message.Contains("Playlist size limit reached"))
+                    {
+                        Logger.Error($"Playlist size limit reached{Environment.NewLine}{e.Message}");
+                        return SyncPlaylistOutputNodeErrors.ReachedSizeLimit;
+                    }
+
+                    // SpotifyAPI randomly returns "Internal server error" after like 1000 deletes
+                    if (playlistDetails.Tracks.Total.Value > 1000)
+                    {
+                        Logger.Error($"Failed to remove_everything from playlist to generate (unstable API for sizes > 1000){Environment.NewLine}{e.Message}");
+                        return SyncPlaylistOutputNodeErrors.SpotifyAPIRemoveUnstable;
+                    }
+
+                    Logger.Error($"Failed to remove_everything from playlist to generate{Environment.NewLine}{e.Message}");
+                    return SyncPlaylistOutputNodeErrors.FailedRemoveOldTracks;
                 }
             }
 
@@ -345,21 +379,23 @@ namespace Backend
             {
                 for (var i = 0; i < tracks.Count; i += BATCH_SIZE)
                 {
+                    var count = Math.Min(tracks.Count - i, BATCH_SIZE);
                     var request = new PlaylistAddItemsRequest(
-                        Enumerable.Range(0, Math.Min(tracks.Count - i, BATCH_SIZE))
+                        Enumerable.Range(0, count)
                             .Select(j => $"spotify:track:{tracks[i + j].Id}")
                             .ToList());
                     await Spotify.Playlists.AddItems(playlistOutputNode.GeneratedPlaylistId, request);
+                    Logger.Information($"added tracks {i}-{i + count} to {playlistOutputNode.PlaylistName}");
                 }
             }
             catch(Exception e)
             {
                 Logger.Error($"Failed to add track to playlist{Environment.NewLine}{e.Message}");
-                return false;
+                return SyncPlaylistOutputNodeErrors.FailedAddNewTrack;
             }
             
             Logger.Information($"synchronized PlaylistOutputNode {playlistOutputNode.PlaylistName} to spotify");
-            return true;
+            return null;
         }
 
         public static async Task<List<FullArtist>> GetArtists(List<string> artistIds)

@@ -1,6 +1,7 @@
 ﻿using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Backend.Entities.GraphNodes.AudioFeaturesFilters;
+using Backend.Errors;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serilog;
@@ -1202,12 +1203,12 @@ namespace Backend
 
 
         #region AssignTagNode
-        public static async Task<bool> AssignTags(AssignTagNode assignTagNode)
+        public static async Task<Error> AssignTags(AssignTagNode assignTagNode)
         {
             if (assignTagNode.AnyBackward(gn => !gn.IsValid))
             {
                 Logger.Information("can't run AssignTagNode (graph contains invalid node)");
-                return false;
+                return AssignTagError.ContainsInvalidNode;
             }
 
             await Task.Run(() =>
@@ -1219,7 +1220,7 @@ namespace Backend
                     AssignTag(track, assignTagNode.Tag);
                 Logger.Information($"assigned tag {assignTagNode.Tag.Name} to {tracks.Count} tracks");
             });
-            return true;
+            return null;
         }
         #endregion
 

@@ -2,6 +2,7 @@
 using Backend.Entities;
 using Backend.Entities.GraphNodes;
 using Backend.Entities.GraphNodes.AudioFeaturesFilters;
+using Backend.Errors;
 using MaterialDesignThemes.Wpf;
 using Serilog;
 using SpotifySongTagger.Converters;
@@ -125,16 +126,53 @@ namespace SpotifySongTagger.ViewModels
             foreach (var runnableNode in runnableNodes)
             {
                 var success = await runnableNode.Run();
-                if (!success)
+                if (success != null)
                 {
+                    var msg = "unknown error";
+                    string infoMsg = null;
+                    if (success == SyncPlaylistOutputNodeErrors.ContainsInvalidNode)
+                        msg = "graph contains invalid node";
+                    else if (success == SyncPlaylistOutputNodeErrors.FailedCreatePlaylist)
+                        msg = "failed to create playlist";
+                    else if (success == SyncPlaylistOutputNodeErrors.FailedLike)
+                    {
+                        msg = "failed to undelete playlist";
+                        infoMsg = "(old playlist with same id was deleted)";
+                    }
+                    else if (success == SyncPlaylistOutputNodeErrors.FailedRename)
+                        msg = "failed to rename playlist";
+                    else if (success == SyncPlaylistOutputNodeErrors.FailedRemoveOldTracks)
+                        msg = "failed to remove old tracks of playlist";
+                    else if (success == SyncPlaylistOutputNodeErrors.FailedAddNewTrack)
+                        msg = "failed to add new tracks to playlist";
+                    else if (success == SyncPlaylistOutputNodeErrors.ReachedSizeLimit)
+                    {
+                        msg = "reached size limit for playlist";
+                        infoMsg = "(limit is ~10.000 songs)";
+                    }
+                    else if (success == SyncPlaylistOutputNodeErrors.SpotifyAPIRemoveUnstable)
+                    {
+                        msg = "failed to remove old tracks of playlist";
+                        infoMsg = "(SpotifyAPI is unstable for playlists with >1000 songs)";
+                    }
+                        
+
                     var converter = new GraphNodeToNameConverter();
-                    var text1 = new TextBlock { Text = "can't run " };
+                    var stackPanel = new StackPanel { Orientation = Orientation.Vertical };
+                    var text1 = new TextBlock { Text = "failed to run " };
                     var nodeStr = (string)converter.Convert(runnableNode, typeof(string), null, CultureInfo.CurrentUICulture);
                     var text2 = new TextBlock { Text = nodeStr, FontWeight = FontWeights.Bold };
-                    var text3 = new TextBlock { Text = " (graph contains invalid node)" };
+                    var text3 = new TextBlock { Text = msg };
                     text1.Inlines.Add(text2);
                     text1.Inlines.Add(text3);
-                    MessageQueue.Enqueue(text1);
+                    stackPanel.Children.Add(text1);
+                    if (infoMsg != null)
+                    {
+                        var text4 = new TextBlock { Text = infoMsg };
+                        stackPanel.Children.Add(text4);
+                    }
+                    var duration = TimeSpan.FromSeconds(10);
+                    MessageQueue.Enqueue(stackPanel, null, null, null, false, true, duration);
                 }
             }
 
