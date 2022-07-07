@@ -801,7 +801,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="{Binding PlayerManager.TagString}" FontWeight="Bold" FontSize="18" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Stretch" Foreground="#FF25CA30"/>
+                    <TextBlock Text="{Binding PlayerManager.TagString}" FontWeight="Bold" FontSize="18" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Stretch" Foreground="#22d057"/>
                     <TextBlock
                         Visibility="{Binding Settings.HideArtistGenres, Converter={StaticResource InverseBoolToVisConverter}}"
                         Text="{Binding PlayerManager.ArtistsGenreString}"
