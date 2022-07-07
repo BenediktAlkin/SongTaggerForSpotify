@@ -10,6 +10,7 @@ namespace SpotifySongTagger.Utils
     {
         IsDarkTheme,
         HidePlayer,
+        HideArtistGenres,
         AutoUpdate,
     }
     public class Settings
@@ -20,6 +21,7 @@ namespace SpotifySongTagger.Utils
 
         private const bool IS_DARK_THEME_DEFAULT = true;
         private const bool HIDE_PLAYER_DEFAULT = false;
+        private const bool HIDE_ARTIST_GENRES = false;
         private const bool AUTO_UPDATE_DEFAULT = true;
 
         private Dictionary<string, string> Dict { get; }
@@ -52,6 +54,11 @@ namespace SpotifySongTagger.Utils
         {
             get => TryGetValue(SettingKey.HidePlayer, HIDE_PLAYER_DEFAULT, bool.Parse);
             set => SetValue(SettingKey.HidePlayer, value.ToString());
+        }
+        public bool HideArtistGenres
+    {
+            get => TryGetValue(SettingKey.HideArtistGenres, HIDE_ARTIST_GENRES, bool.Parse);
+            set => SetValue(SettingKey.HideArtistGenres, value.ToString());
         }
         public bool AutoUpdate
         {
