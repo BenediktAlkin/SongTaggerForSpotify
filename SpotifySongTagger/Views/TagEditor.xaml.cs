@@ -30,11 +30,17 @@ namespace SpotifySongTagger.Views
             DataContext = ViewModel;
 
             BaseViewModel.PlayerManager.OnTrackChanged += UpdatePlayingTrack;
+            BaseViewModel.PlayerManager.OnNewTrack += UpdateNewTrack;
         }
 
         private void UpdatePlayingTrack(string newId)
         {
             SetPlayerTagsForCurrentlyPlayingTrack();
+        }
+
+        private void UpdateNewTrack(string newId)
+        {
+            SetArtisGenresForCurrentlyPlayingTrack();
         }
 
         #region load/unload
@@ -407,5 +413,18 @@ namespace SpotifySongTagger.Views
 
         }
 
+        private async void SetArtisGenresForCurrentlyPlayingTrack()
+        {
+
+            if (BaseViewModel.PlayerManager.Track == null) return;
+            var trackId = BaseViewModel.PlayerManager.TrackId;
+
+            var artistIds = BaseViewModel.PlayerManager.Track.Artists.Select(x => x.Id).ToList();
+            var spotifyArtists = await SpotifyOperations.GetArtists(artistIds);
+            var spGenres = String.Join(" / ", spotifyArtists.Select(x => String.Join(", ", x.Genres)).ToList());
+
+            PlayerManager.Instance.ArtistsGenreString = spGenres;
+
+        }
     }
 }

@@ -48,6 +48,8 @@ namespace Backend
 
         public static bool IsPremiumUser => DataContainer.Instance.User != null && DataContainer.Instance.User.Product == "premium";
 
+        public delegate void NewTrackEventHandler(string newId);
+        public event TrackChangedEventHandler OnNewTrack;
         public delegate void TrackChangedEventHandler(string newId);
         public event TrackChangedEventHandler OnTrackChanged;
         public delegate void ProgressChangedEventHandler(int newProgress);
@@ -79,7 +81,11 @@ namespace Backend
             get => trackId;
             set
             {
-                SetProperty(ref trackId, value, nameof(TrackId));
+                if (value != trackId) {
+                    SetProperty(ref trackId, value, nameof(TrackId));
+                    OnNewTrack?.Invoke(value);
+                }
+                
                 OnTrackChanged?.Invoke(value);
             }
         }
@@ -139,6 +145,16 @@ namespace Backend
         {
             get => tags;
             set => SetProperty(ref tags, value, nameof(tags));
+        }
+
+        private string artistsGenreString;
+        public string ArtistsGenreString
+        { 
+            get => artistsGenreString;
+            set
+            {
+                SetProperty(ref artistsGenreString, value, nameof(artistsGenreString));
+            }
         }
 
         private string tagString;

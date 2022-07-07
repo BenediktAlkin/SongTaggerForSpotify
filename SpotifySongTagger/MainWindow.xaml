@@ -71,7 +71,7 @@
                     </ListBox>
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
-            
+
             <!-- title bar and page content -->
             <DockPanel>
                 <!-- title bar -->
@@ -177,6 +177,10 @@
                                         <CheckBox IsChecked="{Binding Settings.HidePlayer}" Style="{StaticResource MaterialDesignLightCheckBox}"/>
                                         <TextBlock Text="Hide Player" Margin="5 0 10 0" ToolTip="hide the spotify player controls in the tag editor" VerticalAlignment="Center"/>
                                     </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="10,10,10,10">
+                                        <CheckBox IsChecked="{Binding Settings.HideArtistGenres}" Style="{StaticResource MaterialDesignLightCheckBox}" />
+                                        <TextBlock Text="Hide Artist Tags" Margin="5 0 10 0" ToolTip="" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                     <StackPanel Margin="10" Orientation="Horizontal">
                                         <CheckBox IsChecked="{Binding Settings.AutoUpdate}" Style="{StaticResource MaterialDesignLightCheckBox}"/>
                                         <TextBlock Text="Auto Update" Margin="5 0 0 0" ToolTip="automatically update on startup" VerticalAlignment="Center"/>
@@ -252,14 +256,14 @@
                             Margin="6 0 0 0" 
                             HorizontalAlignment="Center" />
                     </Grid>
-                    
+
                     <!-- content -->
                     <ContentControl 
                         DataContext="{Binding SelectedItem}"
                         Content="{Binding DataContext.View, ElementName=MainWindowWindow, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
                         Visibility="{Binding DataContext.ShowContent, ElementName=MainWindowWindow, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Margin="0 8 0 0"/>
-                    
+
                     <!-- snackbar -->
                     <materialDesign:Snackbar
                         x:Name="MainSnackbar"

@@ -797,11 +797,18 @@
                 Grid.Row="1" Grid.Column="1" 
                 Background="{DynamicResource MaterialDesignCardBackground}">
                 <Grid Margin="8" Grid.ColumnSpan="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding PlayerManager.TagString}" FontWeight="Bold" FontSize="18" Grid.Column="1" TextWrapping="Wrap"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding PlayerManager.TagString}" FontWeight="Bold" FontSize="18" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Stretch" Foreground="#22d057"/>
+                    <TextBlock
+                        Visibility="{Binding Settings.HideArtistGenres, Converter={StaticResource InverseBoolToVisConverter}}"
+                        Text="{Binding PlayerManager.ArtistsGenreString}"
+                        FontWeight="Bold" FontSize="18" Grid.Column="1" VerticalAlignment="Stretch" Grid.Row="1" TextWrapping="Wrap"/>
+                    <GridSplitter
+                        Visibility="{Binding Settings.HideArtistGenres, Converter={StaticResource InverseBoolToVisConverter}}"
+                        HorizontalAlignment="Stretch" Height="2" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                 </Grid>
             </Grid>
         </Grid>
