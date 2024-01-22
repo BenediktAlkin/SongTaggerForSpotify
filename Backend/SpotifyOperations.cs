@@ -425,9 +425,21 @@ namespace Backend
                         {
                             // add null artist such that length is equal to ids
                             artists.Add(null);
-                            Logger.Error($"Error in GetArtist (probably couldn't find artist) " +
-                                $"ArtistId={artistIds[i+j]} OuterExceptionMessage={e.Message} " +
-                                $"ExceptionMessage={ex.Message}");
+                            try
+                            {
+                                Logger.Error($"Error in GetArtist (probably couldn't find artist) " +
+                                    $"ArtistId={artistIds[i + j]} OuterExceptionMessage={e.Message} " +
+                                    $"ExceptionMessage={ex.Message}");
+                            }
+                            catch (Exception exx)
+                            {
+                                // the error message threw a IndexOutOfRangeException and this code was added when 
+                                // https://github.com/BenediktAlkin/SongTaggerForSpotify/issues/29 was added; not sure if it is correlated
+                                Logger.Error($"Error in GetArtist " +
+                                    $"OuterOuterExceptionMessage={e.Message} " +
+                                    $"OuterExceptionMessage={ex.Message} " +
+                                    $"ExceptionMessage={exx.Message}");
+                            }
                         }
                     }
                 }

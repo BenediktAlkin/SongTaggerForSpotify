@@ -421,7 +421,10 @@ namespace SpotifySongTagger.Views
 
             var artistIds = BaseViewModel.PlayerManager.Track.Artists.Select(x => x.Id).ToList();
             var spotifyArtists = await SpotifyOperations.GetArtists(artistIds);
-            var spGenres = String.Join(" / ", spotifyArtists.Select(x => String.Join(", ", x.Genres)).ToList());
+            // Spotify changed something in the API which resulted in crashes
+            // https://github.com/BenediktAlkin/SongTaggerForSpotify/issues/29
+            var filteredArtists = spotifyArtists.Where(artist => artist != null && artist.Genres != null);
+            var spGenres = String.Join(" / ", filteredArtists.Select(x => String.Join(", ", x.Genres)).ToList());
 
             PlayerManager.Instance.ArtistsGenreString = spGenres;
 
