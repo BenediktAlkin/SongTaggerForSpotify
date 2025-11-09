@@ -1,6 +1,6 @@
 # API documentation
 
-Running "BackendAPI.exe" will start a HTTP server on http://localhost:63848/ with the following endpoints.
+Running "BackendAPI.exe" will start a HTTP server on http://127.0.0.1:63848/ with the following endpoints.
 
 ## JSON format
 All endpoints described here use text/plain as return type. The return value is wrapped into a json object when an endpoint is prefixed with json/.

@@ -26,7 +26,7 @@ namespace Backend
             Scopes.UserReadPlaybackState,
             Scopes.UserModifyPlaybackState,
         };
-        private const string SERVER_URL_TEMPLATE = "http://localhost:{0}/";
+        private const string SERVER_URL_TEMPLATE = "http://127.0.0.1:{0}/";
         private static readonly string CALLBACK_URL_TEMPLATE = "{0}callback/";
 
         private const string SST_TOKEN_FILE = "token.txt";
