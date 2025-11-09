@@ -161,15 +161,11 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
-      # when changing the runtime from windows-2019 to windows-2022 %MSBUILDPATH% no longer worked
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
       # publish setup project to Setup/{build_config}
       - name: publish setup
         shell: cmd
         run: |
-          msbuild ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
+          "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.com" ${{ env.main_project_name }}_minimal.sln /Project Setup/Setup.vdproj /Build ${{ env.build_config }}
       
       # get release.upload_url
       - name: get release.upload_url
