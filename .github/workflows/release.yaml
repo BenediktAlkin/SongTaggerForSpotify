@@ -136,7 +136,7 @@ jobs:
   create_release_installer:
     needs: update_version_in_source
     # devenv.com doesn't terminate on windows-latest for some reason
-    runs-on: windows-2019
+    runs-on: windows-2022
     
     steps:
       - name: checkout
