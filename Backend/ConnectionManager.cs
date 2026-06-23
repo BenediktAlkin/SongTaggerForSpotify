@@ -405,9 +405,22 @@ namespace Backend
                 return;
             }
 
-            // extract token
-            var code = ctx.Request.Url.ToString().Replace($"{CALLBACK_URL}?code=", "");
-            Logger.Information("got token");
+            // extract authorization code
+            var error = ctx.Request.QueryString["error"];
+            var code = ctx.Request.QueryString["code"];
+            
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                Logger.Information($"Spotify login returned error: {error}");
+            }
+            else if (string.IsNullOrWhiteSpace(code))
+            {
+                Logger.Information("Spotify login callback did not include an authorization code");
+            }
+            else
+            {
+                Logger.Information("got authorization code");
+            }
 
             // create spotify client
             var tokenRequest = new PKCETokenRequest(CLIENT_ID, code, new Uri(CALLBACK_URL), verifier);
