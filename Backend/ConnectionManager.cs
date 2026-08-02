@@ -406,7 +406,7 @@ namespace Backend
             }
 
             // extract token
-            var code = ctx.Request.Url.ToString().Replace($"{CALLBACK_URL}?code=", "");
+            var code = ctx.Request.QueryString["code"];
             Logger.Information("got token");
 
             // create spotify client
